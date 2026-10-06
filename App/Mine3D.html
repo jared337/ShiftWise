@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShiftWise Mine View</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#e8eef7;
+  --ink:#0a2540; --muted:#5b6b82; --faint:#8a98ad; --line:rgba(10,37,64,.09);
+  --accent:#4f5bff; --accent-soft:rgba(79,91,255,.1); --blue:#2f5bea;
+  --ok:#1f9d6b; --ok-soft:#e1f5ec; --warn:#c77d0a; --warn-soft:#fdf0d9; --bad:#d6383d; --bad-soft:#fde6e6;
+  --off:#8a96a8; --off-soft:#eef1f5;
+  --glass:rgba(255,255,255,.62);
+  --shadow:0 1px 2px rgba(10,37,64,.06),0 10px 30px rgba(10,37,64,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--sky);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;outline:none}
+#labels{position:fixed;inset:0;pointer-events:none}
+button{font:inherit;color:inherit}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border-radius:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.7)}
+
+/* Brand */
+.brand{position:fixed;left:16px;top:16px;width:400px;padding:12px 16px;z-index:5}
+.brand h1{margin:0;font-size:16px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.brand h1 i{width:22px;height:22px;border-radius:6px;background:var(--accent);display:inline-block;position:relative}
+.brand h1 i:after{content:"";position:absolute;inset:6px 5px;border:2px solid #fff;border-top:none;border-right:none;transform:rotate(-45deg) translate(1px,-2px)}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.health{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:11.5px;color:var(--muted);cursor:default}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:1px}
+.dot.ok{background:var(--ok)} .dot.warn{background:#e9a23b} .dot.bad{background:var(--bad)} .dot.off{background:var(--off)}
+
+/* Metric tiles */
+.tiles{position:fixed;left:432px;right:16px;top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;z-index:5}
+.tile{display:flex;gap:12px;align-items:center;padding:12px 14px}
+.tile .ic{width:42px;height:42px;border-radius:12px;background:linear-gradient(180deg,#eef1ff,#e1e6ff);display:grid;place-items:center;flex:none}
+.tile .ic svg{width:22px;height:22px}
+.tile .ml{font-size:12px;color:var(--muted);line-height:1.3}
+.tile .mv{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.tile .mv small{font-size:13px;font-weight:500;color:var(--muted);margin-left:3px}
+.tile .ms{font-size:11.5px;color:var(--muted)}
+.mv.ok{color:var(--ok)} .mv.warn{color:var(--warn)} .mv.bad{color:var(--bad)}
+
+/* Queue */
+.queue{position:fixed;left:16px;top:142px;bottom:16px;width:400px;overflow:auto;z-index:4}
+.qhead{padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:baseline}
+.qhead h2{margin:0;font-size:15px;font-weight:700}
+.qhead span{font-size:12px;color:var(--muted)}
+.qrow{width:100%;text-align:left;border:none;background:none;display:grid;grid-template-columns:26px 1fr 92px;gap:10px;padding:12px 16px;border-top:1px solid var(--line);cursor:pointer;align-items:start}
+.qrow:hover,.qrow.sel{background:rgba(255,255,255,.55)}
+.qrow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.qn{width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px;display:grid;place-items:center;margin-top:1px}
+.qrow.done .qn{background:var(--ok-soft);color:var(--ok)}
+.qt{font-weight:600;font-size:13.5px;line-height:1.35}
+.qrow.done .qt{color:var(--muted)}
+.qs{font-size:12.5px;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qm{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:11.5px;padding:2px 8px;border-radius:999px;background:rgba(10,37,64,.06);color:var(--muted);white-space:nowrap}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.qi{text-align:right}
+.qi b{display:block;font-size:13px}
+.qi span{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
+.qi em{display:block;font-style:normal;font-size:12px;color:var(--accent);margin-top:6px;font-weight:600}
+.qi.pos b{color:var(--ok)} .qi.track b{color:var(--accent)} .qi.warn b{color:var(--warn)} .qi.dim b{color:var(--muted)}
+
+/* Nav buttons */
+.nav{position:fixed;right:408px;top:142px;display:flex;flex-direction:column;padding:4px;gap:2px;z-index:5;border-radius:14px}
+.nav button{width:38px;height:38px;border:none;background:none;border-radius:10px;cursor:pointer;display:grid;place-items:center;color:var(--ink)}
+.nav button:hover{background:rgba(255,255,255,.8)}
+.nav button.on{color:var(--accent)}
+.nav button svg{width:18px;height:18px}
+.nav hr{border:none;border-top:1px solid var(--line);margin:2px 6px}
+
+/* Side panel */
+.side{position:fixed;right:16px;top:142px;bottom:16px;width:380px;z-index:5;display:flex;flex-direction:column;overflow:hidden}
+.sbody{flex:1;overflow:auto;padding:14px 16px}
+.sfoot{padding:12px 16px 16px;border-top:1px solid var(--line);display:none;gap:8px}
+.sfoot.show{display:grid}
+.seg{display:flex;background:rgba(10,37,64,.06);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;border:none;background:none;padding:6px 6px;border-radius:8px;font-size:12.5px;cursor:pointer;color:var(--muted);font-weight:500;white-space:nowrap}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(10,37,64,.12)}
+.ahead{display:flex;gap:12px;align-items:center;margin:14px 0 10px}
+.ahead .ic{width:48px;height:48px;border-radius:12px;background:linear-gradient(180deg,#eef1ff,#dfe5ff);display:grid;place-items:center;flex:none}
+.ahead .ic svg{width:26px;height:26px}
+.kick{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--blue);text-transform:uppercase}
+.ahead h3{margin:1px 0 0;font-size:17px;letter-spacing:-.01em}
+.ahead .sub{font-size:12.5px;color:var(--muted)}
+.astat{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12.5px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.off{background:var(--off-soft);color:var(--muted)} .pill.acc{background:var(--accent-soft);color:var(--accent)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:rgba(255,255,255,.6);border-radius:12px;padding:10px 12px}
+.stat .sl{font-size:11.5px;color:var(--muted);line-height:1.3}
+.stat .sv{font-size:17px;font-weight:700;margin-top:2px}
+.stat .sv small{font-size:12px;color:var(--muted);font-weight:500}
+.bar{height:4px;border-radius:4px;background:rgba(10,37,64,.08);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--blue)}
+.bar i.ok{background:var(--ok)} .bar i.warn{background:#e9a23b} .bar i.bad{background:var(--bad)}
+.ltabs{display:flex;gap:4px;margin:16px 0 6px;border-bottom:1px solid var(--line)}
+.ltabs button{border:none;background:none;padding:8px 10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ltabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+.ltabs button span{font-weight:500;color:var(--faint);margin-left:3px}
+.lrow{width:100%;border:none;background:none;display:grid;grid-template-columns:10px 1fr auto 14px;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;text-align:left}
+.lrow:hover{background:rgba(255,255,255,.55)}
+.lrow b{font-size:13px;font-weight:600;display:block}
+.lrow span.s{font-size:12px;color:var(--muted)}
+.lrow .chev{color:var(--faint)}
+.back{border:none;background:none;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;padding:2px 0}
+.dkind{font-size:12px;color:var(--muted);margin-top:10px}
+.dtitle{margin:3px 0 8px;font-size:17px;line-height:1.3;letter-spacing:-.01em}
+.sbody p{margin:0 0 12px}
+.sec{margin:16px 0 0}
+.sec h4{margin:0 0 6px;font-size:12px;color:var(--muted);font-weight:600}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:13px;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0;text-align:right;font-weight:600}
+.checks{display:grid;gap:6px;font-size:13px}
+.check{display:grid;grid-template-columns:20px 84px 1fr;gap:6px;align-items:start}
+.check i{font-style:normal;font-weight:700;text-align:center}
+.check.ok i{color:var(--ok)} .check.warn i{color:var(--warn)} .check.bad i{color:var(--bad)}
+.check span{color:var(--muted)}
+.ev{display:grid;gap:8px}
+.evr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;padding:8px 10px;background:rgba(255,255,255,.6);border-radius:10px}
+.evr b{font-weight:600} .evr span{color:var(--muted);font-size:12px;grid-column:1/-1} .evr em{font-style:normal;font-size:11.5px;color:var(--ok);font-weight:600;text-align:right}
+.alts{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:13px}
+.alts li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.alts li span{color:var(--muted);text-align:right}
+.big{display:flex;align-items:baseline;gap:8px;margin:2px 0 12px}
+.big b{font-size:26px;letter-spacing:-.02em;white-space:nowrap}
+.big span{color:var(--muted);font-size:13px}
+.linkbtn{border:1px solid rgba(79,91,255,.3);background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px;cursor:pointer;width:100%;text-align:left}
+.linkbtn:hover{background:rgba(79,91,255,.16)}
+.btns{display:flex;gap:8px}
+.btn{flex:1;border-radius:10px;padding:10px 12px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:#fff}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#4049e6}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.reason{display:none;gap:8px}
+.reason.show{display:grid}
+.reason select,.reason textarea{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px;width:100%;color:var(--ink);background:#fff}
+.reason textarea{resize:vertical;min-height:54px}
+.note{font-size:12px;color:var(--muted);margin:0}
+
+/* Activity cycle tracker */
+.cycle{position:fixed;left:432px;right:464px;bottom:16px;z-index:4;padding:12px 16px 14px}
+.cyh{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px}
+.cyh b{font-size:14px}
+.cyh .nx{margin-left:auto;color:var(--muted);font-size:12px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
+.steps{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;position:relative}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;min-width:0}
+.step:before{content:"";position:absolute;top:13px;left:-50%;width:100%;height:3px;background:rgba(10,37,64,.1);z-index:0}
+.step:first-child:before{display:none}
+.step.done:before,.step.now:before,.step.bad:before{background:var(--blue)}
+.step i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:12px;position:relative;z-index:1;background:#fff;border:2px solid rgba(10,37,64,.15);color:var(--faint)}
+.step.done i{background:var(--blue);border-color:var(--blue);color:#fff}
+.step.now i{background:#fff;border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 4px rgba(79,91,255,.18)}
+.step.bad i{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:0 0 0 4px rgba(214,56,61,.15)}
+.step.warn i{background:#fff;border-color:#e9a23b;color:var(--warn);box-shadow:0 0 0 4px rgba(233,162,59,.18)}
+.step b{font-size:11.5px;margin-top:5px;font-weight:600;white-space:nowrap}
+.step span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* Labels, tooltip, toast */
+.lbl{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.94);border-radius:999px;padding:2px 9px 2px 7px;font:600 11px/1.5 Inter,system-ui,sans-serif;color:var(--ink);box-shadow:0 1px 3px rgba(10,37,64,.18);white-space:nowrap;transform:translateY(-14px)}
+.lbl .dot{margin:0;width:7px;height:7px}
+.lbl.lvl{background:rgba(10,37,64,.78);color:#fff;cursor:default;pointer-events:none;letter-spacing:.02em}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;z-index:9;opacity:0;transition:opacity .12s;max-width:260px}
+#tip b{display:block;font-size:12.5px}
+#toast{position:fixed;left:50%;top:150px;transform:translate(-50%,-10px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:all .25s;z-index:10;max-width:min(520px,calc(100% - 32px));text-align:center;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#loading{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;z-index:1}
+.mseg{display:none}
+
+@media (max-width:1280px){
+  .tile .ic{display:none}
+  .cycle .nx{display:none}
+}
+@media (max-width:1100px){ .cycle{display:none} }
+@media (max-width:900px){
+  .brand{left:8px;right:8px;top:8px;width:auto;padding:10px 12px}
+  .tiles{left:8px;right:8px;top:112px;grid-template-columns:1fr 1fr;gap:6px}
+  .tile{padding:8px 10px}
+  .tile .ml{font-size:11px}
+  .tile .mv{font-size:18px}
+  .tile .ms{display:none}
+  .mseg{display:flex;position:fixed;left:8px;right:60px;top:278px;z-index:5;overflow-x:auto}
+  .nav{right:8px;top:278px}
+  .queue{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:32%}
+  .side{display:none;left:8px;right:8px;top:auto;bottom:8px;width:auto;height:72%;z-index:7}
+  .side.detail{display:flex}
+  .side .areaonly{display:none}
+}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="labels"></div>
+<div id="loading">Loading the mine model</div>
+
+<header class="brand glass">
+  <h1 id="brandTitle"><i></i>ShiftWise <span style="font-weight:500;color:var(--muted)">Mine view</span></h1>
+  <p>KTO underground · Day shift · 13:07 · Week 39</p>
+  <div class="health" aria-label="System and data health">
+    <span title="Fleet management: live"><i class="dot ok"></i>Fleet</span>
+    <span title="SCADA: live"><i class="dot ok"></i>SCADA</span>
+    <span title="SAP work orders: last sync 12:45"><i class="dot ok"></i>SAP 12:45</span>
+    <span title="Radio updates: last one 3 min ago"><i class="dot ok"></i>Radio 3 min</span>
+    <span title="Underground network: partial coverage"><i class="dot warn"></i>Network partial</span>
+  </div>
+</header>
+
+<div class="tiles" id="metrics"></div>
+
+<aside class="queue glass" aria-label="Next best actions">
+  <div class="qhead"><h2>Next best actions</h2><span id="qcount"></span></div>
+  <div id="qlist"></div>
+</aside>
+
+<div class="nav glass" role="toolbar" aria-label="Camera">
+  <button id="zIn" title="Zoom in" aria-label="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button id="zOut" title="Zoom out" aria-label="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+  <hr>
+  <button id="rL" title="Rotate left (Q)" aria-label="Rotate left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+  <button id="rR" title="Rotate right (E)" aria-label="Rotate right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
+  <button id="home" title="Whole mine" aria-label="Whole mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></button>
+  <hr>
+  <button id="lblBtn" class="on" title="Show labels" aria-label="Show labels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></button>
+</div>
+
+<div class="seg mseg glass" id="mseg"></div>
+
+<aside class="side glass" id="side">
+  <div class="sbody" id="sbody"></div>
+  <div class="sfoot" id="sfoot"></div>
+</aside>
+
+<div class="cycle glass" id="cycle"></div>
+
+<div id="tip"></div>
+<div id="toast"></div>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { MapControls } from 'three/addons/controls/MapControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+/* ═════════ Shift data (same scenario as Dashboard.html) ═════════ */
+const SHIFT = { ore:2950, oreTarget:4200, dev:8.0, devTarget:12, chance:71, chanceStart:84, done:78, expected:82 };
+
+const NBA = [
+ {id:"n1", conf:88, area:"Decline haulage", focus:"S-212", related:["TK-03","TK-05","CR-1"], age:14, wide:true,
+  title:"Move TK-03 and TK-05 from L1865 waste to S-212 ore haulage",
+  short:"Crusher buffer is down to 42 minutes. S-212 has ore ready while L1865 waste can wait.",
+  big:"High impact", cap:"+13 pts chance of completing the plan", cls:"pos", lift:13,
+  why:"Crusher CR-1 feed buffer is down to <b>42 minutes</b> at the current rate. S-212 bogging is ahead of plan with ore at the draw point, while L1865 waste can slip to night shift without touching the Week 39 plan. Swapping two trucks for the next 3 hours closes the gap.",
+  whyNow:"If the crusher starves it takes about 35 minutes to re-establish steady feed. That turns a 42 minute buffer problem into a 1,200 t shortfall by shift end.",
+  evidence:[["Fleet management: truck cycles","TK-03 and TK-05 cycle times","live"],["SCADA: crusher feed rate","312 t/h against 390 t/h planned","live"],["Stockpile level: ROM bin","42 min buffer at current draw","12:55"],["Week 39 plan","L1865 waste has 18 h float","05:48"]],
+  predicted:"Feed buffer recovers to more than 3 h by 16:30. Shift ore lands within 2% of plan.",
+  invalid:"S-212 ore availability drops (hang-up or LHD breakdown), or the ROM buffer recovers on its own.",
+  alts:[["Move TK-03 and TK-05 to S-212 ore (this)","+13 pts"],["Slow crusher feed to stretch the buffer","+4 pts, cuts tonnes"],["Bring spare truck TK-06 into service","Not feasible until about 15:00"],["Do nothing","Crusher starves in about 90 min"]],
+  owner:"Dispatch", primary:"Approve and assign to dispatch"},
+ {id:"n2", conf:54, area:"Pump station P3", focus:"P3", related:[], age:9,
+  title:"P3 discharge flow reads 40% low: confirm in the field first",
+  short:"Flow reads low but pump amps and pressure look normal, likely a sensor fault. Needs a field check.",
+  big:"Confirm first", cap:"not enough evidence yet", cls:"warn", lift:0,
+  why:"SCADA shows P3 flow at <b>58 l/s against a normal 95 l/s</b>, but pump amps and pressure look normal. The pattern matches the fouled sensor seen on 12 Aug, not a real flow loss. A wrong call either floods the decline sump overnight or wastes a crew swap.",
+  whyNow:"If the low flow is real, the sump reaches the Tier 3 level in about 4 hours. A field check now keeps every option open.",
+  evidence:[["SCADA: P3 discharge flow","58 l/s, normal 95 l/s","live"],["SCADA: pump amps and pressure","Within normal range","live"],["History: 12 Aug","Same pattern was a fouled sensor","n/a"]],
+  predicted:"Field check within 30 minutes settles it. No pumping schedule change until then.",
+  invalid:"Sump level starts rising faster than the pump signature predicts.",
+  alts:[["Send a fitter to check the sensor (this)","Keeps options open"],["Start the standby pump now","Wastes a crew swap if the sensor is wrong"],["Do nothing","Sump Tier 3 in about 4 h if real"]],
+  owner:"Services fitter", primary:"Request field check"},
+ {id:"n3", conf:76, area:"Workshop, TK-07", focus:"WS-1", related:["TK-07"], age:5,
+  title:"Bring TK-07's 500 hour service forward into the blast clearance window",
+  short:"Haulage drops during blast clearance anyway, and the bay and fitters are free from 17:00.",
+  big:"Low impact", cap:"+1 pt chance of completing the plan", cls:"dim", lift:1,
+  why:"Work order <b>WO-20441</b> has TK-07 due for its 500 h service this shift. Haulage demand drops during blast clearance (17:30 to 19:00) anyway, so starting at 17:00 takes the truck out when it is least needed.",
+  whyNow:"The workshop bay and both fitters are free from 17:00. That alignment does not hold tomorrow.",
+  evidence:[["SAP: work order WO-20441","500 h service due, TK-07","12:45"],["Fleet management: TK-07 hours","497.6 engine hours","live"],["Shift plan: blast window","Clearance 17:30 to 19:00","05:48"]],
+  predicted:"Service completes by 23:00 with no lost ore. Night shift starts with a full fleet.",
+  invalid:"A breakdown elsewhere pulls the fitters, or the blast window slips.",
+  alts:[["Service at 17:00 in the blast window (this)","+1 pt"],["Keep the night shift slot","-2 pts at night peak"],["Defer to tomorrow","Risk of an unplanned stop"]],
+  owner:"Workshop supervisor", primary:"Approve and notify workshop"},
+ {id:"n4", conf:71, area:"Heading L1880 N", focus:"L1880N", related:["JM-01"], age:11,
+  title:"Start L1880 N charge-up by 15:30 or the second cut misses the blast",
+  short:"The charge crew reaches L1880 N at 15:10. Starting later than 15:30 misses the 18:40 window.",
+  big:"Medium impact", cap:"+6 pts chance of completing the plan", cls:"track", lift:6,
+  why:"The charging crew is still finishing S-214 and will not reach L1880 N until 15:10 at the earliest. If charge-up starts later than 15:30 the cut cannot fire at 18:40 and <b>4 m of development slips</b> from the week.",
+  whyNow:"Telling the shift boss now lets the crew move straight over without a break in sequence.",
+  evidence:[["Radio update: charge crew","Finishing S-214, about 15:05","12:50"],["Shift plan: blast window","Fire at 18:40","05:48"],["Week 39 plan","L1880 N second cut is on the critical path","05:48"]],
+  predicted:"Second cut fires at 18:40. Development lands at 12 m of 12 m.",
+  invalid:"S-214 charge-up runs past 15:20, or re-entry clearance on L1880 is delayed.",
+  alts:[["Move the crew straight to L1880 N at 15:10 (this)","+6 pts"],["Split the crew now","+4 pts, slows S-214"],["Fire tomorrow","4 m development slips"]],
+  owner:"Shift boss", primary:"Approve and tell the shift boss"},
+ {id:"n5", conf:93, area:"Blast 18:40", focus:"S-214", related:["CU-01"], age:2,
+  title:"18:40 blast readiness is on track, no action needed",
+  short:"Charge-up, ventilation and crew count are all trending green.",
+  big:"No action", cap:"all on track", cls:"dim", lift:0,
+  why:"All preconditions are trending green: charge-up on S-214 completes about 15:05, ventilation is normal and the tag board shows a normal crew count for a 17:30 clearance start.",
+  whyNow:"ShiftWise runs the pre-blast checklist at 17:30 and only alerts you if a precondition fails.",
+  evidence:[["Radio update: charge crew","S-214 complete about 15:05","12:50"],["SCADA: ventilation","VF-1 carrying the north block","live"],["Access control: tag board","Normal crew count","live"]],
+  predicted:"Blast fires on time at 18:40.", invalid:"Any precondition turns red before 17:30.",
+  alts:[], owner:"n/a", primary:"Mark as seen"},
+];
+
+/* Every clickable object. cat: place | fleet | service */
+const INFO = {
+ "VF-2":{cat:"service",name:"Primary fan VF-2",kind:"Fixed plant · ventilation",st:"bad",pill:"Stopped",text:"Tripped on high vibration at 06:52 and shut itself down. Do not reset remotely: the vent tech inspects the bearing housing first.",rows:[["State","Stopped, vibration trip"],["Tripped at","06:52"],["Action A-115","Vent tech check, 55 min overdue"]],src:"SCADA · live"},
+ "VF-1":{cat:"service",name:"Primary fan VF-1",kind:"Fixed plant · ventilation",st:"warn",pill:"Running hard",text:"Running and carrying the north block on its own while VF-2 is down.",rows:[["Load","87% of capacity"],["Pull-crews limit","92% for 30 min"]],src:"SCADA · live"},
+ "P3":{cat:"service",name:"Pump station P3",kind:"Fixed plant · dewatering",st:"warn",pill:"Evidence conflict",text:"Flow reads 58 l/s against a normal 95 l/s, but amps and pressure look normal. Likely a fouled sensor.",rows:[["Discharge flow","58 l/s"],["Normal flow","95 l/s"],["Sump Tier 3, if real","in about 4 h"]],src:"SCADA · live",nba:"n2"},
+ "CR-1":{cat:"service",name:"Crusher CR-1 and ROM bin",kind:"Fixed plant · processing feed",st:"warn",pill:"Derated",text:"Feed rate derated since 12:44. The ROM bin buffer runs out if ore haulage stays at the current rate.",rows:[["Feed rate","312 t/h"],["Planned feed rate","390 t/h"],["ROM buffer","42 min"]],src:"SCADA + stockpile survey · 12:55",nba:"n1"},
+ "HOIST":{cat:"service",name:"Main shaft and hoist",kind:"Fixed plant · hoisting",st:"ok",pill:"Running",text:"Hoisting people and materials. No faults this shift.",rows:[["State","Running"],["Faults this shift","0"]],src:"SCADA · live"},
+ "SUB":{cat:"service",name:"Main substation",kind:"Fixed plant · power",st:"ok",pill:"All feeders on",text:"All underground feeders on since the 04:10 outage was restored.",rows:[["Feeders on","3 of 3"],["Last outage","04:10, restored 04:38"]],src:"SCADA · live"},
+ "WS-1":{cat:"service",name:"Workshop",kind:"Maintenance · 3 bays",st:"ok",pill:"Bay 1 busy until 17:00",text:"TK-06 is in for repairs. The bay and both fitters are free from 17:00.",rows:[["Bays busy","1 of 3"],["Free from","17:00"],["Fitters available","2"]],src:"SAP work orders · 12:45",nba:"n3"},
+ "ROC":{cat:"service",name:"Site office and control room",kind:"Operations · remote ROC link",st:"ok",pill:"Staffed",text:"Linked to the Ramjack remote operations centre. Field supervisors carry out the work.",rows:[["Operators on shift","1"],["Link to remote ROC","Up"]],src:"Network monitor · live"},
+ "MAG":{cat:"service",name:"Explosives magazine",kind:"Materials · explosives",st:"ok",pill:"Stocked",text:"Emulsion topped up this morning for the S-214 charge-up (A-114, verified).",rows:[["Emulsion","Topped up 07:50"],["Next delivery","Thursday"]],src:"Person: magazine stock check"},
+ "YARD":{cat:"service",name:"Materials laydown",kind:"Materials · ground support",st:"ok",pill:"Stocked",text:"Bolts, mesh and shotcrete for the week. L1880 N bolts are already at the face.",rows:[["Bolt pallets","6"],["Mesh sheets","120"],["Shotcrete","3 loads"]],src:"Radio update · 11:20"},
+ "DECLINE":{cat:"service",name:"Main decline",kind:"Access",st:"ok",pill:"Normal",text:"Traffic normal. No truck queuing since decline traffic was rerouted past the L1840 remuck (A-116).",rows:[["Queuing events since 09:40","0"]],src:"Fleet management · live"},
+ "S-214":{cat:"place",levels:["L1840","L1865"],name:"Stope S-214",kind:"Production · long-hole stope",st:"bad",pill:"Hang-up",text:"Draw point hang-up since 08:20. The water-jet crew is on site and expects to clear it at about 13:50.",rows:[["Ore held back","560 t"],["Expected clear","13:50"],["Fallback if not clear by 14:00","Re-sequence to ring 11"],["Upper rings charge-up done","about 15:05"]],
+  checks:[["ok","People","Water-jet crew and charge crew on site"],["bad","Equipment","LH-01 idle at the draw point"],["ok","Materials","Emulsion topped up (A-114)"],["bad","Place","Draw point blocked by a hang-up"],["ok","Services","Ventilation normal"],["ok","Safety","Exclusion zone in place"]],src:"Operator report + fleet management · 08:20",nba:"n5"},
+ "S-212":{cat:"place",levels:["L1865","L1880"],name:"Stope S-212",kind:"Production · long-hole stope",st:"ok",pill:"Ahead of plan",text:"Bogging ahead of plan with ore at the draw point. This is where the extra trucks would go.",rows:[["Bogging rate","315 t/h"],["Ore at draw point","Available"],["Loader","LH-02"]],
+  checks:[["ok","People","LH-02 operator on shift"],["ok","Equipment","LH-02 running"],["ok","Materials","n/a"],["ok","Place","Draw point open"],["ok","Services","Ventilation normal"],["ok","Safety","No restrictions"]],src:"Fleet management · live",nba:"n1"},
+ "L1880N":{cat:"place",levels:["L1880"],name:"Heading L1880 N",kind:"Development · second cut",st:"warn",pill:"Timing at risk",text:"Drilled and ready to charge. Charge-up must start by 15:30 to fire in the 18:40 window.",rows:[["Charge crew arrives","15:10"],["Latest charge-up start","15:30"],["Development at risk","4 m"]],
+  checks:[["warn","People","Charge crew still on S-214 until about 15:05"],["ok","Equipment","Drilling complete, JM-01 parked"],["ok","Materials","Emulsion at the magazine"],["ok","Place","Drilled, marked and surveyed"],["ok","Services","Ventilation and power normal"],["ok","Safety","Re-entry window booked for 18:40"]],src:"Radio update · 12:50",nba:"n4"},
+ "L1865W":{cat:"place",levels:["L1865"],name:"Heading L1865 W",kind:"Development · services",st:"ok",pill:"On track",text:"Services crew installing vent duct.",rows:[["Duct installed","36 of 60 m"],["Crew","Services"]],
+  checks:[["ok","People","Services crew on site"],["ok","Equipment","n/a"],["ok","Materials","Duct at the heading"],["ok","Place","Ready"],["ok","Services","Power and air available"],["ok","Safety","No restrictions"]],src:"Radio update · 11:58"},
+ "L1840E":{cat:"place",levels:["L1840"],name:"Heading L1840 E",kind:"Development · ground support",st:"ok",pill:"On track",text:"Shotcrete in progress. Decline traffic rerouted past the remuck bay.",rows:[["Shotcrete sprayed","18 of 30 m³"],["Truck queuing","0 events"]],
+  checks:[["ok","People","Shotcrete crew on site"],["ok","Equipment","SP-01 spraying"],["ok","Materials","Shotcrete delivered"],["ok","Place","Scaled and bolted"],["ok","Services","Ventilation normal"],["ok","Safety","Traffic rerouted (A-116)"]],src:"Fleet management · live"},
+ "TK-03":{cat:"fleet",name:"Truck TK-03",kind:"Haul truck",st:"ok",pill:"Hauling waste",text:"Hauling L1865 waste to the surface dump.",rows:[["Load","Waste"],["Cycle time","38 min"]],src:"Fleet management · live",nba:"n1"},
+ "TK-05":{cat:"fleet",name:"Truck TK-05",kind:"Haul truck",st:"ok",pill:"Hauling waste",text:"Hauling L1865 waste to the surface dump.",rows:[["Load","Waste"],["Cycle time","41 min"]],src:"Fleet management · live",nba:"n1"},
+ "TK-04":{cat:"fleet",name:"Truck TK-04",kind:"Haul truck",st:"warn",pill:"Coolant watch",text:"Engine coolant temperature trending high. No derate yet. Logged for tonight's service window.",rows:[["Load","Ore, S-212 to CR-1"],["Alert level","Tier 1"]],src:"Fleet management telemetry · 11:37"},
+ "TK-07":{cat:"fleet",name:"Truck TK-07",kind:"Haul truck",st:"ok",pill:"Hauling ore",text:"Hauling S-212 ore to the crusher. 500 h service is due this shift.",rows:[["Engine hours","497.6 h"],["Work order","WO-20441"]],src:"Fleet management + SAP · live",nba:"n3"},
+ "TK-06":{cat:"fleet",name:"Truck TK-06",kind:"Haul truck",st:"off",pill:"In workshop",text:"At workshop bay 1. Back in service at about 15:00.",rows:[["Back in service","about 15:00"]],src:"SAP work orders · 12:45"},
+ "LH-02":{cat:"fleet",name:"Loader LH-02",kind:"LHD",st:"ok",pill:"Bogging",text:"Bogging S-212 since the swap at 07:55 (A-117, verified).",rows:[["Bogging rate","315 t/h"],["Predicted","300 to 330 t/h"]],src:"Fleet management · live"},
+ "LH-01":{cat:"fleet",name:"Loader LH-01",kind:"LHD",st:"bad",pill:"Idle",text:"Idle at the S-214 draw point since 08:20 while the hang-up is cleared.",rows:[["Idle since","08:20"]],src:"Fleet management · live"},
+ "LH-04":{cat:"fleet",name:"Loader LH-04",kind:"LHD",st:"warn",pill:"Swapped out",text:"Swapped out at 07:55 for high hydraulic temperature. Waiting at the workshop.",rows:[["Swapped out at","07:55"]],src:"Fleet management · 07:55"},
+ "WJ-1":{cat:"fleet",name:"Water-jet unit WJ-1",kind:"Services",st:"ok",pill:"Clearing hang-up",text:"Clearing the S-214 hang-up (action A-118).",rows:[["Time left","27 min"]],src:"Radio update · 12:40"},
+ "CU-01":{cat:"fleet",name:"Charge-up unit CU-01",kind:"Charging",st:"ok",pill:"Charging S-214",text:"Charging S-214 rings. Finishes at about 15:05, then the crew is needed at L1880 N.",rows:[["Finishes","about 15:05"],["Next","L1880 N"]],src:"Radio update · 12:50",nba:"n4"},
+ "JM-01":{cat:"fleet",name:"Jumbo JM-01",kind:"Development drill",st:"off",pill:"Parked",text:"Drilling on the L1880 N second cut is complete. Parked clear of the heading.",rows:[["Drilling","Complete"]],src:"Fleet management · 12:20"},
+ "SP-01":{cat:"fleet",name:"Sprayer SP-01",kind:"Ground support",st:"ok",pill:"Spraying",text:"Spraying shotcrete on L1840 E.",rows:[["Heading","L1840 E"]],src:"Fleet management · live"},
+ "LV-01":{cat:"fleet",name:"Light vehicle LV-01",kind:"Surface patrol",st:"ok",pill:"Driving",text:"Surface supervisor doing the site round.",rows:[["Driver","Surface supervisor"]],src:"Fleet management · live"},
+ "LV-02":{cat:"fleet",name:"Light vehicle LV-02",kind:"Shift boss",st:"ok",pill:"Driving",text:"Shift boss moving between the surface and L1840.",rows:[["Driver","Shift boss"]],src:"Fleet management · live"},
+};
+
+const AREAS = {
+ all:{tab:"Mine",kick:"Underground mine",name:"KTO underground",sub:"Day shift · Week 39 · 3 production levels",
+  stats:[["Ore hauled so far",2890,4200,"t"],["Development so far",6.5,12,"m"],["Headings ready",2,3,""],["Fleet working",9,13,""]]},
+ S:{tab:"Surface",kick:"Surface",name:"Surface and processing",sub:"Crusher CR-1 · hoist · fans · workshop",
+  stats:[["Crusher feed rate",312,390,"t/h"],["ROM buffer",42,180,"min"],["Primary fans running",1,2,""],["Workshop bays busy",1,3,""]]},
+ L1840:{tab:"L1840",kick:"Underground level · L1840",name:"L1840 upper",sub:"S-214 upper rings · heading L1840 E",
+  stats:[["S-214 rings charged",14,20,""],["Shotcrete L1840 E",18,30,"m³"],["Headings supported",2,3,""],["Truck queuing events",0,null,""]]},
+ L1865:{tab:"L1865",kick:"Underground level · L1865",name:"L1865 middle",sub:"S-214 draw point · L1865 W · waste stockpile",
+  stats:[["Ore held back at S-214",560,null,"t"],["Vent duct L1865 W",36,60,"m"],["Waste moved",420,900,"t"],["Water-jet time left",27,null,"min"]]},
+ L1880:{tab:"L1880",kick:"Underground level · L1880",name:"L1880 lower",sub:"S-212 draw point · L1880 N · pump station P3",
+  stats:[["S-212 bogged so far",1650,2400,"t"],["L1880 N cuts fired",1,2,""],["P3 discharge flow",58,95,"l/s"],["Sump level",48,100,"%"]]},
+};
+
+/* Activity cycles: [step, detail, state] state: done | now | warn | bad | next */
+const CYCLES = {
+ "L1880N":{next:"Next: charge-up · latest start 15:30 · Owner: shift boss",steps:[["Mark-up","06:35","done"],["Drill","11:50","done"],["Charge","by 15:30","warn"],["Fire","18:40","next"],["Re-entry","19:10","next"],["Muck","night","next"],["Support","night","next"],["Services","night","next"]]},
+ "L1865W":{next:"Now: vent duct, 36 of 60 m · Owner: services crew",steps:[["Mark-up","Mon","done"],["Drill","Mon","done"],["Charge","Mon","done"],["Fire","Mon","done"],["Re-entry","Tue","done"],["Muck","Tue","done"],["Support","09:30","done"],["Services","36 of 60 m","now"]]},
+ "L1840E":{next:"Now: shotcrete, 18 of 30 m³ · Owner: shotcrete crew",steps:[["Mark-up","Tue","done"],["Drill","Tue","done"],["Charge","Tue","done"],["Fire","Tue","done"],["Re-entry","06:10","done"],["Muck","10:20","done"],["Support","18 of 30 m³","now"],["Services","tonight","next"]]},
+ "S-214":{next:"Hang-up at the draw point · expected clear 13:50",steps:[["Drill","Fri","done"],["Charge","until 15:05","now"],["Fire","18:40","next"],["Re-entry","19:10","next"],["Bog","hang-up","bad"],["Haul","waiting","next"],["Backfill","next week","next"],["Cure","n/a","next"]]},
+ "S-212":{next:"Now: bogging at 315 t/h · Owner: dispatch",steps:[["Drill","last week","done"],["Charge","Mon","done"],["Fire","Mon","done"],["Re-entry","Mon","done"],["Bog","315 t/h","now"],["Haul","2 trucks","now"],["Backfill","next week","next"],["Cure","n/a","next"]]},
+};
+
+/* ═════════ Scene ═════════ */
+const SKY=0xe8eef7;
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(SKY);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.08;
+stage.appendChild(renderer.domElement);
+const labelRenderer=new CSS2DRenderer({element:document.getElementById('labels')});
+labelRenderer.setSize(innerWidth,innerHeight);
+
+const scene=new THREE.Scene();
+scene.fog=new THREE.Fog(SKY,190,400);
+const camera=new THREE.PerspectiveCamera(30,innerWidth/innerHeight,.5,900);
+const controls=new MapControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.dampingFactor=.08;
+controls.minDistance=10; controls.maxDistance=260; controls.maxPolarAngle=Math.PI*.46;
+controls.screenSpacePanning=false;
+controls.listenToKeyEvents(window);
+controls.keyPanSpeed=18;
+
+const HOME_T=new THREE.Vector3(16,-8,-12);
+const HOME_S=new THREE.Spherical(122, .88, .72);
+camera.position.copy(HOME_T).add(new THREE.Vector3().setFromSpherical(HOME_S));
+controls.target.copy(HOME_T); controls.update();
+
+scene.add(new THREE.HemisphereLight(0xffffff,0xc4cee0,1.25));
+const sun=new THREE.DirectionalLight(0xfffaf0,1.85);
+sun.position.set(60,110,45); sun.castShadow=true;
+sun.shadow.mapSize.set(4096,4096);
+Object.assign(sun.shadow.camera,{left:-100,right:100,top:100,bottom:-100,near:10,far:320});
+sun.shadow.bias=-.0004; sun.shadow.normalBias=.02;
+sun.position.set(80,110,25); sun.target.position.set(20,-8,-4);
+scene.add(sun); scene.add(sun.target);
+
+/* ═════════ Helpers ═════════ */
+const COL={ok:0x1f9d6b,warn:0xe9a23b,bad:0xd6383d,off:0x8a96a8,accent:0x4f5bff};
+const mat=(color,o={})=>new THREE.MeshStandardMaterial({color,roughness:.7,metalness:.05,...o});
+function mesh(geo,m,cast=true){const x=new THREE.Mesh(geo,m);x.castShadow=cast;x.receiveShadow=true;return x;}
+const box=(w,h,d,c,o)=>mesh(new THREE.BoxGeometry(w,h,d),mat(c,o));
+const rb=(w,h,d,c,r=.12,o)=>mesh(new RoundedBoxGeometry(w,h,d,3,Math.min(r,w/2,h/2,d/2)*.98),mat(c,o));
+const cyl=(rt,rbm,h,c,s=16,o)=>mesh(new THREE.CylinderGeometry(rt,rbm,h,s),mat(c,o));
+const at=(o,x,y,z)=>{o.position.set(x,y,z);return o;};
+let seed=7; const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+
+const LV={S:0,L1840:-7,L1865:-14,L1880:-21};
+const LEVEL_NAMES={L1840:"L1840 · upper",L1865:"L1865 · middle",L1880:"L1880 · lower"};
+const levelOf=y=>{let b='S',d=1e9;for(const k in LV){const dd=Math.abs(LV[k]-y);if(dd<d){d=dd;b=k;}}return b;};
+
+const world=new THREE.Group(); scene.add(world);           // ground, always visible
+const groups={}; for(const k in LV){groups[k]=new THREE.Group();scene.add(groups[k]);}
+const shared=new THREE.Group(); scene.add(shared);         // shaft, raises, decline
+
+const pickables=[], assets={}, labels=[], pulses=[], beacons=[], pins=[];
+
+function makeLabel(text,cls,st){const el=document.createElement('div');el.className='lbl '+(cls||'');el.innerHTML=(st?`<i class="dot ${st}"></i>`:'')+text;return el;}
+const shortName=id=>INFO[id].name.replace(/^(Truck|Loader|Primary fan|Stope|Heading|Pump station|Charge-up unit|Water-jet unit|Jumbo|Sprayer|Light vehicle) /,'');
+function addLabel(root,id,y){
+  const el=makeLabel(shortName(id),'',INFO[id].st);
+  el.addEventListener('click',e=>{e.stopPropagation();openDetail(id,true);});
+  const o=new CSS2DObject(el);o.position.set(0,y,0);root.add(o);
+  labels.push({obj:o,root,id,el});
+}
+function addStatusRing(root,st,r){
+  if(st!=='bad'&&st!=='warn')return;
+  const ring=new THREE.Mesh(new THREE.RingGeometry(r*.84,r,48),new THREE.MeshBasicMaterial({color:COL[st],transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false}));
+  ring.rotation.x=-Math.PI/2;ring.position.y=.07;ring.renderOrder=2;root.add(ring);pulses.push(ring);root.userData.ring=ring;
+}
+function addPin(root,y,st){
+  const g=new THREE.Group(), m=mat(COL[st],{emissive:COL[st],emissiveIntensity:.25});
+  const head=mesh(new THREE.SphereGeometry(.55,20,14),m); head.position.y=.9; g.add(head);
+  const tip=mesh(new THREE.ConeGeometry(.42,.9,20),m); tip.rotation.x=Math.PI; tip.position.y=.3; g.add(tip);
+  g.add(at(mesh(new THREE.SphereGeometry(.22,12,10),mat(0xffffff)),0,.95,.42));
+  g.position.y=y; root.add(g); pins.push({g,base:y,ph:rnd()*6}); root.userData.pin=g;
+}
+function register(id,root,level,layer,labelY=2){
+  root.userData.id=id; pickables.push(root);
+  assets[id]={id,root,level,layer};
+  addStatusRing(root,INFO[id].st,root.userData.r||1.6);
+  if(INFO[id].st==='bad') addPin(root,labelY+.4,'bad');
+  addLabel(root,id,labelY);
+  return assets[id];
+}
+function signTex(text,fg='#2f5bea',bg='#ffffff',w=512,h=112){
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  x.fillStyle=bg;x.fillRect(0,0,w,h);x.fillStyle=fg;x.font='700 50px Inter, system-ui, sans-serif';x.textBaseline='middle';x.fillText(text,26,h/2+2);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;
+}
+function strataTex(widthUnits){
+  const c=document.createElement('canvas');c.width=256;c.height=512;const x=c.getContext('2d');
+  const bands=[[.035,'#8c6a4c'],[.11,'#c69e74'],[.12,'#dcc39f'],[.2,'#bfb3a2'],[.17,'#aaa092'],[.14,'#c7bcab'],[.225,'#9c9286']];
+  let y=0; for(const [f,col] of bands){x.fillStyle=col;x.fillRect(0,y,256,f*512+1);y+=f*512;}
+  for(let i=0;i<900;i++){x.fillStyle=`rgba(${rnd()<.5?'60,50,40':'255,255,255'},${.05+rnd()*.08})`;x.fillRect(rnd()*256,rnd()*512,1+rnd()*3,1+rnd()*2);}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=THREE.RepeatWrapping;t.repeat.set(widthUnits/34,1);return t;
+}
+
+/* ═════════ Ground: a cutaway with the underground exposed ═════════ */
+const GROUND=0xe2e8f2, SOIL=0xb39a7c, DEEP=-26;
+const HOLE={x0:-24,x1:24,z0:-17,z1:17};
+function block(x0,x1,z0,z1,y0,y1,faces={}){
+  const g=new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0);
+  const top=mat(GROUND,{roughness:.9}), soil=mat(SOIL,{roughness:1});
+  const side=k=>faces[k]?mat(0xffffff,{map:strataTex(faces[k]),roughness:1}):soil;
+  const m=new THREE.Mesh(g,[side('px'),side('nx'),top,soil,side('pz'),side('nz')]);
+  m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);m.receiveShadow=true;world.add(m);return m;
+}
+// The mine sits in an open corner cut out of the ground block: rock faces on the north and west
+block(-140,HOLE.x0,-140,66,DEEP,0,{px:83,pz:116});
+block(HOLE.x0,106,-140,HOLE.z0,DEEP,0,{pz:130,px:123});
+{ const f=box(600,1,600,0xdde4ee,{roughness:1}); f.castShadow=false; f.position.set(0,DEEP-.5,0); world.add(f); }
+// Collar pads at the west face for the shaft and fans
+for(const z of [0,-11,11]) world.add(at(box(7,.6,6.2,0xd5dbe6),-20.5,-.3,z));
+
+/* Surface roads with lane markings */
+const ROADC=0xc8d0de;
+const dashGeo=new THREE.BoxGeometry(.25,.02,1.6), dashMat=new THREE.MeshBasicMaterial({color:0xffffff});
+const dashes=[];
+function sroad(x1,z1,x2,z2,w=5,mark=true){
+  const len=Math.hypot(x2-x1,z2-z1), alongX=z1===z2;
+  const r=box(alongX?len+w:w,.06,alongX?w:len+w,ROADC,{roughness:.95}); r.castShadow=false;
+  r.position.set((x1+x2)/2,.03,(z1+z2)/2); groups.S.add(r);
+  if(mark) for(let s=2;s<len-1;s+=4){ const t=s/len; dashes.push([x1+(x2-x1)*t,z1+(z2-z1)*t,alongX]); }
+}
+sroad(-52,54,-52,-56); sroad(-52,-56,92,-56); sroad(92,-56,92,-22); sroad(-52,-22,92,-22);
+sroad(20,-16.6,20,-22,3.6,false); sroad(64,-22,64,-31,4,false); sroad(8,-22,8,-30,4,false);
+sroad(-138,20,-52,20,7);
+{ const im=new THREE.InstancedMesh(dashGeo,dashMat,dashes.length), d=new THREE.Object3D();
+  dashes.forEach(([x,z,ax],i)=>{d.position.set(x,.07,z);d.rotation.y=ax?Math.PI/2:0;d.updateMatrix();im.setMatrixAt(i,d.matrix);}); groups.S.add(im); }
+function pad(x,z,w,d,c=0xd3d9e4){const p=box(w,.08,d,c,{roughness:.95});p.castShadow=false;p.position.set(x,.04,z);groups.S.add(p);return p;}
+function grass(x,z,w,d){const p=box(w,.05,d,0xd0ead9,{roughness:1});p.castShadow=false;p.position.set(x,.025,z);groups.S.add(p);}
+grass(30,-48,60,6); grass(-38,56,24,4);
+
+/* Fence and trees */
+{
+  const F={x0:-60,x1:100,z0:-64,z1:60}, posts=[];
+  const panels=[[F.x0,F.z0,F.x1,F.z0],[F.x1,F.z0,F.x1,HOLE.z0],[F.x0,F.z0,F.x0,16],[F.x0,24,F.x0,F.z1],[F.x0,F.z1,HOLE.x0,F.z1]];
+  const pm=mat(0x9db3d8,{transparent:true,opacity:.32,depthWrite:false});
+  for(const [a,b,c,d] of panels){
+    const len=Math.hypot(c-a,d-b), ax=b===d;
+    const p=mesh(new THREE.BoxGeometry(ax?len:.06,1.5,ax?.06:len),pm,false); p.position.set((a+c)/2,.75,(b+d)/2); groups.S.add(p);
+    for(let s=0;s<=len;s+=4) posts.push([a+(c-a)*s/len,b+(d-b)*s/len]);
+  }
+  const im=new THREE.InstancedMesh(new THREE.BoxGeometry(.14,1.7,.14),mat(0x8a9bb8),posts.length), o=new THREE.Object3D();
+  posts.forEach(([x,z],i)=>{o.position.set(x,.85,z);o.updateMatrix();im.setMatrixAt(i,o.matrix);}); im.castShadow=true; groups.S.add(im);
+
+  const trees=[];
+  const inside=(x,z,m)=>x>F.x0-m&&x<F.x1+m&&z>F.z0-m&&z<F.z1+m;
+  for(let x=-134;x<=100;x+=8) for(let z=-134;z<=60;z+=8){
+    const px=x+(rnd()-.5)*5, pz=z+(rnd()-.5)*5;
+    if(inside(px,pz,4)) continue; if(Math.abs(pz-20)<6&&px<-56) continue;
+    if(!(px<HOLE.x0-3||pz<HOLE.z0-3)) continue;     // only on the ground block, not the cutaway floor
+    if(rnd()<.45) continue;
+    trees.push([px,pz,.8+rnd()*.6]);
+  }
+  for(let z=-48;z<=52;z+=6) if(Math.abs(z-20)>5) trees.push([-57+rnd(),z+rnd(),.75+rnd()*.3]);
+  for(let x=-44;x<=96;x+=6) trees.push([x+rnd(),-61.2,.75+rnd()*.3]);
+  const trunk=new THREE.InstancedMesh(new THREE.CylinderGeometry(.14,.18,1.4,6),mat(0x8b6b4e),trees.length);
+  const crown=new THREE.InstancedMesh(new THREE.SphereGeometry(1,14,10),mat(0x56bf93,{roughness:.8}),trees.length);
+  trees.forEach(([x,z,s],i)=>{
+    o.position.set(x,.7*s,z);o.scale.set(s,s,s);o.updateMatrix();trunk.setMatrixAt(i,o.matrix);
+    o.position.set(x,2.2*s,z);o.scale.set(.95*s,1.25*s,.95*s);o.updateMatrix();crown.setMatrixAt(i,o.matrix);
+    crown.setColorAt(i,new THREE.Color().setHSL(.43+rnd()*.04,.42,.52+rnd()*.08));
+  });
+  trunk.castShadow=crown.castShadow=true; world.add(trunk); world.add(crown);
+}
+
+/* ═════════ Surface buildings ═════════ */
+const WALL=0xf3f5f9, BLUE=0x2f5bea, ROOF=0xd9dfea;
+// Site office and control room
+{
+  const g=new THREE.Group();
+  g.add(at(rb(16,5,8,WALL,.15),0,2.5,0));
+  g.add(at(box(16.1,1.4,8.1,0x3a63d8,{roughness:.3,metalness:.2}),0,3.2,0));
+  g.add(at(box(16.1,1.1,8.1,0x3a63d8,{roughness:.3,metalness:.2}),0,1.25,0));
+  g.add(at(box(16.4,.35,8.4,ROOF),0,5.15,0));
+  for(const x of [-5,-1.5,2]){ const ac=rb(2,.7,1.6,0xeef1f6,.1); ac.position.set(x,5.6,-1); g.add(ac);
+    for(const dx of [-.45,.45]){ const f=cyl(.32,.32,.05,0x9aa6ba,16); f.position.set(x+dx,5.97,-1); g.add(f);} }
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(7,1.5),new THREE.MeshBasicMaterial({map:signTex('KTO Operations')}));
+  sign.position.set(-2.5,4.35,4.07); g.add(sign);
+  g.position.set(-38,0,30); g.userData.r=8; groups.S.add(g); register('ROC',g,'S','fixed',6.4);
+  pad(-38,30,20,12);
+}
+// Car park
+{
+  const cx=-38, cz=46;
+  pad(cx,cz,14,10,0xcbd3e0);
+  const lm=new THREE.MeshBasicMaterial({color:0xffffff});
+  for(let i=0;i<7;i++){ const l=new THREE.Mesh(new THREE.BoxGeometry(.12,.02,3.6),lm); l.position.set(cx-6+i*2,.1,cz-2.6); groups.S.add(l);
+    const l2=l.clone(); l2.position.z=cz+2.6; groups.S.add(l2); }
+  for(const [x,z] of [[-5,-2.6],[-3,-2.6],[1,-2.6],[5,-2.6],[-4,2.6],[0,2.6],[2,2.6]]){ const v=lvModel(); v.position.set(cx+x,0,cz+z); groups.S.add(v); }
+}
+// Crusher, ROM bin, conveyor, stockpile, waste dump
+{
+  pad(73,-36,26,12);
+  const g=new THREE.Group();
+  const bin=cyl(2.4,1.1,2.6,0xa7b2c4,4); bin.rotation.y=Math.PI/4; bin.position.set(0,3.4,0); g.add(bin);
+  for(const [x,z] of [[-1,-1],[1,-1],[-1,1],[1,1]]) g.add(at(box(.3,2.2,.3,0x7f8aa0),x,1.1,z));
+  g.add(at(rb(4,4.6,4,0x6f84a8,.15),5.5,2.3,1)); g.add(at(box(4.2,.3,4.2,ROOF),5.5,4.75,1));
+  const conv=box(12,.35,.9,0x4a5568); conv.position.set(13.2,3.2,1); conv.rotation.z=.33; g.add(conv);
+  for(const x of [10,14]) g.add(at(box(.25,x===10?1.8:3.1,.25,0x7f8aa0),x,(x===10?1.8:3.1)/2,1));
+  const pile=mesh(new THREE.ConeGeometry(4,4.6,12),mat(0x9b6a43,{roughness:1})); pile.position.set(19.5,2.3,1); g.add(pile);
+  g.position.set(64,0,-36); g.userData.r=3.6; groups.S.add(g); register('CR-1',g,'S','fixed',5.8);
+  const waste=mesh(new THREE.ConeGeometry(4.6,3.6,10),mat(0xa9adb6,{roughness:1})); waste.position.set(8,1.8,-36); groups.S.add(waste);
+}
+// Workshop with roller doors
+{
+  const g=new THREE.Group();
+  g.add(at(rb(10,6,18,WALL,.12),0,3,0));
+  const roof=box(10.8,.5,18.8,BLUE); roof.position.y=6.25; g.add(roof);
+  for(let i=0;i<3;i++){ const z=-5.6+i*5.6;
+    g.add(at(box(.25,4.6,4.2,0x2f5bea),5.02,2.3,z));
+    g.add(at(box(.2,4.1,3.6,i===0?0x2b3140:0xc9d0dc),5.08,2.05,z));
+    if(i>0) for(let k=0;k<6;k++) g.add(at(box(.05,.04,3.6,0xaab3c2),5.19,.5+k*.65,z)); }
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(5.4,1.2),new THREE.MeshBasicMaterial({map:signTex('Workshop')}));
+  sign.rotation.y=Math.PI/2; sign.position.set(5.08,5.2,0); g.add(sign);
+  g.position.set(40,0,-36); g.rotation.y=-Math.PI/2; g.userData.r=6; groups.S.add(g); register('WS-1',g,'S','fixed',7.2);
+  pad(40,-28.5,20,5);
+  // fuel bay
+  const fb=new THREE.Group(); fb.add(at(box(5,.2,4,ROOF),0,3.2,0));
+  for(const [x,z] of [[-2.2,-1.7],[2.2,-1.7],[-2.2,1.7],[2.2,1.7]]) fb.add(at(box(.2,3.2,.2,0x8a9bb8),x,1.6,z));
+  const tank=cyl(.9,.9,4,0xeef1f6,16); tank.rotation.z=Math.PI/2; tank.position.set(0,1,0); fb.add(tank);
+  fb.position.set(54,0,-32); groups.S.add(fb); pad(54,-32,7,6);
+}
+// Headframe, winder house, ropes
+{
+  const g=new THREE.Group(), s=0x5d6f91;
+  for(const [x,z] of [[-1.3,-1.3],[1.3,-1.3],[-1.3,1.3],[1.3,1.3]]) g.add(at(box(.3,10,.3,s),x,5,z));
+  for(let y=2;y<10;y+=2.5){ g.add(at(box(2.9,.18,.18,s),0,y,-1.3)); g.add(at(box(2.9,.18,.18,s),0,y,1.3)); g.add(at(box(.18,.18,2.9,s),-1.3,y,0)); g.add(at(box(.18,.18,2.9,s),1.3,y,0)); }
+  const back=box(.3,11.5,.3,s); back.position.set(-4.2,5,0); back.rotation.z=-.42; g.add(back);
+  g.add(at(box(3.4,.4,3.4,BLUE),0,10.2,0));
+  for(const z of [-.7,.7]){ const w=mesh(new THREE.TorusGeometry(1,.13,8,24),mat(0x3d4b63)); w.rotation.y=Math.PI/2; w.position.set(0,11.2,z); g.add(w); }
+  g.position.set(-21,0,0); g.userData.r=2.6; groups.S.add(g); register('HOIST',g,'S','fixed',12.8);
+  const wh=new THREE.Group(); wh.add(at(rb(7,4.2,6,WALL,.12),0,2.1,0)); wh.add(at(box(7.4,.4,6.4,BLUE),0,4.4,0));
+  wh.position.set(-35,0,0); groups.S.add(wh);
+  for(const z of [-.7,.7]){ const a=new THREE.Vector3(-31.5,3.6,z), b=new THREE.Vector3(-21,11.2,z), len=a.distanceTo(b);
+    const r=cyl(.05,.05,len,0x222831,6); r.position.copy(a).add(b).multiplyScalar(.5); r.lookAt(b); r.rotateX(Math.PI/2); groups.S.add(r); }
+}
+// Substation and water tanks
+{
+  const g=new THREE.Group(); g.add(at(box(8,.15,6,0xc9cfda),0,.08,0));
+  for(let i=0;i<3;i++){ const t=rb(1.6,2,1.4,0x8796ad,.1); t.position.set(-2.6+i*2.6,1.1,0); g.add(t);
+    for(let k=0;k<4;k++) g.add(at(box(.08,1.6,1.5,0x6f7d95),-3.2+i*2.6+k*.38,1,0)); }
+  g.position.set(-38,0,-9); g.userData.r=4.5; groups.S.add(g); register('SUB',g,'S','fixed',3.6);
+  for(const [x,z] of [[-38,9],[-38,14]]){ const t=cyl(2,2,4.2,0xf3f5f9,24); t.position.set(x,2.1,z); groups.S.add(t);
+    const band=cyl(2.03,2.03,.4,BLUE,24); band.position.set(x,3.4,z); groups.S.add(band); }
+}
+// Materials laydown, core shed, explosives magazine
+{
+  const y=new THREE.Group(); y.add(at(box(16,.12,10,0xcfd6e2),0,.06,0));
+  for(let i=0;i<6;i++){ y.add(at(rb(1.6,.9,1.6,0x3f6fe0,.06),-6+i*2.2,.6,-2.6)); y.add(at(box(1.6,.15,1.6,0xc9a777),-6+i*2.2,.13,-2.6)); }
+  for(let i=0;i<4;i++) y.add(at(box(3,.12*(3+i),2.2,0x9aa3b2),-5+i*3.4,.06*(3+i)+.1,1.4));
+  for(let i=0;i<3;i++) y.add(at(rb(1.4,1.3,1.4,0xd8cbb3,.08),4+i*1.8,.7,-2.6));
+  y.position.set(-14,0,-38); y.userData.r=6; groups.S.add(y); register('YARD',y,'S','fixed',2.6);
+  const m=new THREE.Group();
+  const berm=mesh(new THREE.CylinderGeometry(4.6,6.2,1.8,6),mat(0xc6b79c,{roughness:1})); berm.position.y=.9; m.add(berm);
+  m.add(at(rb(4.6,2.4,3.4,0xe9edf3,.1),0,2.2,0)); m.add(at(box(1.1,1.5,.1,0xd6383d),0,2,1.72));
+  m.position.set(-38,0,-44); m.userData.r=5; groups.S.add(m); register('MAG',m,'S','fixed',4.4);
+}
+
+/* ═════════ Underground levels ═════════ */
+const PW=48, PD=34, ROAD=0x646b7c, ROADW=1.9;
+const lightGeo=new THREE.BoxGeometry(.18,.18,.18), lightMat=new THREE.MeshStandardMaterial({color:0xfff6d8,emissive:0xffe9a8,emissiveIntensity:1.4});
+function plate(level){
+  const y=LV[level], g=new THREE.BoxGeometry(PW,.6,PD);
+  const m=mesh(g,mat(0xe3d9c8,{transparent:true,opacity:.5,depthWrite:false,roughness:1}),false);
+  m.position.set(0,y-.32,0); groups[level].add(m);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xa99d88,transparent:true,opacity:.6}));
+  e.position.copy(m.position); groups[level].add(e);
+  const lo=new CSS2DObject(makeLabel(LEVEL_NAMES[level],'lvl')); lo.position.set(-4,y+.4,-PD/2+.6); groups[level].add(lo);
+  labels.push({obj:lo,root:groups[level],id:null});
+}
+function road(level,x1,z1,x2,z2){
+  const y=LV[level], len=Math.hypot(x2-x1,z2-z1), alongX=z1===z2;
+  const r=box(alongX?len+ROADW:ROADW,.16,alongX?ROADW:len+ROADW,ROAD,{roughness:.95}); r.castShadow=false;
+  r.position.set((x1+x2)/2,y+.08,(z1+z2)/2); groups[level].add(r);
+  // edge lines and wall lights
+  const em=new THREE.MeshBasicMaterial({color:0xd9dde6});
+  for(const side of [-1,1]){
+    const l=new THREE.Mesh(new THREE.BoxGeometry(alongX?len:.06,.02,alongX?.06:len),em);
+    l.position.set((x1+x2)/2+(alongX?0:side*.82),y+.17,(z1+z2)/2+(alongX?side*.82:0)); groups[level].add(l);
+  }
+  for(let s=2;s<len;s+=5){ const t=s/len, L=new THREE.Mesh(lightGeo,lightMat);
+    L.position.set(x1+(x2-x1)*t+(alongX?0:1.05),y+1.3,z1+(z2-z1)*t+(alongX?1.05:0)); groups[level].add(L); }
+}
+function duct(level,x1,x2,z){ const len=x2-x1, d=cyl(.26,.26,len,0xf2c94c,12); d.rotation.z=Math.PI/2; d.position.set((x1+x2)/2,LV[level]+1.7,z-.75); d.castShadow=false; groups[level].add(d); }
+const DEC={L1840:12.5,L1865:-12.5,L1880:12.5};
+for(const k of ['L1840','L1865','L1880']){
+  plate(k);
+  road(k,-19,0,16,0); road(k,16,-12.5,16,12.5); road(k,16,DEC[k],20,DEC[k]);
+  duct(k,-18,15,0);
+  groups[k].add(at(rb(2.6,1.6,3.2,0xd9d4c8,.08),-21,LV[k]+.8,0));
+  const ref=new THREE.Group(); ref.add(at(rb(2.4,1.5,1.6,0xf3f5f9,.12),0,.75,0)); ref.add(at(box(.7,1.1,.06,0x1f9d6b),0,.65,.82));
+  ref.position.set(-16,LV[k],2.6); groups[k].add(ref);
+}
+road('L1840',0,0,0,7); road('L1840',8,0,8,12); road('L1840',11,0,11,-6);
+road('L1865',-8,0,-8,-7); road('L1865',0,0,0,6); road('L1865',8,0,8,-5); road('L1865',-13,0,-13,11);
+road('L1880',8,0,8,-5); road('L1880',-8,0,-8,12); road('L1880',-15,0,-15,-7);
+{ const p=mesh(new THREE.ConeGeometry(1.6,1.4,9),mat(0x8f939b,{roughness:1})); p.position.set(-8,LV.L1865+.7,-8.6); groups.L1865.add(p);
+  const r=mesh(new THREE.ConeGeometry(1.3,1.1,9),mat(0x9b6a43,{roughness:1})); r.position.set(11,LV.L1840+.55,-7.2); groups.L1840.add(r); }
+
+/* Decline, shaft, vent raises */
+const D0=[20,0,-16.6], D1=[20,LV.L1840,12.5], D2=[20,LV.L1865,-12.5], D3=[20,LV.L1880,12.5];
+function ramp(a,b){
+  const A=new THREE.Vector3(...a), B=new THREE.Vector3(...b), len=A.distanceTo(B);
+  const r=box(ROADW+.3,.22,len,0x737a8c,{roughness:.95}); r.castShadow=false;
+  r.position.copy(A).add(B).multiplyScalar(.5); r.position.y+=.06; r.lookAt(B.x,B.y+.06,B.z);
+  r.userData.id='DECLINE'; shared.add(r); pickables.push(r);
+}
+ramp(D0,D1); ramp(D1,D2); ramp(D2,D3);
+assets['DECLINE']={id:'DECLINE',root:shared,level:'all',layer:'fixed'};
+{ const g=new THREE.Group(), c=0x8a96a8;
+  g.add(at(box(.6,2.8,.6,c),-1.7,1.4,0)); g.add(at(box(.6,2.8,.6,c),1.7,1.4,0)); g.add(at(box(4,.6,.8,BLUE),0,2.9,0));
+  g.position.set(20,0,-17.8); groups.S.add(g); }
+{ const sh=cyl(1.3,1.3,22.6,0xbfb8aa,24,{transparent:true,opacity:.75}); sh.position.set(-21,-11,0); shared.add(sh);
+  for(const z of [-11,11]){ const r=cyl(.6,.6,21.6,0xc9d0db,14,{transparent:true,opacity:.7}); r.position.set(-21,-10.8,z); shared.add(r); } }
+
+/* Fans on the vent raises */
+const fanBlades={};
+function fan(id,z,running){
+  const g=new THREE.Group();
+  g.add(at(rb(3.4,.7,2.8,0xc4ccd8,.08),0,.35,0));
+  const body=cyl(1.05,1.05,3.2,running?0x7d95bd:0x9aa3b2,24); body.rotation.z=Math.PI/2; body.position.set(.3,1.75,0); g.add(body);
+  const ev=cyl(1.05,1.6,2,running?0x7d95bd:0x9aa3b2,24); ev.rotation.z=-Math.PI/2; ev.position.set(2.9,1.75,0); g.add(ev);
+  const bl=new THREE.Group(); bl.position.set(3.95,1.75,0);
+  for(let i=0;i<5;i++){ const b=box(.06,1.4,.34,0x2f3a4f); b.rotation.x=i*Math.PI/5*2; bl.add(b);} g.add(bl);
+  fanBlades[id]=running?bl:null;
+  g.position.set(-22.4,0,z); g.userData.r=2.6; groups.S.add(g); register(id,g,'S','fixed',3.8);
+}
+fan('VF-1',-11,true); fan('VF-2',11,false);
+
+/* Pump station P3 and sump */
+{ const g=new THREE.Group();
+  g.add(at(box(2.8,.4,2.2,0xb9c1cc),0,.2,0));
+  for(const x of [-.6,.6]){ const p=cyl(.45,.45,1.3,0x3f7fcf,16); p.position.set(x,1,0); g.add(p); }
+  g.add(at(rb(.9,.9,.9,0x7f8aa0,.08),0,.85,1.2));
+  const sump=box(3.6,.4,2.6,0x4aa3df,{transparent:true,opacity:.8,roughness:.2}); sump.position.set(0,.2,-2.9); g.add(sump);
+  g.position.set(-15,LV.L1880,-7.6); g.userData.r=2.6; groups.L1880.add(g); register('P3',g,'L1880','fixed',2.8); }
+
+/* Stopes and headings */
+function stope(id,x,z,top,bot){
+  const yt=LV[top], yb=LV[bot], h=yt-yb-.6, g=new THREE.Group();
+  const geo=new THREE.BoxGeometry(3.8,h,3.8);
+  const m=mesh(geo,mat(0xe39a45,{transparent:true,opacity:.8,roughness:.85})); m.position.y=h/2+.1; g.add(m);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x9c5a1c})); e.position.copy(m.position); g.add(e);
+  const rm=new THREE.LineBasicMaterial({color:0x7a4214,transparent:true,opacity:.6}), pts=[];
+  for(let r=0;r<5;r++){ const zz=-1.5+r*.75; for(let k=-3;k<=3;k++){ pts.push(new THREE.Vector3(0,h,zz), new THREE.Vector3(k*.6,h*.25,zz)); } }
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),rm));
+  g.position.set(x,yb,z); g.userData.r=3; groups[bot].add(g); register(id,g,bot,null,h+1.4);
+}
+stope('S-214',0,8,'L1840','L1865');
+stope('S-212',8,-7,'L1865','L1880');
+function heading(id,level,x,z){
+  const g=new THREE.Group(), st=INFO[id].st;
+  g.add(at(rb(2.4,2,.5,0xb8ab95,.08),0,1,0));
+  const hm=new THREE.MeshStandardMaterial({color:0x2a2a2a}), im=new THREE.InstancedMesh(new THREE.CylinderGeometry(.06,.06,.1,8),hm,15), o=new THREE.Object3D();
+  let i=0; for(let r=0;r<3;r++) for(let c=0;c<5;c++){ o.position.set(-.8+c*.4,.5+r*.45,-.27); o.rotation.x=Math.PI/2; o.updateMatrix(); im.setMatrixAt(i++,o.matrix); }
+  g.add(im);
+  g.add(at(box(.9,.06,.9,st==='warn'?COL.warn:COL.ok),0,.2,-1.1));
+  g.position.set(x,LV[level],z); g.userData.r=1.8; groups[level].add(g); register(id,g,level,null,2.8);
+}
+heading('L1880N','L1880',-8,12.9);
+heading('L1865W','L1865',-13,11.9);
+heading('L1840E','L1840',8,12.9);
+
+/* ═════════ Mobile fleet ═════════ */
+const YEL=0xf5b82e;
+function beacon(g,x,y,z){ const m=new THREE.MeshStandardMaterial({color:0xffb020,emissive:0xff9a00,emissiveIntensity:1}); const b=mesh(new THREE.SphereGeometry(.12,10,8),m,false); b.position.set(x,y,z); g.add(b); beacons.push({m,ph:rnd()*6}); }
+function wheels(g,list,r=.4,w=.32){ for(const [x,z] of list){ const t=cyl(r,r,w,0x1f232b,14); t.rotation.z=Math.PI/2; t.position.set(x,r,z); g.add(t); const hub=cyl(r*.45,r*.45,w+.02,0x8a96a8,10); hub.rotation.z=Math.PI/2; hub.position.copy(t.position); g.add(hub);} }
+function lights(g,z,y,dx){ const m=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xfff3c4,emissiveIntensity:1.5}); for(const s of [-1,1]){ const l=box(.18,.12,.05,0xffffff); l.material=m; l.position.set(s*dx,y,z); g.add(l);} }
+function truckModel(load=0x8f7a63){
+  const g=new THREE.Group();
+  g.add(at(rb(1.25,.42,3.6,0x2e3442,.08),0,.62,0));
+  g.add(at(rb(1.3,.95,1.05,YEL,.14),0,1.2,1.25));
+  g.add(at(box(1.0,.45,.06,0x1f2a3d),0,1.4,1.79));
+  g.add(at(rb(.62,.6,.7,0xf4f1ea,.1),-.28,1.95,1.2));
+  g.add(at(box(.5,.3,.05,0x1f2a3d),-.28,2.02,1.56));
+  const tray=rb(1.5,.95,2.2,YEL,.16); tray.position.set(0,1.32,-.55); g.add(tray);
+  const ld=rb(1.25,.4,1.85,load,.2); ld.position.set(0,1.82,-.55); g.add(ld); g.userData.load=ld;
+  wheels(g,[[-.72,1.25],[.72,1.25],[-.72,-.2],[.72,-.2],[-.72,-1.2],[.72,-1.2]],.44,.34);
+  beacon(g,.25,2.3,1.2); lights(g,1.8,1.05,.42);
+  g.userData.r=1.8; return g;
+}
+function lhdModel(c=0xf08a24){
+  const g=new THREE.Group();
+  g.add(at(rb(1.15,.65,2.4,c,.14),0,.75,-.25));
+  g.add(at(rb(.7,.75,.75,0xf4f1ea,.1),-.18,1.45,-.35)); g.add(at(box(.55,.35,.05,0x1f2a3d),-.18,1.55,.04));
+  const arm=box(.16,.16,1.1,0x3d4554); arm.position.set(0,.85,1.0); arm.rotation.x=.25; g.add(arm);
+  g.add(at(rb(1.45,.6,.75,0x4a5568,.08),0,.48,1.45));
+  wheels(g,[[-.62,.65],[.62,.65],[-.62,-.95],[.62,-.95]],.38,.3);
+  beacon(g,.2,1.9,-.4); g.userData.r=1.7; return g;
+}
+function utilModel(c,kind){
+  const g=new THREE.Group();
+  g.add(at(rb(1.1,.6,2.1,c,.14),0,.65,0));
+  g.add(at(rb(.9,.65,.75,0xf4f1ea,.1),0,1.25,-.5)); g.add(at(box(.7,.3,.05,0x1f2a3d),0,1.35,-.12));
+  if(kind==='boom'){ for(const s of [-.25,.25]){ const b=box(.12,.12,2.2,0x4a5568); b.position.set(s,1.15,1.5); b.rotation.x=-.18; g.add(b);
+      const rod=box(.05,.05,1.2,0x9aa3b2); rod.position.set(s,1.42,2.9); rod.rotation.x=-.18; g.add(rod);} }
+  else if(kind==='basket'){ const b=box(.12,.12,1.4,0x4a5568); b.position.set(0,1.5,.9); b.rotation.x=-.6; g.add(b); g.add(at(rb(.7,.45,.6,0xf5b82e,.06),0,2.05,1.45)); }
+  else if(kind==='jet'){ g.add(at(cyl(.38,.38,1.1,0x4aa3df,14),0,1.25,.55)); }
+  wheels(g,[[-.58,.65],[.58,.65],[-.58,-.65],[.58,-.65]],.3,.26);
+  beacon(g,0,1.7,-.5); g.userData.r=1.5; return g;
+}
+function lvModel(c=0xf6f7fa){
+  const g=new THREE.Group();
+  g.add(at(rb(1.05,.55,2.1,c,.18),0,.62,0));
+  g.add(at(rb(.95,.45,1.2,c,.16),0,1.08,-.2));
+  g.add(at(box(.98,.3,1.1,0x26334d),0,1.1,-.2));
+  g.add(at(box(1.07,.1,2.12,BLUE),0,.62,0));
+  wheels(g,[[-.5,.65],[.5,.65],[-.5,-.65],[.5,-.65]],.26,.2);
+  const mast=box(.04,.9,.04,0xffa020); mast.position.set(.45,1.6,-.8); g.add(mast);
+  g.userData.r=1.4; return g;
+}
+function person(vest=0xff7a1a){
+  const g=new THREE.Group();
+  g.add(at(mesh(new THREE.CapsuleGeometry(.17,.42,4,10),mat(0x2f3a52)),0,.38,0));
+  g.add(at(mesh(new THREE.CapsuleGeometry(.2,.32,4,10),mat(vest)),0,.85,0));
+  g.add(at(mesh(new THREE.SphereGeometry(.15,12,10),mat(0xe8c4a0)),0,1.22,0));
+  const h=mesh(new THREE.SphereGeometry(.18,12,8,0,Math.PI*2,0,Math.PI/2),mat(0xffffff)); h.position.y=1.28; g.add(h);
+  return g;
+}
+function crew(level,x,z,n,vest){ for(let i=0;i<n;i++){ const p=person(vest); p.position.set(x+i*.55,LV[level],z+(i%2)*.4); p.rotation.y=rnd()*6; groups[level].add(p);} }
+crew('L1865',1.2,5.4,2,0xff7a1a); crew('L1840',-1.2,6.2,2,0xff7a1a); crew('L1865',-12,9.6,2,0x37c37a); crew('L1840',9.3,11.2,1,0xff7a1a);
+crew('S',31,-28.4,2,0x37c37a); crew('S',60,-30.6,1,0xff7a1a);
+
+const Y=.17;
+const P=(x,l,z)=>[x,(typeof l==='string'?LV[l]:l)+Y,z];
+const ORE_PATH=[P(8,'L1880',-4.6),P(8,'L1880',0),P(16,'L1880',0),P(16,'L1880',12.5),[20,LV.L1880+Y,12.5],[20,LV.L1865+Y,-12.5],[20,LV.L1840+Y,12.5],[20,Y,-16.6],[20,Y,-22],[64,Y,-22],[64,Y,-31.6]];
+const WASTE_PATH=[P(-8,'L1865',-6.6),P(-8,'L1865',0),P(16,'L1865',0),P(16,'L1865',-12.5),[20,LV.L1865+Y,-12.5],[20,LV.L1840+Y,12.5],[20,Y,-16.6],[20,Y,-22],[8,Y,-22],[8,Y,-30.6]];
+const RING=[[-52,Y,52],[-52,Y,-56],[92,Y,-56],[92,Y,-22],[-52,Y,-22],[-52,Y,52]];
+const BOSS=[[44,Y,-28.6],[44,Y,-22],[20,Y,-22],[20,Y,-16.6],[20,LV.L1840+Y,12.5],P(16,'L1840',12.5),P(16,'L1840',0),P(3,'L1840',0)];
+
+function polyline(pts){ const v=pts.map(p=>new THREE.Vector3(...p)), cum=[0]; for(let i=1;i<v.length;i++) cum.push(cum[i-1]+v[i].distanceTo(v[i-1])); return {v,cum,len:cum[cum.length-1]}; }
+function sampleAt(pl,s){ s=Math.max(0,Math.min(pl.len,s)); let i=1; while(i<pl.cum.length-1&&pl.cum[i]<s) i++;
+  const a=pl.v[i-1], b=pl.v[i], t=(s-pl.cum[i-1])/((pl.cum[i]-pl.cum[i-1])||1); return {p:a.clone().lerp(b,t),dir:b.clone().sub(a).normalize()}; }
+
+const movers=[];
+function vehicle(id,model,o){
+  const root=new THREE.Group(); root.add(model); root.userData.r=model.userData.r; scene.add(root);
+  const a=register(id,root,'S','mobile',2.8); a.model=model;
+  if(o.path){ a.path=polyline(o.path); a.speed=o.speed||3.4; a.offset=o.offset||0; a.dwell=o.dwell||4; a.loop=!!o.loop; a.ore=o.ore; movers.push(a); }
+  else { root.position.set(...o.pos); root.rotation.y=o.rot||0; a.level=levelOf(o.pos[1]); }
+  return a;
+}
+vehicle('TK-03',truckModel(0x8f939b),{path:WASTE_PATH,offset:0});
+vehicle('TK-05',truckModel(0x8f939b),{path:WASTE_PATH,offset:60});
+vehicle('TK-04',truckModel(),{path:ORE_PATH,offset:14,ore:true});
+vehicle('TK-07',truckModel(),{path:ORE_PATH,offset:80,ore:true});
+vehicle('TK-06',truckModel(),{pos:[34.4,Y,-29.4],rot:0});
+vehicle('LH-02',lhdModel(),{path:[P(8,'L1880',-5.2),P(8,'L1880',0),P(12.5,'L1880',0)],speed:2.2,dwell:2});
+vehicle('LH-01',lhdModel(),{pos:P(0,'L1865',4.4),rot:0});
+vehicle('LH-04',lhdModel(),{pos:[47,Y,-28.8],rot:0});
+vehicle('WJ-1',utilModel(0x4f8fd8,'jet'),{pos:P(1.6,'L1865',2.4),rot:-.5});
+vehicle('CU-01',utilModel(0x6b74ff,'basket'),{pos:P(0,'L1840',5.2),rot:0});
+vehicle('JM-01',utilModel(0xe0b23a,'boom'),{pos:P(-8,'L1880',8.6),rot:0});
+vehicle('SP-01',utilModel(0x7aa96b,'boom'),{pos:P(8,'L1840',9.8),rot:0});
+vehicle('LV-01',lvModel(),{path:RING,loop:true,speed:5,offset:30});
+vehicle('LV-02',lvModel(),{path:BOSS,speed:3.6,dwell:8,offset:20});
+
+/* ═════════ Selection rings ═════════ */
+const ringMat=o=>new THREE.MeshBasicMaterial({color:COL.accent,transparent:true,opacity:o,side:THREE.DoubleSide,depthWrite:false});
+const selRing=new THREE.Mesh(new THREE.RingGeometry(1,1.16,56),ringMat(.85)); selRing.rotation.x=-Math.PI/2; selRing.visible=false; selRing.renderOrder=3; scene.add(selRing);
+const relRings=[]; let focusId=null, related=[];
+function setRelated(ids){ related=ids.filter(id=>assets[id]); while(relRings.length<related.length){ const r=new THREE.Mesh(new THREE.RingGeometry(1,1.1,56),ringMat(.45)); r.rotation.x=-Math.PI/2; r.renderOrder=3; scene.add(r); relRings.push(r);} relRings.forEach((r,i)=>r.visible=i<related.length); }
+function worldPos(id){ if(id==='DECLINE') return new THREE.Vector3(20,-10,0); const v=new THREE.Vector3(); assets[id].root.getWorldPosition(v); return v; }
+
+/* Camera moves along a sphere so rotations arc instead of cutting through */
+let fly=null;
+function flyTo(target,dist,dTheta=0,phi){
+  const off=camera.position.clone().sub(controls.target), s=new THREE.Spherical().setFromVector3(off);
+  const e=new THREE.Spherical(dist??s.radius, phi??s.phi, s.theta+dTheta);
+  fly={t0:performance.now(),dur:900,sT:controls.target.clone(),eT:target.clone(),s,e};
+}
+
+/* ═════════ UI ═════════ */
+const state={}; const shift={...SHIFT};
+const $=s=>document.querySelector(s);
+const fmt=n=>n.toLocaleString('en-US');
+const ICON={
+ ore:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>',
+ dev:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="2" stroke-linecap="round"><path d="M3 17h18M6 17v-3M10 17v-5M14 17v-3M18 17v-5"/><path d="M4 8h13l-3-3M17 8l-3 3"/></svg>',
+ chance:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="2" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>',
+ plan:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>',
+ mine:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="1.8" stroke-linejoin="round"><path d="M2 8h20M5 8v12M5 12h8M5 16h12M13 12v-4M17 16v-4"/><path d="M14 3l3 3-3 2"/></svg>',
+ surface:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="1.8" stroke-linejoin="round"><path d="M3 20h18M5 20V9l4 2V8l4 2V7l6 3v10"/><path d="M8 15h2M13 15h2"/></svg>',
+ level:'<svg viewBox="0 0 24 24" fill="none" stroke="#2f5bea" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 16l9 4 9-4"/></svg>',
+};
+const pct=(a,b)=>Math.round(a/b*100), tone=p=>p>=90?'ok':p>=75?'warn':'bad';
+
+function renderMetrics(){
+  const op=pct(shift.ore,shift.oreTarget), dp=pct(shift.dev,shift.devTarget), gap=shift.expected-shift.done;
+  const tile=(ic,l,v,u,s,c)=>`<div class="tile glass"><div class="ic">${ICON[ic]}</div><div><div class="ml">${l}</div><div class="mv ${c}">${v}<small>${u}</small></div><div class="ms">${s}</div></div></div>`;
+  $('#metrics').innerHTML=
+    tile('ore','Ore at shift end, at the current rate',fmt(shift.ore),'t',`${op}% of ${fmt(shift.oreTarget)} t target`,tone(op))+
+    tile('dev','Development at shift end, at the current rate',shift.dev.toFixed(1),'m',`${dp}% of ${shift.devTarget} m target`,tone(dp))+
+    tile('chance','Chance of completing the plan',shift.chance,'%',`${shift.chanceStart}% at shift start`,shift.chance>=80?'ok':shift.chance>=65?'warn':'bad')+
+    tile('plan','Against plan right now',gap<=0?'On plan':gap+'%',gap>0?'behind':'',`${shift.done}% done, ${shift.expected}% expected`,gap<=0?'ok':gap<=5?'warn':'bad');
+}
+
+function renderQueue(){
+  const open=NBA.filter(n=>!state[n.id]).length;
+  $('#qcount').textContent=open?`${open} open`:'All handled';
+  $('#qlist').innerHTML=NBA.map((n,i)=>{
+    const st=state[n.id]; let sub=n.short;
+    if(st==='approved') sub=`Approved: assigned to ${n.owner}. Tracking it in the action loop.`;
+    if(st==='confirming') sub='Field check requested. The queue re-ranks when the result comes in.';
+    if(st==='declined') sub='Not now. Reason recorded in the decision log.';
+    if(st==='seen') sub='Seen. The pre-blast checklist runs at 17:30.';
+    const chips=(n.owner!=='n/a'?`<span class="chip">Owner: ${n.owner}</span>`:'')+(!st?`<span class="chip ${n.age>=10?'warn':''}">Waiting ${n.age} min</span>`:'');
+    return `<button class="qrow ${st?'done':''} ${sideMode==='nba'&&sideId===n.id?'sel':''}" data-n="${n.id}">
+      <span class="qn">${st?'✓':i+1}</span>
+      <span><div class="qt">${n.title}</div><div class="qs">${sub}</div>${chips?`<div class="qm">${chips}</div>`:''}</span>
+      <span class="qi ${st?'dim':n.cls}"><b>${st?'Done':n.big}</b><span>${st?'':n.cap}</span>${st?'':'<em>Review ›</em>'}</span></button>`;
+  }).join('');
+  document.querySelectorAll('.qrow').forEach(r=>r.addEventListener('click',()=>openNBA(r.dataset.n)));
+}
+
+/* Side panel: area overview, object detail or recommendation */
+let area='all', sideMode='area', sideId=null, listTab='place', lastListKey='';
+function areaIds(a,cat){
+  return Object.keys(assets).filter(id=>{
+    const inf=INFO[id], as=assets[id]; if(!inf||inf.cat!==cat) return false;
+    if(a==='all') return true;
+    if(inf.levels) return inf.levels.includes(a);
+    if(id==='DECLINE') return a!=='S';
+    return as.level===a;
+  }).sort((x,y)=>'bad warn ok off'.indexOf(INFO[x].st)-'bad warn ok off'.indexOf(INFO[y].st));
+}
+function areaSeg(){ return Object.entries(AREAS).map(([k,a])=>`<button data-a="${k}" class="${area===k?'on':''}">${a.tab}</button>`).join(''); }
+function bindSeg(root){ root.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>setArea(b.dataset.a,true))); }
+function renderSide(){
+  const side=$('#side'); side.classList.toggle('detail',sideMode!=='area');
+  $('#mseg').innerHTML=areaSeg(); bindSeg($('#mseg'));
+  if(sideMode==='area') renderArea(); else if(sideMode==='detail') renderDetail(sideId); else renderNBA(sideId);
+}
+function renderArea(){
+  const A=AREAS[area];
+  const all=[...areaIds(area,'place'),...areaIds(area,'fleet'),...areaIds(area,'service')];
+  const bad=all.filter(id=>INFO[id].st==='bad').length, warn=all.filter(id=>INFO[id].st==='warn').length;
+  const cnt={place:areaIds(area,'place'),fleet:areaIds(area,'fleet'),service:areaIds(area,'service')};
+  const stat=([l,v,max,u])=>{ const p=max?Math.min(100,v/max*100):null;
+    return `<div class="stat"><div class="sl">${l}</div><div class="sv">${fmt(v)}${max?` <small>/ ${fmt(max)}${u?' '+u:''}</small>`:(u?` <small>${u}</small>`:'')}</div>${p!==null?`<div class="bar"><i class="${p>=85?'ok':p>=55?'':'warn'}" style="width:${p}%"></i></div>`:''}</div>`; };
+  const ids=cnt[listTab];
+  lastListKey=ids.join();
+  $('#sbody').innerHTML=`
+    <div class="seg areaonly">${areaSeg()}</div>
+    <div class="ahead"><div class="ic">${ICON[area==='all'?'mine':area==='S'?'surface':'level']}</div><div><div class="kick">${A.kick}</div><h3>${A.name}</h3><div class="sub">${A.sub}</div></div></div>
+    <div class="astat"><span class="pill ${bad?'bad':warn?'warn':'ok'}">${bad?`${bad} problem${bad>1?'s':''}`:warn?'Watch':'Operational'}</span><span>${warn} to watch · ${cnt.fleet.length} machines · ${cnt.place.length} work places</span></div>
+    <div class="stats">${A.stats.map(stat).join('')}</div>
+    <div class="ltabs">${[['place','Work places'],['fleet','Fleet'],['service','Services']].map(([k,l])=>`<button data-t="${k}" class="${listTab===k?'on':''}">${l}<span>${cnt[k].length}</span></button>`).join('')}</div>
+    <div>${ids.map(id=>{const inf=INFO[id];return `<button class="lrow" data-id="${id}"><i class="dot ${inf.st}"></i><span><b>${inf.name}</b><span class="s">${inf.kind}</span></span><span class="pill ${inf.st}">${inf.pill}</span><span class="chev">›</span></button>`;}).join('')||'<p class="note" style="padding:10px 4px">Nothing here right now.</p>'}</div>`;
+  bindSeg($('#sbody'));
+  $('#sbody').querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>{listTab=b.dataset.t;renderArea();}));
+  $('#sbody').querySelectorAll('.lrow').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.id,true)));
+  $('#sfoot').className='sfoot';
+}
+const backBtn=()=>`<button class="back" id="back">‹ ${AREAS[area].name}</button>`;
+function bindBack(){ $('#back').addEventListener('click',closeDetail); }
+function renderDetail(id){
+  const inf=INFO[id];
+  let h=backBtn()+`<div class="dkind">${inf.kind}</div><h3 class="dtitle">${inf.name}</h3><span class="pill ${inf.st}">${inf.pill}</span><p style="margin-top:12px">${inf.text}</p>`;
+  h+=`<div class="sec"><h4>Status</h4><dl class="kv">${inf.rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl></div>`;
+  if(inf.checks) h+=`<div class="sec"><h4>Readiness checks</h4><div class="checks">${inf.checks.map(c=>`<div class="check ${c[0]}"><i>${c[0]==='ok'?'✓':c[0]==='warn'?'!':'✕'}</i><b>${c[1]}</b><span>${c[2]}</span></div>`).join('')}</div></div>`;
+  h+=`<div class="sec"><h4>Data source</h4><p class="note">${inf.src}</p></div>`;
+  if(inf.nba){ const n=NBA.find(x=>x.id===inf.nba), i=NBA.indexOf(n); h+=`<div class="sec"><h4>Linked recommendation</h4><button class="linkbtn" id="toNBA">Action ${i+1}: ${n.title} ›</button></div>`; }
+  $('#sbody').innerHTML=h; $('#sfoot').className='sfoot'; bindBack();
+  const t=$('#toNBA'); if(t) t.addEventListener('click',()=>openNBA(inf.nba));
+}
+function renderNBA(nid){
+  const n=NBA.find(x=>x.id===nid), i=NBA.indexOf(n), st=state[nid];
+  const color=n.cls==='pos'?'var(--ok)':n.cls==='warn'?'var(--warn)':n.cls==='track'?'var(--accent)':'var(--muted)';
+  let h=backBtn()+`<div class="dkind">Action ${i+1} · ${n.area}</div><h3 class="dtitle">${n.title}</h3>`;
+  h+=st?`<span class="pill ok">${st==='confirming'?'Field check requested':st==='declined'?'Not now':st==='seen'?'Seen':'Approved'}</span>`:`<span class="pill acc">Confidence ${n.conf}%</span>`;
+  h+=`<div class="big" style="margin-top:12px"><b style="color:${color}">${n.lift?'+'+n.lift+' pts':n.big}</b><span>${n.lift?'effect on the chance of completing the plan':n.cap}</span></div>`;
+  h+=`<p>${n.why}</p><div class="sec"><h4>Why now</h4><p>${n.whyNow}</p></div>`;
+  h+=`<div class="sec"><h4>Evidence</h4><div class="ev">${n.evidence.map(e=>`<div class="evr"><b>${e[0]}</b><em>${e[2]==='live'?'live':e[2]==='n/a'?'n/a':'updated '+e[2]}</em><span>${e[1]}</span></div>`).join('')}</div></div>`;
+  h+=`<div class="sec"><h4>What should happen</h4><p>${n.predicted}</p></div><div class="sec"><h4>What would make this wrong</h4><p>${n.invalid}</p></div>`;
+  if(n.alts.length) h+=`<div class="sec"><h4>Options considered</h4><ul class="alts">${n.alts.map(a=>`<li>${a[0]}<span>${a[1]}</span></li>`).join('')}</ul></div>`;
+  $('#sbody').innerHTML=h; bindBack();
+  const f=$('#sfoot'); f.className='sfoot show';
+  if(st) f.innerHTML=`<p class="note">Decision recorded.${st==='approved'?' ShiftWise verifies the result from the source data.':''}</p>`;
+  else if(nid==='n5') f.innerHTML=`<div class="btns"><button class="btn primary" id="bA">${n.primary}</button></div>`;
+  else {
+    f.innerHTML=`<div class="btns"><button class="btn primary" id="bA">${n.primary}</button><button class="btn" id="bB">Not now</button></div>
+      <div class="reason" id="rs"><select id="rSel"><option value="">Choose a reason (required)</option><option>Already handled by radio</option><option>Not safe to do now</option><option>Evidence looks wrong</option><option>Other priority on the ground</option></select>
+      <textarea id="rNote" placeholder="Add a note (optional)"></textarea><button class="btn" id="bConf" disabled>Record and dismiss</button></div>`;
+    $('#bB').addEventListener('click',()=>{$('#rs').classList.add('show');$('#bB').disabled=true;});
+    $('#rSel').addEventListener('change',e=>$('#bConf').disabled=!e.target.value);
+    $('#bConf').addEventListener('click',()=>decide(nid,'declined'));
+  }
+  const bA=$('#bA'); if(bA) bA.addEventListener('click',()=>decide(nid,nid==='n2'?'confirming':nid==='n5'?'seen':'approved'));
+}
+
+function openDetail(id,doFly){
+  if(!INFO[id]) return;
+  sideMode='detail'; sideId=id; focusId=id; setRelated([]);
+  selRing.scale.setScalar((assets[id].root.userData.r||1.6)*1.3);
+  if(assets[id].layer!=='mobile' && id!=='DECLINE' && area!=='all'){ const lv=INFO[id].levels?INFO[id].levels[INFO[id].levels.length-1]:assets[id].level; if(lv!==area) setArea(lv,false); }
+  if(doFly) flyTo(worldPos(id),area==='all'?62:44);
+  if(CYCLES[id]) setCycle(id);
+  renderSide(); renderQueue();
+}
+function openNBA(nid){
+  const n=NBA.find(x=>x.id===nid);
+  sideMode='nba'; sideId=nid; focusId=n.focus; setRelated(n.related);
+  selRing.scale.setScalar((assets[n.focus].root.userData.r||1.6)*1.3);
+  if(n.wide){ setArea('all',false); flyTo(HOME_T,HOME_S.radius,0,HOME_S.phi); }
+  else { setArea(assets[n.focus].level,false); flyTo(worldPos(n.focus),46); }
+  if(CYCLES[n.focus]) setCycle(n.focus);
+  renderSide(); renderQueue();
+}
+function closeDetail(){ sideMode='area'; sideId=null; focusId=null; setRelated([]); renderSide(); renderQueue(); }
+addEventListener('keydown',e=>{
+  if(e.target.closest&&e.target.closest('input,textarea,select')) return;
+  if(e.key==='Escape') closeDetail();
+  if(e.key==='q'||e.key==='Q') flyTo(controls.target,undefined,Math.PI/4);
+  if(e.key==='e'||e.key==='E') flyTo(controls.target,undefined,-Math.PI/4);
+  if(e.key==='+'||e.key==='=') zoom(.72);
+  if(e.key==='-'||e.key==='_') zoom(1.38);
+});
+
+function decide(nid,st){
+  const n=NBA.find(x=>x.id===nid); state[nid]=st;
+  if(st==='approved'){
+    shift.chance=Math.min(97,shift.chance+n.lift);
+    if(nid==='n1'){ shift.ore=4120;
+      ['TK-03','TK-05'].forEach((id,k)=>{ const a=assets[id]; a.path=polyline(ORE_PATH); a.offset=36+k*52; a.ore=true; a.model.userData.load.material.color.set(0x8f7a63);
+        INFO[id].text='Moved to S-212 ore haulage. Hauling ore to the crusher.'; INFO[id].pill='Hauling ore'; INFO[id].rows=[['Load','Ore, S-212 to CR-1'],['Approved at','13:07']]; });
+      INFO['CR-1'].text='Two more trucks on ore haulage. The ROM buffer is expected to recover to more than 3 h by 16:30.'; }
+    if(nid==='n4'){ shift.dev=12.0; const h=INFO['L1880N']; h.st='ok'; h.pill='Crew booked for 15:10'; h.checks[0]=['ok','People','Charge crew moves over at 15:10 (approved)'];
+      assets['L1880N'].root.userData.ring.visible=false; labels.find(l=>l.id==='L1880N').el.querySelector('.dot').className='dot ok';
+      CYCLES['L1880N'].steps[2]=['Charge','15:10 booked','now']; CYCLES['L1880N'].next='Next: charge-up at 15:10 · approved · Owner: shift boss'; renderCycle(); }
+    toast(`Approved and assigned to ${n.owner}. ShiftWise checks the result from the source data.`);
+  } else if(st==='confirming') toast('Field check requested from the services fitter.');
+  else if(st==='declined') toast('Recorded as not now, with your reason, in the decision log.');
+  else toast('Marked as seen.');
+  renderMetrics(); renderSide(); renderQueue();
+}
+let tT; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('show'),3200); }
+
+/* Activity cycle tracker */
+let cycleId='L1880N';
+function setCycle(id){ cycleId=id; renderCycle(); }
+function renderCycle(){
+  const c=CYCLES[cycleId];
+  $('#cycle').innerHTML=`<div class="cyh"><b>Activity cycle</b><span class="chip" style="cursor:pointer" id="cyPlace">${INFO[cycleId].name}</span><span class="nx">${c.next}</span></div>
+    <div class="steps">${c.steps.map(s=>`<div class="step ${s[2]}"><i>${s[2]==='done'?'✓':s[2]==='bad'?'!':s[2]==='warn'?'!':s[2]==='now'?'•':''}</i><b>${s[0]}</b><span>${s[1]}</span></div>`).join('')}</div>`;
+  $('#cyPlace').addEventListener('click',()=>openDetail(cycleId,true));
+}
+
+/* Areas and camera buttons */
+function setArea(a,doFly){
+  area=a;
+  for(const k in groups) groups[k].visible=(a==='all'||k===a);
+  shared.visible=(a==='all');
+  if(doFly){
+    if(a==='all') flyTo(HOME_T,HOME_S.radius,0,HOME_S.phi);
+    else if(a==='S') flyTo(new THREE.Vector3(18,0,-22),150,0,.85);
+    else flyTo(new THREE.Vector3(0,LV[a],0),78,0,.85);
+    if(sideMode!=='area') closeDetail(); else renderSide();
+  }
+}
+function zoom(f){ const d=camera.position.distanceTo(controls.target); flyTo(controls.target,THREE.MathUtils.clamp(d*f,controls.minDistance,controls.maxDistance)); }
+$('#zIn').onclick=()=>zoom(.72); $('#zOut').onclick=()=>zoom(1.38);
+$('#rL').onclick=()=>flyTo(controls.target,undefined,Math.PI/4);
+$('#rR').onclick=()=>flyTo(controls.target,undefined,-Math.PI/4);
+$('#home').onclick=()=>setArea('all',true);
+let showLabels=true; $('#lblBtn').onclick=()=>{showLabels=!showLabels;$('#lblBtn').classList.toggle('on',showLabels);};
+
+/* Picking and hover */
+const ray=new THREE.Raycaster(), ndc=new THREE.Vector2(), tip=$('#tip');
+const isShown=o=>{ while(o){ if(!o.visible) return false; o=o.parent; } return true; };
+function pick(e){
+  const r=renderer.domElement.getBoundingClientRect();
+  ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(ndc,camera);
+  for(const h of ray.intersectObjects(pickables.filter(isShown),true)){
+    if(h.object.geometry&&h.object.geometry.type==='RingGeometry') continue;
+    let o=h.object; while(o&&!o.userData.id) o=o.parent; if(o&&INFO[o.userData.id]) return o.userData.id;
+  }
+  return null;
+}
+let down=null;
+renderer.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
+renderer.domElement.addEventListener('pointerup',e=>{ if(!down) return; const m=Math.hypot(e.clientX-down.x,e.clientY-down.y); down=null; if(m>5) return; const id=pick(e); if(id) openDetail(id,true); });
+renderer.domElement.addEventListener('dblclick',e=>{ const r=renderer.domElement.getBoundingClientRect(); ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1); ray.setFromCamera(ndc,camera); const h=ray.intersectObjects(scene.children,true).find(h=>h.object.isMesh&&isShown(h.object)); if(h) flyTo(h.point,camera.position.distanceTo(controls.target)*.7); });
+let hovT=0;
+renderer.domElement.addEventListener('pointermove',e=>{
+  if(e.buttons){ tip.style.opacity=0; return; }
+  const now=performance.now(); if(now-hovT<40) return; hovT=now;
+  const id=pick(e); renderer.domElement.style.cursor=id?'pointer':'grab';
+  if(id){ const inf=INFO[id]; tip.innerHTML=`<b>${inf.name}</b>${inf.pill}`; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; tip.style.opacity=1; }
+  else tip.style.opacity=0;
+});
+renderer.domElement.addEventListener('pointerleave',()=>tip.style.opacity=0);
+
+/* ═════════ Loop ═════════ */
+const clock=new THREE.Clock();
+let listTick=0;
+function frame(){
+  const t=clock.getElapsedTime(), now=performance.now();
+  for(const a of movers){
+    const L=a.path.len; let s, back=false;
+    if(a.loop){ s=(t*a.speed+a.offset)%L; }
+    else { const D=a.dwell*a.speed, cyc=2*L+2*D, u=(t*a.speed+a.offset)%cyc;
+      if(u<D) s=0; else if(u<D+L) s=u-D; else if(u<2*D+L) s=L; else s=L-(u-2*D-L);
+      back=u>=D+L;
+      if(a.ore!==undefined && a.model.userData.load) a.model.userData.load.visible=a.ore?back:!back; }
+    const {p,dir}=sampleAt(a.path,s);
+    a.root.position.copy(p); a.root.lookAt(p.clone().add(back?dir.clone().negate():dir));
+    a.level=levelOf(p.y);
+  }
+  for(const id in assets){ const a=assets[id]; if(a.layer==='mobile') a.root.visible=(area==='all'||a.level===area); }
+  for(const id in fanBlades) if(fanBlades[id]) fanBlades[id].rotation.x=t*7;
+  const pz=.5+.5*Math.sin(t*3);
+  for(const r of pulses){ r.material.opacity=.22+.45*pz; r.scale.setScalar(1+.18*pz); }
+  for(const b of beacons) b.m.emissiveIntensity=Math.sin(t*6+b.ph)>.2?2.2:.15;
+  for(const p of pins) p.g.position.y=p.base+Math.sin(t*2+p.ph)*.25;
+  if(focusId&&assets[focusId]){ const p=worldPos(focusId); selRing.position.set(p.x,p.y+.1,p.z); selRing.material.opacity=.55+.35*pz; selRing.visible=focusId!=='DECLINE'&&isShown(assets[focusId].root); } else selRing.visible=false;
+  related.forEach((id,i)=>{ const p=worldPos(id), r=relRings[i]; r.position.set(p.x,p.y+.1,p.z); r.scale.setScalar((assets[id].root.userData.r||1.6)*1.3); r.visible=isShown(assets[id].root); });
+  for(const l of labels){
+    const a=l.id&&assets[l.id];
+    const quiet=a&&a.layer==='mobile'&&INFO[l.id].st!=='bad'&&INFO[l.id].st!=='warn'&&area==='all'&&l.id!==focusId&&!related.includes(l.id);
+    l.obj.visible=showLabels&&!quiet&&isShown(l.root);
+  }
+  if(fly){ const k=Math.min(1,(now-fly.t0)/fly.dur), e=1-Math.pow(1-k,3);
+    controls.target.lerpVectors(fly.sT,fly.eT,e);
+    const s=new THREE.Spherical(THREE.MathUtils.lerp(fly.s.radius,fly.e.radius,e),THREE.MathUtils.lerp(fly.s.phi,fly.e.phi,e),THREE.MathUtils.lerp(fly.s.theta,fly.e.theta,e));
+    camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(s));
+    if(k>=1) fly=null; }
+  // refresh the fleet list when machines move between areas
+  if(sideMode==='area'&&listTab==='fleet'&&now-listTick>1500){ listTick=now; if(areaIds(area,'fleet').join()!==lastListKey) renderArea(); }
+  controls.update();
+  renderer.render(scene,camera); labelRenderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); labelRenderer.setSize(innerWidth,innerHeight); });
+if(innerWidth<900){ camera.position.copy(HOME_T).add(new THREE.Vector3().setFromSpherical(new THREE.Spherical(170,HOME_S.phi,HOME_S.theta))); }
+
+if(window.self!==window.top) $('#brandTitle').textContent='Live view';   // inside the dashboard, which has its own logo
+renderMetrics(); renderQueue(); renderSide(); renderCycle();
+document.getElementById('loading').remove();
+frame();
+</script>
+</body>
+</html>

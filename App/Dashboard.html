@@ -866,6 +866,9 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   .shift-grid{grid-template-columns:minmax(0,1fr) 340px;gap:22px}
 }
 .rail .spacer{flex:1}
+/* Live view: the 3D mine fills the whole content area */
+#view-live{padding:0;overflow:hidden}
+#view-live iframe{display:block;width:100%;height:100%;border:0}
 </style>
 </head>
 <body>
@@ -928,6 +931,10 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
       <span class="lbl">Shift</span>
       <span class="pip" id="pipShift">4</span>
+    </button>
+    <button data-view="live">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5 12 21l9-4.5"/></svg>
+      <span class="lbl">Live view</span>
     </button>
     <button data-view="performance">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
@@ -1045,6 +1052,10 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   </section>
 
   <!-- ── Plan view ────────────────────────── -->
+  <section class="view" id="view-live">
+    <iframe id="liveFrame" title="Live view of the mine in 3D" data-src="Mine3D.html"></iframe>
+  </section>
+
   <section class="view" id="view-plan">
     <div class="view-head">
       <div>
@@ -1851,6 +1862,7 @@ function showView(v){
   $$(".view").forEach(x=>x.classList.remove("active"));
   $("#view-"+v).classList.add("active");
   if(v==="handover"&&!handoverAccepted)renderHandover();
+  if(v==="live"&&!$("#liveFrame").src)$("#liveFrame").src=$("#liveFrame").dataset.src;   // load the 3D view on first open
   $$(".rail button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
 }
 $$(".rail button[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
