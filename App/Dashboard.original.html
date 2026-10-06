@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShiftWise: Adaptive Decision-Making</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --ink:#10182b;
+  --ink-soft:#525a70;
+  --ink-faint:#8a91a5;
+  --brand:#ffb02e;
+  --brand-deep:#f09a00;
+  --brand-soft:#fff4de;
+  --bg:#ffffff;
+  --canvas:#f6f7f9;
+  --line:#e8e9ee;
+  --blue:#3d63ff;
+  --blue-deep:#2b4cd8;
+  --blue-soft:#edf1ff;
+  --green:#0ca678;
+  --green-soft:#e6f6f0;
+  --red:#e5484d;
+  --red-soft:#fdecec;
+  --amber:#e8930c;
+  --amber-soft:#fdf3e1;
+  --violet:#7b61ff;
+  --violet-soft:#f0edff;
+  --shadow:0 1px 2px rgba(16,24,43,.05), 0 4px 14px rgba(16,24,43,.05);
+  --shadow-lift:0 8px 30px rgba(16,24,43,.16);
+  --r-lg:14px; --r-md:10px; --r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--canvas); color:var(--ink);
+  font-size:14px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+
+/* ── App frame ─────────────────────────────── */
+.app{display:grid;grid-template-columns:76px 1fr;grid-template-rows:60px 1fr;height:100vh}
+.topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--line);z-index:30}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:21px;letter-spacing:-.5px;white-space:nowrap}
+.brand .mark{width:34px;height:34px;border-radius:9px;background:var(--brand);display:grid;place-items:center;flex-shrink:0}
+.brand .mark svg{width:20px;height:20px}
+.brand small{font-weight:600;color:var(--ink-faint);font-size:11px;margin-left:2px;letter-spacing:0}
+.site-chip{display:flex;flex-direction:column;line-height:1.3;padding:5px 14px;border:1px solid var(--line);border-radius:9px;background:var(--bg);cursor:pointer;text-align:left}
+.site-chip b{font-size:12.5px}
+.site-chip span{font-size:10.5px;color:var(--ink-faint);font-weight:600}
+.site-chip:hover{border-color:var(--ink-faint)}
+.shiftclock{display:flex;flex-direction:column;gap:3px;min-width:190px}
+.shiftclock .sc-top{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--ink-soft)}
+.shiftclock .sc-top b{color:var(--ink)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;border-radius:8px;padding:9px 16px;font-size:13.5px;transition:background .12s, border-color .12s, box-shadow .12s, transform .1s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn svg{width:16px;height:16px}
+.btn-brand{background:var(--brand);color:var(--ink);font-weight:700}
+.btn-brand:hover{background:var(--brand-deep)}
+.btn-blue{background:var(--blue);color:#fff;font-weight:700}
+.btn-blue:hover{background:var(--blue-deep)}
+#askBtn{background:linear-gradient(180deg,#4a6cff,#3556ec)}
+#askBtn:hover{background:linear-gradient(180deg,#3556ec,#2b4cd8)}
+.btn-ghost{border:1px solid var(--line);background:var(--bg)}
+.btn-ghost:hover{border-color:var(--ink-faint);background:var(--canvas)}
+.btn-ink{background:var(--ink);color:var(--bg);font-weight:700}
+.btn-ink:hover{opacity:.92}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--canvas);border:1px solid var(--line);color:var(--ink);display:grid;place-items:center;font-weight:700;font-size:13px;cursor:pointer}
+.avatar:hover{border-color:var(--ink-faint)}
+.acct-wrap{position:relative}
+.acct-menu{position:absolute;top:calc(100% + 10px);right:0;width:250px;background:var(--bg);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lift);padding:8px;z-index:60;display:none}
+.acct-menu.open{display:block;animation:viewfade .15s ease}
+.acct-who{padding:10px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.acct-who b{display:block;font-size:13.5px}
+.acct-who span{font-size:12px;color:var(--ink-faint)}
+.acct-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink)}
+.acct-item svg{width:16px;height:16px;color:var(--ink-faint);flex-shrink:0}
+.acct-item:hover{background:var(--canvas)}
+.acct-item.danger{color:var(--red)}
+.acct-item.danger svg{color:var(--red)}
+.acct-div{height:1px;background:var(--line);margin:6px 4px}
+
+/* ── Left rail ─────────────────────────────── */
+.rail{background:var(--bg);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;overflow-y:auto}
+.rail button{width:54px;height:54px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-soft);font-size:10px;font-weight:600;position:relative;transition:background .15s,color .15s;flex-shrink:0}
+.rail button svg{width:21px;height:21px;stroke-width:1.7}
+.rail button:hover{background:var(--canvas);color:var(--ink)}
+.rail button.active{background:var(--brand-soft);color:var(--brand-deep)}
+.rail button.active svg{stroke-width:2.1}
+.rail button .pip{position:absolute;top:7px;right:10px;min-width:16px;height:16px;border-radius:99px;background:var(--red);border:2px solid var(--bg);color:#fff;font-size:9px;font-weight:800;display:grid;place-items:center;padding:0 3px}
+.rail .spacer{flex:1}
+
+/* ── Main region ──────────────────────────── */
+.main{position:relative;overflow:hidden;display:flex}
+.view{flex:1;overflow-y:auto;padding:26px 30px 60px;display:none}
+.view.active{display:block;animation:viewfade .2s ease}
+@keyframes viewfade{from{opacity:0}to{opacity:1}}
+@keyframes viewin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+h1{font-size:24px;font-weight:800;letter-spacing:-.4px}
+.view-head p{color:var(--ink-soft);margin-top:3px;max-width:66ch}
+
+/* briefing */
+.briefing{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden;margin-bottom:22px}
+.briefing::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--brand)}
+.briefing .who{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.agent-dot{width:36px;height:36px;border-radius:9px;background:var(--brand);display:grid;place-items:center;font-size:17px;flex-shrink:0}
+.briefing .who b{font-size:15px}
+.briefing .who span{display:block;font-size:12px;color:var(--ink-faint);font-weight:600}
+.briefing .text{font-size:16px;line-height:1.65;max-width:80ch}
+.briefing .text strong{background:linear-gradient(transparent 62%, var(--brand) 62%);font-weight:800;padding:0 2px}
+.brief-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.chip-btn{border:1.5px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 14px;font-weight:700;font-size:12.5px}
+.chip-btn:hover{border-color:var(--ink)}
+
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;cursor:pointer;transition:border-color .15s, box-shadow .15s}
+.kpi:hover{border-color:#d5d5de;box-shadow:var(--shadow)}
+.kpi .n{font-size:24px;font-weight:800;letter-spacing:-.6px}
+.kpi .n small{font-size:13px;font-weight:700;color:var(--ink-faint);letter-spacing:0}
+.kpi .l{font-size:12px;color:var(--ink-soft);font-weight:600}
+.kpi .d{font-size:11.5px;font-weight:700;margin-top:2px}
+.up{color:var(--green)} .down{color:var(--red)} .flat{color:var(--ink-faint)}
+
+/* section titles & tags */
+.section-title{display:flex;align-items:center;gap:10px;margin:26px 0 12px;font-size:15px;font-weight:800}
+.section-title .count{background:var(--red);color:#fff;font-size:11px;border-radius:999px;padding:2px 8px}
+.section-title .hint{font-size:12px;font-weight:600;color:var(--ink-faint);margin-left:auto}
+.tag{font-size:11.5px;font-weight:700;border-radius:6px;padding:3px 8px;white-space:nowrap}
+.tag.red{background:var(--red-soft);color:var(--red)}
+.tag.green{background:var(--green-soft);color:var(--green)}
+.tag.amber{background:var(--amber-soft);color:var(--amber)}
+.tag.blue{background:var(--blue-soft);color:var(--blue)}
+.tag.violet{background:var(--violet-soft);color:var(--violet)}
+.tag.brand{background:var(--brand-soft);color:var(--brand-deep)}
+.tag.plain{background:var(--canvas);color:var(--ink-soft)}
+
+/* Next best actions queue */
+.queue{display:flex;flex-direction:column;gap:10px}
+.qitem{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 18px 12px 20px;position:relative;overflow:hidden;transition:opacity .3s, transform .3s}
+.qitem::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.qitem.p-high::before{background:var(--red)}
+.qitem.p-med::before{background:var(--amber)}
+.qitem.p-low::before{background:var(--blue)}
+.qitem.resolved{opacity:.45}
+.qtop{display:flex;align-items:flex-start;gap:12px}
+.qrank{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0;margin-top:1px}
+.qmain{flex:1;min-width:0}
+.qitem h4{font-size:14.5px;margin-bottom:3px}
+.qitem .why{color:var(--ink-soft);font-size:13px;max-width:80ch}
+.qitem .why b{color:var(--ink)}
+.qitem .impact{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qfoot{display:flex;align-items:center;gap:14px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line);flex-wrap:wrap}
+.act{border-radius:8px;padding:6px 14px;font-weight:700;font-size:12.5px;border:1px solid transparent;white-space:nowrap}
+.act.primary{background:var(--blue);color:#fff}
+.act.primary:hover{background:var(--blue-deep)}
+.act.amberbtn{background:var(--amber);color:#fff}
+.act.amberbtn:hover{filter:brightness(.94)}
+.act.line{color:var(--ink-soft);border-color:var(--line);background:var(--bg)}
+.act.line:hover{border-color:var(--ink-faint);color:var(--ink)}
+.act.link{color:var(--ink-faint);font-weight:600;padding:6px 2px;font-size:12.5px}
+.act.link:hover{color:var(--blue)}
+.qfoot .qdone{font-size:12.5px;font-weight:700;color:var(--green)}
+.qfoot .qwait{font-size:12.5px;font-weight:700;color:var(--amber)}
+
+/* confidence meter */
+.conf{display:inline-flex;align-items:center;gap:8px;flex-shrink:0}
+.conf .cbar{width:64px;height:7px;border-radius:99px;background:var(--canvas);overflow:hidden;border:1px solid var(--line)}
+.conf .cbar i{display:block;height:100%;border-radius:99px}
+.conf b{font-size:12px;font-weight:800}
+.conf span{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.conf.hi b,.conf.hi span{color:var(--green)} .conf.hi .cbar i{background:var(--green)}
+.conf.md b,.conf.md span{color:var(--amber)} .conf.md .cbar i{background:var(--amber)}
+.conf.lo b,.conf.lo span{color:var(--red)} .conf.lo .cbar i{background:var(--red)}
+
+/* two-col dash bottom */
+.dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:26px}
+@media(max-width:1100px){.dash-grid{grid-template-columns:1fr}}
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
+.panel h3{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.panel h3 button{font-size:12px;color:var(--blue);font-weight:700}
+.mini-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px;cursor:pointer}
+.mini-row:last-child{border-bottom:none}
+.mini-row:hover .mr-id{color:var(--blue)}
+.mr-id{font-weight:800}
+.bar-wrap{height:8px;background:var(--canvas);border-radius:99px;overflow:hidden;margin-top:5px;border:1px solid var(--line)}
+.bar{height:100%;border-radius:99px}
+
+/* ── Plan view ─────────────────────────────── */
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fchip{border:1.5px solid var(--line);border-radius:999px;padding:7px 15px;font-weight:700;font-size:12.5px;background:var(--bg)}
+.fchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.plan-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:15px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .15s, box-shadow .15s}
+.plan-card:hover{border-color:#d5d5de;box-shadow:var(--shadow)}
+.plan-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.plan-top .pt-main{flex:1;min-width:220px}
+.plan-top h4{font-size:14px}
+.plan-top .pt-sub{font-size:12px;color:var(--ink-soft);font-weight:600;margin-top:1px}
+.plan-nums{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.pnum{text-align:right}
+.pnum b{font-size:15px;font-weight:800;display:block;letter-spacing:-.3px}
+.pnum span{font-size:10.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.plan-bar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.plan-bar .bar-wrap{flex:1;margin-top:0}
+.plan-bar .pb-label{font-size:11.5px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+.readiness{margin-top:11px;padding-top:10px;border-top:1px dashed var(--line);display:flex;gap:7px;flex-wrap:wrap}
+.rchk{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:11.5px;font-weight:700}
+.rchk svg{width:12px;height:12px}
+.rchk.ok{color:var(--green);border-color:#bfe8da;background:var(--green-soft)}
+.rchk.no{color:var(--red);border-color:#f5c6c8;background:var(--red-soft)}
+.rchk.pend{color:var(--amber);border-color:#f0dcb4;background:var(--amber-soft)}
+
+/* ── Actions table ─────────────── */
+.tbl{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11.5px;color:var(--ink-faint);font-weight:800;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg);letter-spacing:.2px;white-space:nowrap}
+td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--canvas)}
+tbody tr:last-child td{border-bottom:none}
+.a-id{font-weight:800;white-space:nowrap}
+.a-sub{color:var(--ink-soft);font-size:12.5px}
+.status{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;border-radius:999px;padding:4px 11px;white-space:nowrap}
+.status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-done{background:var(--green-soft);color:var(--green)}
+.s-prog{background:var(--blue-soft);color:var(--blue)}
+.s-wait{background:var(--amber-soft);color:var(--amber)}
+.s-stall{background:var(--red-soft);color:var(--red)}
+.s-hand{background:var(--violet-soft);color:var(--violet)}
+/* loop dots */
+.loopdots{display:flex;align-items:center;gap:0}
+.ldot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--canvas);border:2px solid var(--line);color:var(--ink-faint);flex-shrink:0}
+.ldot svg{width:11px;height:11px}
+.ldot.done{background:var(--green);border-color:var(--green);color:#fff}
+.ldot.now{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 4px var(--blue-soft)}
+.lconn{width:14px;height:2px;background:var(--line);flex-shrink:0}
+.lconn.done{background:var(--green)}
+
+/* ── Alerts view ─────────────── */
+.tier-legend{display:none;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:900px){.tier-legend{grid-template-columns:1fr}}
+.tierdef{border:1px solid var(--line);border-radius:var(--r-md);background:var(--bg);padding:13px 16px;display:flex;gap:12px;align-items:flex-start}
+.tierdef .tnum{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:14px;flex-shrink:0}
+.tierdef.t1 .tnum{background:var(--blue-soft);color:var(--blue)}
+.tierdef.t2 .tnum{background:var(--amber-soft);color:var(--amber)}
+.tierdef.t3 .tnum{background:var(--red-soft);color:var(--red)}
+.tierdef b{font-size:13px;display:block}
+.tierdef span{font-size:11.5px;color:var(--ink-soft)}
+.alert-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 18px;margin-bottom:10px;position:relative;overflow:hidden}
+.alert-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.alert-card.t1::before{background:var(--blue)}
+.alert-card.t2::before{background:var(--amber)}
+.alert-card.t3::before{background:var(--red)}
+.alert-card.cleared{opacity:.5}
+.al-top{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.al-top h4{font-size:14px;flex:1;min-width:200px}
+.al-meta{font-size:12px;color:var(--ink-faint);font-weight:600;white-space:nowrap}
+.al-body{font-size:13px;color:var(--ink-soft);margin-top:4px;max-width:82ch}
+.al-resp{margin-top:10px;padding:10px 13px;background:var(--canvas);border:1px dashed var(--line);border-radius:var(--r-sm);font-size:12.5px}
+.al-resp b{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);display:block;margin-bottom:2px}
+.al-foot{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
+
+/* ── Sources view ─────────────── */
+.layer{margin-bottom:22px}
+.layer-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.layer-head h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+.layer-head .lh-line{flex:1;height:1px;background:var(--line)}
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
+.src{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:13px 16px;display:flex;gap:12px;align-items:flex-start}
+.src .sico{width:38px;height:38px;border-radius:9px;background:var(--canvas);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);flex-shrink:0}
+.src .sico svg{width:18px;height:18px}
+.src .sbody{flex:1;min-width:0}
+.src b{font-size:13.5px;display:block}
+.src .ssub{font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.src .sconf{margin-top:7px;display:flex;align-items:center;gap:8px}
+.src .sconf .bar-wrap{flex:1;margin-top:0;max-width:120px}
+.src .sconf em{font-style:normal;font-size:11px;font-weight:800}
+.src .snote{font-size:11.5px;color:var(--ink-soft);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.src.gap{border-style:dashed}
+.src.gap .sico{color:var(--ink-faint)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot.g{background:var(--green)} .dot.a{background:var(--amber)} .dot.r{background:var(--red)} .dot.x{background:var(--ink-faint)}
+
+/* ── Decisions view ─────────── */
+.dec-item{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.dec-item:hover{border-color:#d5d5de}
+.dec-top{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.dec-top h4{font-size:13.5px;flex:1;min-width:220px}
+.dec-top time{font-size:11.5px;color:var(--ink-faint);font-weight:700;white-space:nowrap}
+.dec-body{font-size:12.5px;color:var(--ink-soft);margin-top:4px;max-width:84ch}
+.dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:700px){.dec-grid{grid-template-columns:1fr}}
+.dec-cell{background:var(--canvas);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px;font-size:12.5px}
+.dec-cell b{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);display:block;margin-bottom:1px}
+.dec-foot{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.learn{font-size:12px;color:var(--violet);font-weight:700;display:inline-flex;gap:6px;align-items:center}
+.learn svg{width:13px;height:13px}
+
+/* ── Settings ─────────────── */
+.jumpnav-wrap{position:sticky;top:0;z-index:20;background:var(--canvas);padding:2px 0 14px;margin-bottom:8px}
+.jumpnav{display:flex;gap:6px;overflow-x:auto;background:var(--bg);padding:8px 10px;border:1px solid var(--line);border-radius:12px}
+.jumpnav button{flex-shrink:0;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 15px;font-weight:700;font-size:12.5px;color:var(--ink-soft);white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
+.jumpnav button:hover{border-color:var(--ink-faint);color:var(--ink)}
+.jumpnav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.set-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 22px;margin-bottom:14px;max-width:820px}
+.set-card h3{font-size:14.5px;font-weight:800;margin-bottom:4px}
+.set-card p{color:var(--ink-soft);font-size:13px;margin-bottom:12px;max-width:72ch}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1.5px solid var(--line);border-radius:11px;padding:9px 15px;font-weight:700;font-size:13px;background:var(--bg)}
+.seg button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.slider-row{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.slider-row .sl-label{width:220px;font-size:12.5px;font-weight:700;flex-shrink:0}
+.slider-row input[type=range]{flex:1;accent-color:var(--blue)}
+.slider-val{font-weight:800;font-size:15px;min-width:56px;text-align:right}
+.slider-note{font-size:11.5px;color:var(--ink-faint);margin:-2px 0 10px;max-width:70ch}
+.conn{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.conn:last-child{border-bottom:none}
+.conn .cico{width:36px;height:36px;border-radius:9px;background:var(--canvas);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);flex-shrink:0}
+.conn .cico svg{width:18px;height:18px}
+.conn b{font-size:13.5px;display:block}
+.conn span{font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.conn .cstate{margin-left:auto}
+.toggle{position:relative;width:46px;height:26px;border-radius:99px;background:var(--line);transition:background .15s;flex-shrink:0;cursor:pointer}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.toggle.on{background:var(--blue)}
+.toggle.on::after{left:23px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:800;margin-bottom:5px;color:var(--ink-soft)}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:10px 13px;background:var(--bg);outline:none;font-size:13.5px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f-grid .full{grid-column:1/3}
+@media(max-width:640px){.f-grid{grid-template-columns:1fr}.f-grid .full{grid-column:1}}
+
+/* ── Impact view ─────────────── */
+.impact-hero{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px 14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.impact-hero h3{font-size:14px;font-weight:800;margin-bottom:2px}
+.impact-hero .ih-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px}
+.chart-wrap{width:100%}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.ch-target{stroke:var(--ink-faint);stroke-width:1.5;stroke-dasharray:5 5;fill:none}
+.ch-actual{stroke:var(--blue);stroke-width:2.5;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.ch-proj{stroke:var(--green);stroke-width:2;stroke-dasharray:4 5;fill:none;stroke-linecap:round}
+.ch-fill{fill:var(--blue-soft);opacity:.55}
+.ch-grid{stroke:var(--line);stroke-width:1}
+.ch-lab{font:700 10px 'Inter',sans-serif;fill:var(--ink-faint)}
+.ch-anno{font:800 11px 'Inter',sans-serif}
+.ch-mark{fill:var(--bg);stroke:var(--blue);stroke-width:2.5}
+.ch-mark.pending{stroke:var(--amber)}
+.ch-mnum{font:800 9.5px 'Inter',sans-serif;fill:var(--ink)}
+.chart-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;font-weight:700;color:var(--ink-soft)}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.chart-legend i{width:16px;height:0;border-top:2.5px solid;display:inline-block;border-radius:2px}
+.imp-row{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:13px 18px;margin-bottom:9px;display:flex;gap:14px;align-items:flex-start;cursor:pointer;transition:border-color .15s}
+.imp-row:hover{border-color:#d5d5de}
+.imp-row .im-main{flex:1;min-width:0}
+.imp-row h4{font-size:13.5px}
+.imp-row .im-sub{font-size:12px;color:var(--ink-soft);margin-top:2px;max-width:76ch}
+.imp-row .im-sub b{color:var(--ink)}
+.imp-row .im-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.imp-contrib{text-align:right;flex-shrink:0;min-width:110px}
+.imp-contrib b{display:block;font-size:19px;font-weight:800;letter-spacing:-.4px}
+.imp-contrib span{font-size:10.5px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.3px}
+.imp-contrib.pos b{color:var(--green)}
+.imp-contrib.track b{color:var(--blue)}
+.imp-contrib.neg b{color:var(--red)}
+.cal-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.cal-row .cl{width:190px;font-size:12px;font-weight:700;flex-shrink:0}
+.cal-row .cl span{display:block;font-size:10.5px;color:var(--ink-faint);font-weight:600}
+.cal-row .bar-wrap{flex:1;margin-top:0}
+.cal-row em{font-style:normal;font-weight:800;font-size:13px;min-width:44px;text-align:right}
+.ms-wrap{display:flex;gap:8px;align-items:flex-end;height:92px;padding-top:6px}
+.ms{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.ms i{display:block;width:100%;max-width:44px;border-radius:6px 6px 2px 2px;background:var(--blue-soft);border:1px solid var(--line)}
+.ms.hot i{background:var(--green-soft);border-color:#bfe8da}
+.ms b{font-size:10.5px;font-weight:800}
+.ms span{font-size:9.5px;color:var(--ink-faint);font-weight:700;white-space:nowrap}
+
+/* ── Detail drawer ───────────────── */
+/* ── Requirements-driven additions ─────────── */
+.safety-banner{display:flex;gap:12px;align-items:flex-start;background:var(--red-soft);border:1px solid #f5c6c8;border-radius:var(--r-md);padding:12px 16px;margin-bottom:12px;font-size:13px;color:var(--ink-soft)}
+.safety-banner b{color:var(--red)}
+.safety-banner svg{width:18px;height:18px;color:var(--red);flex-shrink:0;margin-top:2px}
+.safety-banner button{margin-left:auto;color:var(--red);font-weight:700;font-size:12.5px;white-space:nowrap}
+.kpi.hero{border-color:var(--brand);background:linear-gradient(180deg,var(--brand-soft),var(--bg))}
+.age{font-size:11.5px;font-weight:700;color:var(--ink-faint);display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+.age.hot{color:var(--amber)}
+.age.vhot{color:var(--red)}
+.qitem.compact .why{display:none}
+.qitem.compact{display:flex;align-items:center;gap:14px;padding:10px 16px 10px 20px}
+.qitem.compact .qtop{flex:1;min-width:0;align-items:center}
+.qitem.compact .qfoot{margin:0;padding:0;border:none;flex-shrink:0}
+.qitem.compact h4{font-size:13.5px;font-weight:600}
+.qitem.compact .qrank{background:var(--canvas);color:var(--ink-soft)}
+.qitem.compact{padding-top:11px;padding-bottom:10px}
+.qitem.compact h4{margin-bottom:0}
+.qitem.compact .impact{margin-top:6px}
+.qitem.compact .qfoot{margin-top:8px;padding-top:8px}
+.tag.first{background:var(--ink);color:var(--bg)}
+.altrow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.altrow:last-child{border-bottom:none}
+.altrow span{color:var(--ink-soft);text-align:right;max-width:55%}
+.weekstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:12px}
+.wk{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
+.wk .wl{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint)}
+.wk .wn{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.wk .wn small{font-size:12px;color:var(--ink-faint);font-weight:700}
+.wk .wd{font-size:11.5px;font-weight:700;margin-top:1px}
+.note-strip{background:var(--blue-soft);border:1px solid #d3dcff;border-radius:var(--r-md);padding:10px 14px;font-size:12.5px;color:var(--ink-soft);margin-bottom:16px}
+.note-strip b{color:var(--ink)}
+.ladder{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.ladder .lstep{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;background:var(--bg)}
+.ladder .larr{color:var(--ink-faint);font-weight:800}
+.hier{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.hier .lvl{border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:700;background:var(--bg)}
+.hier .lvl small{display:block;font-size:10.5px;color:var(--ink-faint);font-weight:600}
+.hier .larr{color:var(--ink-faint);font-weight:800}
+.stage-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.hand-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:1000px){.hand-grid{grid-template-columns:1fr}}
+.hand-grid .panel h3{margin-bottom:8px}
+.hand-item{padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.hand-item:last-child{border-bottom:none}
+.hand-item b{display:block}
+.hand-item span{font-size:12px;color:var(--ink-soft)}
+.delta-good{color:var(--green);font-weight:800}
+.delta-bad{color:var(--red);font-weight:800}
+/* ── One calm row style across pages ─────────── */
+.imp-contrib.warn b{color:var(--amber)}
+.imp-contrib.dim b{color:var(--ink-faint)}
+.imp-contrib.qimp b{font-size:15px}
+.imp-contrib.small b{font-size:14px;letter-spacing:0}
+.imp-row.resolved{opacity:.45}
+.imp-row h4{line-height:1.4}
+.src-grid{display:block}
+.alert-card::before{display:none}
+.alert-card,.dec-item{padding:13px 18px}
+.alert-card summary,.dec-item summary{display:flex;gap:14px;align-items:flex-start}
+.alert-card summary .im-main,.dec-item summary .im-main{flex:1;min-width:0}
+.alert-card summary h4,.dec-item summary h4{font-size:13.5px}
+.alert-card[open] summary,.dec-item[open] summary{margin-bottom:10px}
+/* ── Fixed bottom likelihood strip, rank numbers, live timers ─────────── */
+.app{height:100vh}
+.qrk{width:28px;height:28px;border-radius:8px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0;margin-top:1px}
+.imp-row.resolved .qrk{background:var(--green-soft);color:var(--green)}
+.tag.qtimer{font-variant-numeric:tabular-nums;font-weight:800}
+.tag.qtimer.hot{background:var(--amber-soft);color:var(--amber)}
+.tag.qtimer.vhot{background:var(--red-soft);color:var(--red)}
+.imp-contrib b{font-variant-numeric:tabular-nums}
+/* ── Shift page: queue left, pinned health column right ─────────── */
+.shift-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:28px;align-items:start}
+.sg-main{min-width:0}
+.sg-side{position:static;display:flex;flex-direction:column;gap:14px}
+.sidec{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px}
+.sidec.lik{background:linear-gradient(180deg,var(--brand-soft),var(--bg));border-color:var(--brand);cursor:pointer}
+.sidec .eb{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-faint)}
+.sidec .big{display:flex;align-items:baseline;gap:10px;margin-top:2px}
+.sidec .big b{font-size:46px;font-weight:800;letter-spacing:-1.5px;line-height:1.1}
+.sidec .big span{font-size:17px;font-weight:800;color:var(--green)}
+.sidec .sub{font-size:12px;font-weight:700;color:var(--red);margin-top:2px}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:10px 0;border-bottom:1px solid var(--line);text-align:left}
+.mrow:last-child{border-bottom:none}
+.mrow:first-child{padding-top:0}.mrow:last-child{padding-bottom:0}
+.mrow:hover .ml{color:var(--blue)}
+.mrow .ml{font-size:13px;font-weight:700}
+.mrow .ml small{display:block;font-size:11px;color:var(--ink-faint);font-weight:600}
+.mrow b{font-size:19px;font-weight:800;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mrow b em{font-style:normal;font-size:11.5px;color:var(--ink-faint);font-weight:600;margin-left:3px}
+.sidec svg{width:100%;height:auto;display:block;margin:6px 0 4px}
+.sidec .lg{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;font-weight:700;color:var(--ink-soft)}
+.sidec .lg span::before{content:"";display:inline-block;width:14px;border-top:2.5px solid;margin-right:5px;vertical-align:middle}
+.sidec .lg .a::before{border-color:var(--blue)}.sidec .lg .b::before{border-color:var(--ink-faint);border-top-style:dotted}.sidec .lg .c::before{border-color:var(--green);border-top-style:dashed}
+.evlist{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-soft)}
+.evlist div{display:flex;align-items:center}
+.evlist b{display:inline-flex;align-items:center;justify-content:center;flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--blue);font-size:9.5px;line-height:1;margin-right:7px;color:var(--ink)}
+.evlist b.bad{border-color:var(--red)}.evlist b.act{border-color:var(--green)}
+.evlist i{font-style:normal;color:var(--ink-faint);font-weight:700;margin-right:4px}
+.statusline{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;font-size:15px;color:var(--ink-soft)}
+.statusline strong{color:var(--ink)}
+.tl-lab{font:600 9.5px 'Inter',sans-serif;fill:var(--ink-faint)}
+.tl-grid{stroke:var(--line);stroke-width:1}
+.tl-now{stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 3}
+.tl-actual{fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.tl-none{fill:none;stroke:var(--ink-faint);stroke-width:1.8;stroke-dasharray:2 5;stroke-linecap:round}
+.tl-with{fill:none;stroke:var(--green);stroke-width:2.2;stroke-dasharray:5 5;stroke-linecap:round}
+.tl-dot{fill:var(--bg);stroke:var(--blue);stroke-width:1.8}
+.tl-dot.bad{stroke:var(--red)}.tl-dot.act{stroke:var(--green)}
+.tl-ev{font:700 9.5px 'Inter',sans-serif;fill:var(--ink-soft)}
+.tl-let{font:800 8px 'Inter',sans-serif;fill:var(--ink);text-anchor:middle;pointer-events:none}
+@media(max-width:1180px){.shift-grid{grid-template-columns:1fr}.sg-side{position:static;order:-1}}
+#view-shift{padding-top:18px}
+#queueList .imp-row{padding:11px 16px;margin-bottom:8px}
+#queueList .imp-row .im-meta{margin-top:6px}
+#queueList .imp-row .im-sub{margin-top:1px}
+.statusline{margin-bottom:12px}
+#view-shift .safety-banner{margin-bottom:10px;padding:9px 14px}
+/* ── Tighter page tops (every page) ─────────── */
+.view{padding-top:20px}
+.view-head{margin-bottom:12px}
+.view-head h1{font-size:21px}
+.view-head p{font-size:12.5px;margin-top:1px;max-width:72ch}
+
+/* ── Mobile ─────────── */
+@media(max-width:1100px){
+  .view{padding-left:20px;padding-right:20px}
+}
+@media(max-width:760px){
+  html,body{height:auto}
+  body{overflow:hidden}
+  .app{grid-template-columns:1fr;grid-template-rows:56px 1fr 64px;height:100vh;height:100dvh}
+  .topbar{padding:0 12px;gap:8px}
+  .rail{grid-row:3;grid-column:1;flex-direction:row;overflow-x:auto;overflow-y:hidden;border-right:none;border-top:1px solid var(--line);padding:6px 8px;gap:2px;justify-content:flex-start;align-items:center}
+  .rail .spacer{display:none}
+  .rail button{width:62px;height:50px;flex-shrink:0}
+  .rail button .pip{top:3px;right:12px}
+  .main{grid-row:2;grid-column:1}
+  .view{padding:14px 14px 28px}
+  .view-head h1{font-size:19px}
+  .site-chip{display:none}
+  .btn{padding:8px 12px}
+  .brand{font-size:17px}
+    .main .chatpane.open{position:absolute;inset:0;width:100%;z-index:35}
+  .main .chat-inner{width:100%}
+  .drawer{width:100vw}
+  .drawer-head,.drawer-tabs,.drawer-body,.drawer-foot{padding-left:16px;padding-right:16px}
+  .imp-row{padding:12px 14px;gap:10px}
+  .imp-contrib{min-width:70px}
+  .imp-contrib b{font-size:16px}
+  .imp-contrib.qimp b{font-size:13.5px}
+  .imp-contrib span{font-size:9.5px}
+  .im-sub{max-width:none}
+  .qrk{width:24px;height:24px;font-size:12px}
+  .sidec .big b{font-size:40px}
+  .statusline{font-size:14px}
+  .section-title .hint{display:none}
+  .safety-banner{flex-wrap:wrap}
+  .slider-row{flex-wrap:wrap;gap:6px}
+  .slider-row .sl-label{width:100%}
+  .cal-row .cl{width:130px}
+  .lost-row,.ms-wrap{gap:4px}
+  .set-card{padding:16px 16px}
+  .f-grid{grid-template-columns:1fr}
+  .f-grid .full{grid-column:1}
+  .hier .lvl{flex:1 1 40%}
+  .modal-scrim{padding:0;align-items:flex-end}
+  .modal{border-radius:18px 18px 0 0;width:100%;max-height:94vh}
+  .modal-head,.modal-body,.modal-foot{padding-left:18px;padding-right:18px}
+  .conn{flex-wrap:wrap}
+  .tag,.rchk,.status{white-space:normal}
+  .im-meta,.al-foot,.stage-row{flex-wrap:wrap}
+  .tl-lab{font-size:11px}
+  #toasts{bottom:78px}
+}
+@media(max-width:560px){
+  .btn .lbl2{display:none}
+  .btn-ghost{padding:8px 10px}
+  .brand .bname{display:none}
+    .kpis{grid-template-columns:1fr 1fr}
+  .weekstrip{grid-template-columns:1fr 1fr}
+  .evlist{grid-template-columns:1fr}
+  .filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
+  .fchip{flex-shrink:0}
+}
+@media(max-width:1180px) and (min-width:761px){.sg-side{order:-1}}
+@media(max-width:760px){.sg-side{order:0}}
+/* ── Queue rows are clearly clickable ─────────── */
+.imp-row.qact{transition:border-color .15s,box-shadow .15s,transform .15s}
+.imp-row.qact:not(.resolved):hover,.imp-row.qact:not(.resolved):focus-visible{border-color:var(--blue);box-shadow:0 4px 18px rgba(61,99,255,.14);transform:translateY(-1px)}
+.imp-row.qact.resolved{cursor:default}
+.imp-contrib.qimp,.imp-contrib.stack{display:flex;flex-direction:column;align-items:flex-end}
+.imp-contrib.qimp span,.imp-contrib.stack span{display:block}
+.imp-contrib.qimp .rv,.imp-contrib.stack .rv{display:block;width:max-content;margin-top:7px}
+.imp-contrib .rv{display:inline-block;font-style:normal;margin-top:5px;border:1.5px solid var(--blue);color:var(--blue);background:var(--bg);border-radius:8px;padding:2px 10px;font-size:11.5px;font-weight:700;text-transform:none;letter-spacing:0;transition:background .15s,color .15s}
+.imp-row.qact:hover .rv,.imp-row.qact:focus-visible .rv{background:var(--blue);color:#fff}
+/* ── Make clickable things look clickable, static things look static ─────────── */
+.imp-row[style*="cursor:default"]:hover{border-color:var(--line)}
+.imp-row.qact:not(.resolved):hover,.imp-row.qact:focus-visible{border-color:var(--blue)}
+.alert-card summary::after,.dec-item summary::after,.layer-head::after{content:"\2304";display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--line);border-radius:50%;color:var(--ink-soft);font-weight:700;font-size:15px;line-height:1;flex-shrink:0;align-self:center;background:var(--bg)}
+.alert-card[open] summary::after,.dec-item[open] summary::after{content:"\2303"}
+.layer:not(.collapsed) .layer-head::after{content:"\2303"}
+.alert-card:hover,.dec-item:hover{border-color:#c9cfdb}
+.alert-card summary:hover::after,.dec-item summary:hover::after,.layer-head:hover::after{border-color:var(--blue);color:var(--blue)}
+/* ── End-of-shift projection card ─────────── */
+.fin{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.fin-i b{display:block;font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1.1;font-variant-numeric:tabular-nums}
+.fin-i b.down{color:var(--red)}.fin-i b.up{color:var(--green)}
+.fin-i em{display:block;font-style:normal;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-top:1px}
+.fin-i span{display:block;font-size:11.5px;font-weight:700;color:var(--ink-faint)}
+.fin-with{display:none;margin-top:10px;padding:8px 10px;border-radius:9px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:700}
+.fin-with.on{display:block}
+.fs-top .fin-with{display:none;margin:0 14px 0 auto;padding:3px 12px;border-radius:99px;font-size:11.5px;line-height:1.5}
+.fs-top .fin-with.on{display:inline-block}
+@media(max-width:900px){.fs-top{flex-wrap:wrap;gap:6px}.fs-top .fin-with{order:3;width:100%;margin:0;border-radius:9px}}
+.sidec .sub2{font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:12px;padding-top:10px;border-top:1px solid rgba(16,24,43,.1)}
+.sidec .sub2 b{color:var(--ink)}.sidec .sub2 b.down{color:var(--red)}
+@media(max-width:560px){.fin-i b{font-size:28px}}
+/* ── Full-width projection strip ─────────── */
+.fstrip{margin-bottom:14px}
+.fs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.fs-lab{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-soft)}
+.fs-why{font-size:12px;font-weight:700;color:var(--blue)}
+.fs-why:hover{text-decoration:underline}
+.fs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fc{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 16px 11px;text-align:left;font:inherit;display:block;width:100%}
+.fc.proj{background:linear-gradient(180deg,var(--brand-soft),var(--bg));border-color:var(--brand)}
+button.fc{cursor:pointer}
+button.fc:hover{border-color:var(--blue)}
+.fc small{display:block;font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--ink-faint)}
+.fc b{display:block;font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.2;font-variant-numeric:tabular-nums}
+.fc b.red{color:var(--red)}
+.fc b span{display:inline;font-size:inherit;font-weight:inherit;color:inherit;letter-spacing:inherit}
+.fc b i{font-style:normal;font-size:15px;font-weight:700;color:var(--ink-soft);margin-left:4px;letter-spacing:0}
+.fc b em{font-style:normal;font-size:13px;font-weight:700;color:var(--green);margin-left:8px;letter-spacing:0}
+.fc span{display:block;font-size:12px;font-weight:600;color:var(--ink-soft)}
+.fbar{height:6px;border-radius:99px;background:var(--line);position:relative;margin:5px 0 6px;overflow:visible}
+.fbar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px}
+.fbar .base{background:var(--red)}
+.fbar .base.mid{background:var(--ink-faint)}
+.fbar .gain{background:var(--green);opacity:.85;border-radius:0 99px 99px 0}
+.fbar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.5}
+.fin-with{display:none;margin-top:10px;padding:8px 12px;border-radius:9px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:700}
+.fin-with.on{display:block}
+#queueTitle .hint{margin-left:6px}
+#view-shift .section-title{margin-bottom:8px}
+@media(max-width:1100px){.fs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.fc{padding:9px 12px}.fc b{font-size:24px}.fc small{font-size:10px}}
+/* ── AI shift summary ─────────── */
+.sum-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sum .ai{font-size:10px;font-weight:800;letter-spacing:.5px;border-radius:5px;padding:2px 7px;background:var(--violet-soft);color:var(--violet)}
+.sum-b{margin-top:12px}
+.sum-b h5{font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px}
+.sum-b p,.sum-b li{font-size:12.5px;line-height:1.55;color:var(--ink-soft)}
+.sum-b p b,.sum-b li b{color:var(--ink)}
+.sum-b ul{padding-left:0;list-style:none}
+.sum-b ul li{position:relative;padding-left:14px;margin-bottom:5px}
+.sum-b ul li::before{content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--red)}
+.sumlink{font-size:inherit;font-weight:700;color:var(--blue);text-align:left}
+.sumlink:hover{text-decoration:underline}
+.sg-main .chartcard{margin-top:16px}
+.sg-main .chartcard .evlist{grid-template-columns:repeat(3,1fr)}
+.chartcard svg{margin:8px 0 6px}
+/* ── Cleaner briefing ─────────── */.fc{padding:8px 15px 9px}
+.fc .fr{display:flex;align-items:baseline;justify-content:space-between;gap:2px 10px;flex-wrap:wrap}
+.fc .fr>span{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-align:right;margin-left:auto}
+.fc b{font-size:27px;line-height:1.15}
+.fc small{font-size:10.5px}
+.fbar{margin:4px 0 0}
+@media(max-width:760px){.fs-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding-bottom:4px;-webkit-overflow-scrolling:touch}.fs-grid .fc{flex:0 0 80%;scroll-snap-align:start}}
+@media(max-width:560px){.fc{padding:8px 11px}.fc b{font-size:22px}.fc .fr>span{font-size:10.5px;margin-left:0;text-align:left}}
+/* ── Cleaner briefing ─────────── */
+.briefing{padding:16px 22px 12px 26px}
+.brief-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brief-row .text{flex:1;min-width:260px;font-size:15px;line-height:1.5;max-width:none}
+.brief-row .brief-actions{margin-top:0;flex-wrap:nowrap}
+.brief-meta{font-size:11px;color:var(--ink-faint);font-weight:600;margin:6px 0 0 50px}
+/* ── Single-line header ─────────── */
+.topbar{position:relative}
+.site-chip{border:none;background:none;border-radius:0;padding:2px 0 2px 16px;border-left:1px solid var(--line)}
+.site-chip:hover{border-color:var(--line)}
+.site-chip b{font-size:13.5px}
+.site-chip span{font-size:11.5px}
+/* ── Calmer header ─────────── */
+.topbar{gap:14px}
+.brand small{display:none}
+.shiftclock{min-width:140px}
+/* ── Progressive disclosure ─────────── */
+.set-card.fold h3{cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
+.set-card.fold h3::after,details.fold>summary::after{content:"\2304";color:var(--ink-faint);font-weight:700;font-size:18px;line-height:1}
+.set-card.fold.open h3::after,details.fold[open]>summary::after{content:"\2303"}
+.set-card.fold .set-body{display:none;margin-top:10px}
+.set-card.fold.open .set-body{display:block}
+details.fold{margin-top:18px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md)}
+details.fold>summary{cursor:pointer;padding:13px 18px;font-weight:800;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.fold>summary::-webkit-details-marker,.alert-card summary::-webkit-details-marker,.dec-item summary::-webkit-details-marker{display:none}
+details.fold>summary small{font-weight:600;color:var(--ink-faint);font-size:12px;margin-left:10px;margin-right:auto}
+details.fold>*:not(summary){margin-left:18px;margin-right:18px}
+details.fold[open]{padding-bottom:16px}
+details.fold .dash-grid{margin-top:0}
+.alert-card summary,.dec-item summary{list-style:none;cursor:pointer}
+.layer.collapsed .src-grid{display:none}
+.layer-head{cursor:pointer}
+.layer.collapsed{margin-bottom:12px}
+.alert-card[open] summary,.dec-item[open] summary{margin-bottom:6px}
+.alert-card summary .chev,.dec-item summary .chev{color:var(--ink-faint);font-weight:700}
+.drawer-scrim{position:fixed;inset:0;background:rgba(16,24,43,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.drawer-scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(680px,94vw);background:var(--bg);z-index:41;transform:translateX(102%);transition:transform .28s cubic-bezier(.3,.9,.3,1);box-shadow:var(--shadow-lift);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer-head{padding:20px 26px 16px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.drawer-head h2{font-size:18px;font-weight:800;line-height:1.35}
+.drawer-head .sub{color:var(--ink-soft);font-size:13px;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.drawer-close{margin-left:auto;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;flex-shrink:0}
+.drawer-tabs{display:flex;gap:4px;padding:10px 26px 0;border-bottom:1px solid var(--line)}
+.dtab{padding:9px 14px;font-weight:700;font-size:13px;color:var(--ink-faint);border-bottom:3px solid transparent;border-radius:6px 6px 0 0}
+.dtab.on{color:var(--ink);border-bottom-color:var(--brand)}
+.drawer-body{flex:1;overflow-y:auto;padding:22px 26px 40px}
+.dsection{display:none}
+.dsection.on{display:block;animation:viewin .2s ease}
+.dblock{margin-bottom:18px}
+.dblock h5{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint);font-weight:800;margin-bottom:7px}
+.dblock p{font-size:13.5px;color:var(--ink-soft);max-width:70ch}
+.dblock p b{color:var(--ink)}
+.evid{display:flex;gap:12px;border:1px solid var(--line);border-radius:var(--r-md);padding:11px 14px;margin-bottom:9px;align-items:flex-start}
+.evid .dot{margin-top:5px}
+.evid b{font-size:13px;display:block}
+.evid span{font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.evid .ev-val{margin-left:auto;font-weight:800;font-size:13px;white-space:nowrap;text-align:right}
+.evid .ev-val small{display:block;font-weight:700;font-size:10.5px;color:var(--ink-faint)}
+.drawer-foot{padding:14px 26px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}
+
+/* timeline */
+.timeline{position:relative;margin:6px 0 6px 6px;padding-left:24px}
+.timeline::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tstep{position:relative;padding:0 0 18px}
+.tstep:last-child{padding-bottom:0}
+.tstep::before{content:"";position:absolute;left:-24px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--line)}
+.tstep.done::before{background:var(--green);border-color:var(--green)}
+.tstep.now::before{background:var(--blue);border-color:var(--blue);box-shadow:0 0 0 5px var(--blue-soft)}
+.tstep.alert::before{background:var(--red);border-color:var(--red)}
+.tstep b{font-size:13.5px}
+.tstep .tmeta{font-size:12px;color:var(--ink-faint);font-weight:600}
+.tstep .tnote{font-size:12.5px;color:var(--ink-soft);margin-top:2px;max-width:60ch}
+
+/* ── Agent chat panel ─────────────── */
+.chatpane{width:0;overflow:hidden;background:var(--bg);border-left:1px solid var(--line);display:flex;flex-direction:column;transition:width .28s cubic-bezier(.3,.9,.3,1);flex-shrink:0}
+.chatpane.open{width:380px}
+.chat-inner{width:380px;display:flex;flex-direction:column;height:100%}
+.chat-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px}
+.chat-head b{font-size:14.5px}
+.chat-head span{display:block;font-size:11.5px;color:var(--green);font-weight:700}
+.chat-head button{margin-left:auto;width:32px;height:32px;border-radius:9px;border:1.5px solid var(--line)}
+.chat-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:88%;padding:11px 14px;border-radius:14px;font-size:13.5px;line-height:1.55;white-space:pre-line}
+.msg.user{align-self:flex-end;background:var(--ink);color:var(--bg);border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:var(--canvas);border-bottom-left-radius:4px}
+.msg.bot b{font-weight:800}
+.suggests{padding:0 16px 10px;display:flex;flex-wrap:wrap;gap:7px}
+.sug{border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;background:var(--bg)}
+.sug:hover{border-color:var(--blue);background:var(--blue-soft)}
+.chat-input{padding:12px 14px;border-top:1px solid var(--line);display:flex;gap:9px}
+.chat-input input{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;outline:none;background:var(--bg)}
+.chat-input input:focus{border-color:var(--blue)}
+.chat-send{width:42px;height:42px;border-radius:10px;background:var(--blue);color:#fff;font-size:15px}
+.chat-send:hover{background:var(--blue-deep)}
+.typing{display:inline-flex;gap:4px;padding:4px 2px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--ink-faint);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* ── Modal (operator update) ─────────── */
+.modal-scrim{position:fixed;inset:0;background:rgba(16,24,43,.45);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-scrim.open{display:flex;animation:viewin .2s ease}
+.modal{background:var(--bg);border-radius:20px;width:min(620px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lift);overflow:hidden}
+.modal-head{padding:20px 26px 14px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--line)}
+.modal-head h2{font-size:18px;font-weight:800}
+.modal-head p{color:var(--ink-soft);font-size:13px;margin-top:2px}
+.modal-body{flex:1;overflow-y:auto;padding:20px 26px}
+.modal-foot{padding:14px 26px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+
+/* toasts */
+#toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:99;align-items:center}
+.toast{background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:12px;font-weight:600;font-size:13.5px;box-shadow:var(--shadow-lift);animation:viewin .25s ease;max-width:88vw;text-align:center}
+
+@media(max-width:900px){
+  .shiftclock{display:none}
+  .site-chip{display:none}
+  .brand small{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═════════ Topbar ═════════ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#10182b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-9 4 6 3-4 4 7"/><path d="M2 21h20"/></svg>
+      </span>
+      <span class="bname">ShiftWise</span> <small>ADAPTIVE DECISION-MAKING · BY RAMJACK</small>
+    </div>
+
+    <button class="site-chip" onclick="toast('Site switching is configured per deployment. KTO Underground is the pilot site.')">
+      <b>KTO Underground</b>
+      <span>Day shift · <span id="scTime">13:07</span></span>
+    </button>
+
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="openUpdateModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        <span class="lbl2">Log update</span>
+      </button>
+      <button class="btn btn-blue" id="askBtn" onclick="toggleChat()">
+        Ask
+      </button>
+      <div class="acct-wrap">
+        <button class="avatar" onclick="event.stopPropagation();toggleAcctMenu()">NA</button>
+        <div class="acct-menu" id="acctMenu">
+          <div class="acct-who">
+            <b>Nadia Abara</b>
+            <span>Control room operator · Ramjack ROC</span>
+          </div>
+          <button class="acct-item" onclick="toast('Profile is managed by your Ramjack ROC administrator.')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+            My profile
+          </button>
+          <button class="acct-item" onclick="showView('settings');toggleAcctMenu(false)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+            Site configuration
+          </button>
+          <button class="acct-item" onclick="showView('handover');toggleAcctMenu(false)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M21 3 13 11"/><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
+            Prepare shift handover
+          </button>
+          <div class="acct-div"></div>
+          <button class="acct-item danger" onclick="toast('Signed out (demo).')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═════════ Left rail ═════════ -->
+  <nav class="rail">
+    <button data-view="shift" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      <span class="lbl">Shift</span>
+      <span class="pip" id="pipShift">4</span>
+    </button>
+    <button data-view="performance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      <span class="lbl">Stats</span>
+    </button>
+    <button data-view="plan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+      <span class="lbl">Plan</span>
+    </button>
+    <button data-view="impact">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+      <span class="lbl">Impact</span>
+    </button>
+    <button data-view="actions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m9 11 3 3L22 4"/></svg>
+      <span class="lbl">Actions</span>
+      <span class="pip" id="pipActions" style="background:var(--amber)">3</span>
+    </button>
+    <button data-view="alerts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg>
+      <span class="lbl">Alerts</span>
+      <span class="pip" id="pipAlerts">1</span>
+    </button>
+    <button data-view="sources">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+      <span class="lbl">Sources</span>
+    </button>
+    <button data-view="decisions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/><path d="M12 10v2.5l1.8 1"/></svg>
+      <span class="lbl">Decisions</span>
+    </button>
+    <button data-view="handover">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 3 8l4 4"/><path d="M3 8h13"/><path d="m17 20 4-4-4-4"/><path d="M21 16H8"/></svg>
+      <span class="lbl">Handover</span>
+    </button>
+    <div class="spacer"></div>
+    <button data-view="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg>
+      <span class="lbl">Settings</span>
+    </button>
+  </nav>
+
+  <!-- ═════════ Main ═════════ -->
+  <div class="main">
+  <!-- ── Shift view ────────────────────────── -->
+  <section class="view active" id="view-shift">
+
+    <div class="fstrip">
+      <div class="fs-top"><span class="fs-lab">If the current rate holds, you finish the shift at</span><span class="fin-with" id="finWith"></span><button class="fs-why" onclick="toggleChat(true);chatAsk('Where will we finish the shift if we do nothing?')">Why short? ›</button></div>
+      <div class="fs-grid">
+        <div class="fc proj">
+          <small>Ore at end of shift</small>
+          <div class="fr"><b class="red"><span id="finOre">2,950</span><i>t</i></b><span id="finOrePct">70% of 4,200 t target</span></div>
+          <div class="fbar"><i class="base" id="finOreBar" style="width:70%"></i><i class="gain" id="finOreGain"></i></div>
+        </div>
+        <div class="fc proj">
+          <small>Development at end of shift</small>
+          <div class="fr"><b class="red"><span id="finDev">8.0</span><i>m</i></b><span id="finDevPct">67% of 12 m target</span></div>
+          <div class="fbar"><i class="base" id="finDevBar" style="width:67%"></i><i class="gain" id="finDevGain"></i></div>
+        </div>
+        <div class="fc">
+          <small>Right now</small>
+          <div class="fr"><b class="red">4% behind</b><span>78% done, should be 82%</span></div>
+          <div class="fbar"><i class="base mid" style="width:78%"></i><u style="left:82%"></u></div>
+        </div>
+        <button class="fc lk" onclick="showView('performance')" title="The chance of hitting every target, given the risks still ahead. It is a separate measure from where you finish at the current rate.">
+          <small>Plan likelihood</small>
+          <div class="fr"><b><span id="likBig">71%</span><em id="likArrow"></em></b><span>chance of hitting all targets</span></div>
+          <div class="fbar"><i class="base mid" style="width:71%"></i></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="shift-grid">
+      <div class="sg-main">
+        <div class="section-title" id="queueTitle" style="margin-top:0">
+          Next best actions
+          <span class="count" id="queueCount">5</span><span class="hint">Select an action to review and decide.</span>
+        </div>
+        <div class="safety-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg>
+          <div><b>Safety first. VF-2 tripped (Tier 3).</b> Vent tech confirmation is overdue.</div>
+          <button onclick="showView('alerts')">Open alert →</button>
+        </div>
+        <div class="queue" id="queueList"></div>
+
+        <div class="sidec chartcard">
+          <div class="eb">Where you are now, and where you can get to</div>
+          <svg id="tl" viewBox="0 0 720 220" role="img" aria-label="Plan likelihood: where you are now and where you can get to by the end of the shift"></svg>
+          <div class="lg"><span class="a">Where you have been</span><span class="b">If you make no changes</span><span class="c">If you act on the recommendations</span></div>
+          <div class="evlist" id="evlist"></div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="panel">
+            <h3>Shift plan: biggest gaps to plan <button onclick="showView('plan')">Open plan →</button></h3>
+            <div id="miniPlan"></div>
+          </div>
+          <div class="panel">
+            <h3>Feed activity <button onclick="showView('sources')">All sources →</button></h3>
+            <div id="feedLog"></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sg-side" aria-label="Shift health">
+        <div class="sidec sum" id="sumCard">
+          <div class="sum-h"><span class="eb">Shift summary</span><span class="ai">AI</span></div>
+          <div class="sum-b"><h5>Where you are</h5><p id="sumNow"></p></div>
+          <div class="sum-b"><h5>What went wrong</h5><ul id="sumWrong"></ul></div>
+          <div class="sum-b"><h5>What to do next</h5><p id="sumFix"></p></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ── Plan view ────────────────────────── -->
+  <section class="view" id="view-plan">
+    <div class="view-head">
+      <div>
+        <h1>Shift plan</h1>
+        <p>Imported from the mine planning system at 05:48 · anchored to the Week 39 rolling plan. The big number is how much of each activity is done, with where the plan says it should be underneath. Green is ahead, red is behind, blue is on track.</p>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('Plan re-sync requested: planning system usually publishes updates within 2 minutes.')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+        Re-sync plan
+      </button>
+    </div>
+    <div class="weekstrip">
+      <div class="wk"><div class="wl">Week 39 · ore tonnes</div><div class="wn">41,200 <small>/ 98,000 t</small></div><div class="wd flat">42% vs 43% expected</div></div>
+      <div class="wk"><div class="wl">Week 39 · development</div><div class="wn">33 <small>/ 84 m</small></div><div class="wd down">39% vs 43% expected</div></div>
+      <div class="wk"><div class="wl">Week 39 · backfill</div><div class="wn">1,950 <small>/ 4,800 m³</small></div><div class="wd up">41% vs 43% expected</div></div>
+      <div class="wk"><div class="wl">Baseline</div><div class="wn">Plan v3 <small>frozen 05:48</small></div><div class="wd flat">0 approved re-plans · 2 in-shift deviations</div></div>
+    </div>
+    <div class="filters" id="planFilters">
+      <button class="fchip on" data-pf="all">All activities</button>
+      <button class="fchip" data-pf="risk">At risk</button>
+      <button class="fchip" data-pf="production">Production</button>
+      <button class="fchip" data-pf="development">Development</button>
+      <button class="fchip" data-pf="services">Services & maintenance</button>
+    </div>
+    <div id="planList"></div>
+  </section>
+
+  <!-- ── Performance view ────────────────────────── -->
+  <section class="view" id="view-performance">
+    <div class="view-head">
+      <div>
+        <h1>Shift performance</h1>
+        <p>Day shift so far, 06:00 – 13:07. Outputs are shown separately from plan compliance, because a shift can hit tonnes and still miss critical development.</p>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('Shift summary exported: measures, lost time by cause, decision log and response times.')">Export summary</button>
+    </div>
+
+    <div class="imp-row" style="cursor:default">
+      <div class="im-main"><h4>Likelihood of completing the plan</h4><div class="im-sub">Started the shift at 84%, fell to 62% after the S-214 hang-up, and has recovered 9 points since.</div></div>
+      <div class="imp-contrib warn"><b>71%</b><span>84% at 06:00</span></div>
+    </div>
+    <div class="imp-row" style="cursor:default">
+      <div class="im-main"><h4>Plan compliance</h4><div class="im-sub">Activities completed to agreed scope and timing: 5 of 8, weighted by the weights fixed before the shift.</div></div>
+      <div class="imp-contrib warn"><b>62%</b><span>target 80%</span></div>
+    </div>
+    <div class="imp-row" style="cursor:default">
+      <div class="im-main"><h4>Output against target</h4><div class="im-sub">Ore 2,890 of 4,200 t · Development 6.5 of 12 m. Development is the one at risk. L1880 N second cut.</div></div>
+      <div class="imp-contrib neg"><b>69% · 54%</b><span>ore · development</span></div>
+    </div>
+    <div class="imp-row" style="cursor:default">
+      <div class="im-main"><h4>Workplace readiness</h4><div class="im-sub">Share of activities that were ready at their planned start. Two were not: S-214 draw point and L1880 N charge crew.</div></div>
+      <div class="imp-contrib track"><b>75%</b><span>6 of 8 ready</span></div>
+    </div>
+    <div class="imp-row" style="cursor:default">
+      <div class="im-main"><h4>Response to problems</h4><div class="im-sub">Median time from a recommendation appearing to a decision. 7 of 9 approved, 2 rejected with a reason, 1 action stalled.</div></div>
+      <div class="imp-contrib pos"><b>6 min</b><span>median decision time</span></div>
+    </div>
+
+    <div class="section-title">Lost time by cause <span class="hint">3.3 hours so far</span></div>
+    <div class="panel">
+      <div class="cal-row"><div class="cl">S-214 draw-point hang-up<span>560 t held back</span></div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--red)"></div></div><em>1.4 h</em></div>
+      <div class="cal-row"><div class="cl">VF-2 trip, north block limited<span>No extra headings ventilated</span></div><div class="bar-wrap"><div class="bar" style="width:64%;background:var(--amber)"></div></div><em>0.9 h</em></div>
+      <div class="cal-row"><div class="cl">Crusher feed derate<span>312 vs 390 t/h</span></div><div class="bar-wrap"><div class="bar" style="width:36%;background:var(--amber)"></div></div><em>0.5 h</em></div>
+      <div class="cal-row"><div class="cl">Waiting on confirmations<span>Vent tech, A-115</span></div><div class="bar-wrap"><div class="bar" style="width:21%;background:var(--blue)"></div></div><em>0.3 h</em></div>
+      <div class="cal-row"><div class="cl">Other<span>Minor delays</span></div><div class="bar-wrap"><div class="bar" style="width:14%;background:var(--ink-faint)"></div></div><em>0.2 h</em></div>
+    </div>
+
+    <div class="section-title">Where you are now, and where you can get to</div>
+    <div class="impact-hero">
+      <div class="chart-wrap"><svg id="tl2" viewBox="0 0 720 220" role="img" aria-label="Plan likelihood: where you are now and where you can get to by the end of the shift"></svg></div>
+      <div class="chart-legend">
+        <span><i style="border-color:var(--blue)"></i>Where you have been</span>
+        <span><i style="border-color:var(--ink-faint);border-top-style:dotted"></i>If you make no changes</span>
+        <span><i style="border-color:var(--green);border-top-style:dashed"></i>If you act on the recommendations</span>
+      </div>
+      <div class="evlist" id="evlist2"></div>
+    </div>
+  </section>
+
+  <!-- ── Impact view ────────────────────────── -->
+  <section class="view" id="view-impact">
+    <div class="view-head">
+      <div>
+        <h1>Recommendation impact</h1>
+        <p>Not another reporting platform: this answers one question: <b>did acting on ShiftWise recommendations bring the shift back on track, and by how much?</b></p>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('Impact report exported: recommendation, approver, predicted vs actual, and plan contribution per action.')">Export report</button>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="n up">+10<small> pts</small></div><div class="l">Plan attainment recovered</div><div class="d flat">since first action at 08:41</div></div>
+      <div class="kpi"><div class="n">1,240<small> t</small></div><div class="l">Tonnes protected (verified)</div><div class="d up">+560 t more tracking</div></div>
+      <div class="kpi"><div class="n">7<small> / 9</small></div><div class="l">Recommendations approved</div><div class="d flat">2 dismissed with reason</div></div>
+      <div class="kpi"><div class="n">86<small>%</small></div><div class="l">Predictions within range</div><div class="d flat">outcome vs predicted, 30 days</div></div>
+      <div class="kpi"><div class="n">6<small> min</small></div><div class="l">Median time to approve</div><div class="d up">was 14 min in week 1</div></div>
+    </div>
+
+    <div class="impact-hero">
+      <h3>Back on track: plan attainment through this shift</h3>
+      <div class="ih-sub">The hang-up at 08:20 pulled attainment to 68%. Each numbered marker is an approved recommendation; the dotted green line is the projection if recommendation #1 is approved now.</div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 720 230" role="img" aria-label="Plan attainment recovery chart">
+          <line class="ch-grid" x1="40" y1="45"  x2="690" y2="45"/>
+          <line class="ch-grid" x1="40" y1="80"  x2="690" y2="80"/>
+          <line class="ch-grid" x1="40" y1="115" x2="690" y2="115"/>
+          <line class="ch-grid" x1="40" y1="150" x2="690" y2="150"/>
+          <line class="ch-grid" x1="40" y1="185" x2="690" y2="185"/>
+          <text class="ch-lab" x="8" y="49">100%</text>
+          <text class="ch-lab" x="14" y="84">90%</text>
+          <text class="ch-lab" x="14" y="119">80%</text>
+          <text class="ch-lab" x="14" y="154">70%</text>
+          <text class="ch-lab" x="14" y="189">60%</text>
+          <text class="ch-lab" x="28" y="208">06:00</text>
+          <text class="ch-lab" x="136" y="208">08:00</text>
+          <text class="ch-lab" x="244" y="208">10:00</text>
+          <text class="ch-lab" x="353" y="208">12:00</text>
+          <text class="ch-lab" x="461" y="208">14:00</text>
+          <text class="ch-lab" x="569" y="208">16:00</text>
+          <text class="ch-lab" x="670" y="208">18:00</text>
+          <line class="ch-target" x1="40" y1="45" x2="690" y2="45"/>
+          <polygon class="ch-fill" points="40,52 141,55 163,59 200,110 240,150 265,157 330,143 380,132 425,122 425,190 40,190"/>
+          <polyline class="ch-actual" points="40,52 141,55 163,59 200,110 240,150 265,157 330,143 380,132 425,122"/>
+          <polyline class="ch-proj" points="425,122 540,80 690,59"/>
+          <text class="ch-anno" x="205" y="98" fill="var(--red)">hang-up 08:20</text>
+          <text class="ch-anno" x="300" y="170" fill="var(--green)">+10 pts recovered since 08:41</text>
+          <text class="ch-anno" x="505" y="70" fill="var(--green)">→ 96% if #1 approved</text>
+          <circle class="ch-mark" cx="141" cy="55" r="8"/><text class="ch-mnum" x="138" y="58.5">1</text>
+          <circle class="ch-mark" cx="186" cy="88" r="8"/><text class="ch-mnum" x="183" y="91.5">2</text>
+          <circle class="ch-mark pending" cx="425" cy="122" r="8"/><text class="ch-mnum" x="422" y="125.5">3</text>
+        </svg>
+      </div>
+      <div class="chart-legend">
+        <span><i style="border-color:var(--blue)"></i>Actual attainment</span>
+        <span><i style="border-color:var(--ink-faint);border-top-style:dashed"></i>Plan (100%)</span>
+        <span><i style="border-color:var(--green);border-top-style:dashed"></i>Projection with #1 approved</span>
+        <span><i style="border-color:var(--amber)"></i>③ awaiting your approval</span>
+      </div>
+    </div>
+
+    <div class="section-title">What each recommendation did <span class="hint">Predicted vs measured, updated live, verified numbers only after the outcome lands.</span></div>
+    <div id="impactList"></div>
+
+    <details class="fold"><summary>Pilot scorecard<small>8 measures vs a baseline frozen at go-live</small></summary>
+    <div class="stage-row">
+      <span class="tag green">✓ 1 · Replay historical events</span>
+      <span class="tag green">✓ 2 · Shadow mode alongside operators</span>
+      <span class="tag brand">3 · Operator-approved recommendations (current)</span>
+    </div>
+    <div class="tbl" style="margin-bottom:6px"><div class="tbl-scroll"><table>
+      <thead><tr><th>Measure</th><th>Frozen baseline</th><th>Now</th><th>Change</th></tr></thead>
+      <tbody id="scorecardRows"></tbody>
+    </table></div></div>
+    <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px">Demo values. Operator and crew figures are adjusted for time outside their control using the site's time usage model. Improvement is a hypothesis being tested, not a promised percentage.</p></details>
+
+    <div class="dash-grid">
+      <div class="panel">
+        <h3>Confidence calibration, 30 days <button onclick="toast('Calibration detail: every recommendation bucketed by stated confidence vs measured outcome.')">Detail →</button></h3>
+        <div class="cal-row"><div class="cl">Said ≥ 88% (“you must”)<span>34 recommendations</span></div><div class="bar-wrap"><div class="bar" style="width:91%;background:var(--green)"></div></div><em>91%</em></div>
+        <div class="cal-row"><div class="cl">Said 60–87% (“I think you should”)<span>52 recommendations</span></div><div class="bar-wrap"><div class="bar" style="width:78%;background:var(--blue)"></div></div><em>78%</em></div>
+        <div class="cal-row"><div class="cl">Below 60%: held for evidence<span>21 held · never actioned blind</span></div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--canvas)"></div></div><em>n/a</em></div>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:8px">% of recommendations whose measured outcome landed inside the predicted range. This is what earns the right to say “you must”.</p>
+      </div>
+      <div class="panel">
+        <h3>Shift-end attainment: last 6 shifts <button onclick="toast('Attainment history export queued.')">Export →</button></h3>
+        <div class="ms-wrap">
+          <div class="ms"><i style="height:52%"></i><b>74%</b><span>Sun N</span></div>
+          <div class="ms"><i style="height:58%"></i><b>79%</b><span>Mon D</span></div>
+          <div class="ms"><i style="height:62%"></i><b>81%</b><span>Mon N</span></div>
+          <div class="ms hot"><i style="height:70%"></i><b>88%</b><span>Tue D</span></div>
+          <div class="ms hot"><i style="height:74%"></i><b>90%</b><span>Tue N</span></div>
+          <div class="ms hot"><i style="height:82%;border-style:dashed"></i><b>96%*</b><span>Now (proj)</span></div>
+        </div>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:10px">Trend since pilot go-live. * projection assumes recommendation #1 is approved and the hang-up clears by 14:00.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Actions view ────────────────────────── -->
+  <section class="view" id="view-actions">
+    <div class="view-head">
+      <div>
+        <h1>Action loop</h1>
+        <p>Approved recommendations, tracked until the result is verified.</p>
+      </div>
+    </div>
+    <div class="filters" id="actFilters">
+      <button class="fchip on" data-af="all">All</button>
+      <button class="fchip" data-af="open">Open</button>
+      <button class="fchip" data-af="stalled">Stalled</button>
+      <button class="fchip" data-af="done">Completed</button>
+    </div>
+    <div id="actionList"></div>
+  </section>
+
+  <!-- ── Alerts view ────────────────────────── -->
+  <section class="view" id="view-alerts">
+    <div class="view-head">
+      <div>
+        <h1>Constraint alerts</h1>
+        <p><b>Tier 1</b> be aware · <b>Tier 2</b> derate, intervention recommended · <b>Tier 3</b> stop / shutdown. Each alert carries a pre-agreed response. Open an alert to see it.</p>
+      </div>
+    </div>
+    <div class="tier-legend">
+      <div class="tierdef t1"><span class="tnum">1</span><div><b>Tier 1: Be aware</b><span>Operator is informed. No constraint on the plan yet.</span></div></div>
+      <div class="tierdef t2"><span class="tnum">2</span><div><b>Tier 2: Derate</b><span>A constraint is actively degrading the plan. Intervention recommended.</span></div></div>
+      <div class="tierdef t3"><span class="tnum">3</span><div><b>Tier 3: Stop / shutdown</b><span>Hard constraint. Activity must stop or will stop itself.</span></div></div>
+    </div>
+    <div id="alertList"></div>
+  </section>
+
+  <!-- ── Sources view ────────────────────────── -->
+  <section class="view" id="view-sources">
+    <div class="view-head">
+      <div>
+        <h1>System &amp; data health</h1>
+        <p>Everything ShiftWise reasons over, grouped by operational layer. Radio calls and manual updates count as full inputs, not a fallback. Confidence reflects freshness, coverage and sensor health, recommendations always cite which feeds they used.</p>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('Site audit pack exported: the field team template covers application, data and network landscape per layer.')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Export audit pack
+      </button>
+    </div>
+    <div class="section-title" style="margin-top:0">Data integrity flags <span class="count" id="flagCount">2</span><span class="hint">Cross-source checks ShiftWise runs itself, a reading can be live and still wrong.</span></div>
+    <div id="integrityList" style="margin-bottom:22px"></div>
+    <div id="sourceLayers"></div>
+  </section>
+
+  <!-- ── Handover view ────────────────────────── -->
+  <section class="view" id="view-handover">
+    <div class="view-head">
+      <div>
+        <h1>Shift handover</h1>
+        <p>Day → Night · 18:00. Open actions, owners, constraints and context carried into the next shift. Compiles automatically 30 minutes before the boundary; you add notes, the incoming operator accepts.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="toast('Handover pack exported (PDF): open actions, constraints, notes and decision references.')">Export pack</button>
+        <button class="btn btn-brand" id="acceptHandover" onclick="acceptHandover()">Accept handover (incoming operator)</button>
+      </div>
+    </div>
+    <div class="hand-grid">
+      <div class="panel"><h3>Open actions <span class="tag plain" id="hoActCount"></span></h3><div id="hoActions"></div></div>
+      <div class="panel"><h3>Constraints carried over <span class="tag red" id="hoConCount"></span></h3><div id="hoConstraints"></div></div>
+      <div class="panel"><h3>Recommendations still open <span class="tag amber" id="hoRecCount"></span></h3><div id="hoRecs"></div></div>
+      <div class="panel"><h3>What night shift needs to know</h3><div id="hoContext"></div></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
+      <h3>Operator notes</h3>
+      <div class="field" style="margin-bottom:0"><textarea id="hoNotes" rows="3" placeholder="Context that isn't in the systems: e.g. what the shift boss said on the radio, what you've already chased."></textarea></div>
+    </div>
+    <div id="hoStatus" style="font-size:13px;font-weight:700;color:var(--ink-faint)">Handover not yet accepted.</div>
+  </section>
+
+  <!-- ── Decisions view ────────────────────────── -->
+  <section class="view" id="view-decisions">
+    <div class="view-head">
+      <div>
+        <h1>Decision log</h1>
+        <p>Every recommendation, who approved it, the predicted impact and what actually happened. This is the site's local learning loop: and the defence file for every call made in this room.</p>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('Decision log export queued (CSV + evidence references).')">Export log</button>
+    </div>
+    <div id="decisionList"></div>
+  </section>
+
+  <!-- ── Settings view ────────────────────────── -->
+  <section class="view" id="view-settings">
+    <div class="view-head">
+      <div>
+        <h1>Site configuration</h1>
+        <p>How KTO Underground runs ShiftWise. Every mine configures its own horizons, thresholds and integrations.</p>
+      </div>
+    </div>
+
+    <div class="jumpnav-wrap"><div class="jumpnav" id="settingsJumpnav">
+      <button class="on" data-jump="jsHorizon">Planning horizon</button>
+      <button data-jump="jsStructure">Site structure</button>
+      <button data-jump="jsModules">Tiers &amp; modules</button>
+      <button data-jump="jsConfidence">Confidence thresholds</button>
+      <button data-jump="jsRanking">Ranking weights</button>
+      <button data-jump="jsTiers">Alert tiers</button>
+      <button data-jump="jsEscalate">Escalation &amp; notifications</button>
+      <button data-jump="jsConn">Integrations</button>
+      <button data-jump="jsLearn">Learning</button>
+      <button data-jump="jsTeam">Team</button>
+    </div></div>
+
+    <div class="set-card" id="jsHorizon">
+      <h3>Planning horizon</h3>
+      <p>Which plan ShiftWise anchors decisions to. KTO executes shifts against a rolling weekly plan; other sites may run daily or monthly.</p>
+      <div class="seg" id="segHorizon">
+        <button data-h="Shift">Shift</button>
+        <button data-h="Daily">Daily</button>
+        <button class="on" data-h="Weekly">Weekly (rolling)</button>
+        <button data-h="Monthly">Monthly</button>
+      </div>
+      <p style="margin:16px 0 8px"><b style="color:var(--ink)">Shift duration</b>: the human time-slice inside the horizon.</p>
+      <div class="seg" id="segShift">
+        <button data-s="8">8 h</button>
+        <button data-s="10">10 h</button>
+        <button class="on" data-s="12">12 h</button>
+      </div>
+      <p style="margin-top:14px;font-size:12px">Shift boundaries: <b style="color:var(--ink)">06:00 / 18:00</b> site time · Handover pack compiles 30 min before each boundary.</p>
+    </div>
+
+    <div class="set-card" id="jsStructure">
+      <h3>Site structure</h3>
+      <p>The hierarchy follows this site's mine plan and has at least one level between site and activity. Nothing is fixed: other sites can use different levels (e.g. strip → seam → block → RL) or several mines under one site.</p>
+      <div class="hier">
+        <span class="lvl">KTO<small>Site</small></span><span class="larr">→</span>
+        <span class="lvl">KTO Underground<small>Mine / area</small></span><span class="larr">→</span>
+        <span class="lvl">North block<small>Zone / section</small></span><span class="larr">→</span>
+        <span class="lvl">L1880 N heading<small>Location</small></span><span class="larr">→</span>
+        <span class="lvl">Develop 2 cuts<small>Activity</small></span><span class="larr">→</span>
+        <span class="lvl">Charge-up<small>Task</small></span>
+        <button class="btn btn-ghost" style="padding:7px 12px" onclick="toast('Levels are added per site by the site administrator, names and depth are free-form.')">+ Add level</button>
+      </div>
+      <div class="f-grid">
+        <div class="field"><label>Mining method(s)</label><input value="Long-hole stoping · development"></div>
+        <div class="field"><label>Operating model</label><select><option>Remote ROC (Ramjack)</option><option>On-site control room</option></select></div>
+        <div class="field"><label>Shift pattern / roster</label><input value="2 × 12 h · day 06:00 · night 18:00"></div>
+        <div class="field"><label>Communications</label><input value="Leaky feeder voice · Rajant mesh (rolling out)"></div>
+        <div class="field"><label>Re-entry &amp; gas clearance rules</label><input value="Post-blast re-entry ~75 min · gas clearance required"></div>
+        <div class="field"><label>Languages</label><input value="English · French (to confirm)"></div>
+      </div>
+    </div>
+
+    <div class="set-card" id="jsModules">
+      <h3>Data tier &amp; modules</h3>
+      <p>Two independent dimensions. The <b>tier</b> says how much data is automated; <b>modules</b> say which domains are covered. A site can run Core with manual inputs plus the Fixed plant module.</p>
+      <div class="seg" id="segTier">
+        <button class="on" data-t="Core">Core: plan, production, fixed plant</button>
+        <button data-t="Tier 2">Tier 2: automated data</button>
+      </div>
+      <div style="margin-top:12px">
+        <div class="conn"><div><b>Fixed plant</b><span>Power, pumps, fans, hoist / shaft status</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Module toggled (demo).')"></span></div>
+        <div class="conn"><div><b>People, safety &amp; environment</b><span>Tag-in by area, qualifications, re-entry, gas</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Module toggled (demo).')"></span></div>
+        <div class="conn"><div><b>Asset health (plan-affecting timing only)</b><span>Bring a service forward: not a reliability engine</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Module toggled (demo).')"></span></div>
+        <div class="conn"><div><b>Materials &amp; consumables</b><span>Where bolts, mesh, shotcrete and explosives actually are</span></div><span class="toggle cstate" onclick="this.classList.toggle('on');toast('Module toggled (demo).')"></span></div>
+        <div class="conn"><div><b>Traffic management</b><span>Route conflicts and congestion</span></div><span class="toggle cstate" onclick="this.classList.toggle('on');toast('Module toggled (demo).')"></span></div>
+        <div class="conn"><div><b>Operator &amp; crew performance</b><span>Adjusted for time outside their control</span></div><span class="toggle cstate" onclick="this.classList.toggle('on');toast('Module toggled (demo).')"></span></div>
+      </div>
+    </div>
+
+    <div class="set-card" id="jsConfidence">
+      <h3>Recommendation confidence thresholds</h3>
+      <p>Below the lower threshold ShiftWise only asks for more evidence. Between the two it says <b>“I think you should…”</b>. Above the upper it says <b>“You must…”</b>. It never invents a recommendation it can't defend.</p>
+      <div class="slider-row">
+        <span class="sl-label">Recommend (“I think you should”)</span>
+        <input type="range" min="30" max="80" value="60" id="slRec" oninput="updateSlider('slRec','slRecVal','%')">
+        <span class="slider-val" id="slRecVal">60%</span>
+      </div>
+      <div class="slider-note">Below 60% confidence, the platform's next best action is always <i>gather more evidence</i>: e.g. request a field check.</div>
+      <div class="slider-row">
+        <span class="sl-label">Mandate (“You must”)</span>
+        <input type="range" min="70" max="99" value="90" id="slMan" oninput="updateSlider('slMan','slManVal','%')">
+        <span class="slider-val" id="slManVal">90%</span>
+      </div>
+      <div class="slider-note">At or above 90%, the recommendation is presented as required, still approved and executed by a person.</div>
+      <div class="slider-row">
+        <span class="sl-label">Evidence staleness limit</span>
+        <input type="range" min="5" max="120" value="30" id="slStale" oninput="updateSlider('slStale','slStaleVal',' min')">
+        <span class="slider-val" id="slStaleVal">30 min</span>
+      </div>
+      <div class="slider-note">Feeds older than this can't be cited as evidence without a confirmation step.</div>
+    </div>
+
+    <div class="set-card" id="jsRanking">
+      <h3>Ranking weights</h3>
+      <p>How ShiftWise orders the queue once safety conditions are cleared. Safety is never weighted or traded against production, and a failed enabling system (network, power) always comes first. Weight changes need approval from the site's operations owner.</p>
+      <div class="slider-row"><span class="sl-label">Critical path (downstream blocked)</span><input type="range" min="0" max="50" value="30" id="wCrit" oninput="updateSlider('wCrit','wCritVal','')"><span class="slider-val" id="wCritVal">30</span></div>
+      <div class="slider-row"><span class="sl-label">Time sensitivity</span><input type="range" min="0" max="50" value="25" id="wTime" oninput="updateSlider('wTime','wTimeVal','')"><span class="slider-val" id="wTimeVal">25</span></div>
+      <div class="slider-row"><span class="sl-label">Feasibility &amp; effort</span><input type="range" min="0" max="50" value="15" id="wFeas" oninput="updateSlider('wFeas','wFeasVal','')"><span class="slider-val" id="wFeasVal">15</span></div>
+      <div class="slider-row"><span class="sl-label">Confidence in the evidence</span><input type="range" min="0" max="50" value="15" id="wConf" oninput="updateSlider('wConf','wConfVal','')"><span class="slider-val" id="wConfVal">15</span></div>
+      <div class="slider-row"><span class="sl-label">Protects the week / month</span><input type="range" min="0" max="50" value="15" id="wWeek" oninput="updateSlider('wWeek','wWeekVal','')"><span class="slider-val" id="wWeekVal">15</span></div>
+      <div class="slider-note">Unresolved items also gain urgency with age, and confidence has to build (red → amber → green) before an action is recommended, so the operator isn't re-prompted every 30 seconds.</div>
+      <button class="btn btn-ghost" onclick="toast('Weight change submitted for operations-owner approval, current weights stay live until approved.')">Submit for approval</button>
+    </div>
+
+    <div class="set-card" id="jsTiers">
+      <h3>Alert tier behaviour</h3>
+      <p>What each constraint tier does inside ShiftWise. Execution always stays with authorised people and existing control systems.</p>
+      <div class="conn"><div class="cico"><b style="font-size:13px">T1</b></div><div><b>Tier 1: Awareness</b><span>Notify operator · logged · no plan impact assumed</span></div><span class="cstate tag blue">Notify only</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:13px">T2</b></div><div><b>Tier 2: Derate</b><span>Raise recommendation · attach pre-agreed response · re-rank queue</span></div><span class="cstate tag amber">Recommend</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:13px">T3</b></div><div><b>Tier 3: Stop</b><span>Escalate to shift boss · constraint locked into plan evaluation</span></div><span class="cstate tag red">Escalate</span></div>
+    </div>
+
+    <div class="set-card" id="jsEscalate">
+      <h3>Escalation &amp; notifications</h3>
+      <p>Cutting noise is a core requirement: the in-app queue is the operator's main channel, and outbound messages mostly go to people away from the screen. Underground coverage is limited, so some may still be relayed by radio.</p>
+      <div class="ladder"><span class="lstep">Expected duration exceeded</span><span class="larr">→</span><span class="lstep">Up the operator queue</span><span class="larr">→</span><span class="lstep">+15 min · shift boss</span><span class="larr">→</span><span class="lstep">+30 min · superintendent</span></div>
+      <div class="slider-note" style="margin-bottom:12px">Escalation timings are set per action type. Response times are logged for performance review and root-cause analysis of plan misses.</div>
+      <div class="conn"><div><b>Action assigned to a field owner</b><span>In-app + SMS</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
+      <div class="conn"><div><b>Action overdue</b><span>In-app + Teams</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
+      <div class="conn"><div><b>Critical service lost (ventilation, dewatering, power) affecting planned work</b><span>In-app + SMS + radio relay</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
+      <div class="conn"><div><b>Source or feed down / stale</b><span>In-app</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
+      <div class="conn"><div><b>Likelihood of completing the plan falls below threshold</b><span>In-app + email to supervisor</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
+      <div class="slider-row" style="margin-top:8px"><span class="sl-label">Likelihood threshold</span><input type="range" min="30" max="90" value="65" id="slLik" oninput="updateSlider('slLik','slLikVal','%')"><span class="slider-val" id="slLikVal">65%</span></div>
+      <div class="conn"><div><b>Handover ready</b><span>In-app + email</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
+    </div>
+
+    <div class="set-card" id="jsConn">
+      <h3>Integrations</h3>
+      <p>Source systems feeding this site. Each line shows the baseline from the October 2025 KTO scoping study, all to be reconfirmed before go-live. Manual and radio input is always available as a full source.</p>
+      <div class="conn"><div><b>Manual &amp; two-way radio updates</b><span>Always on · timestamped, with who reported it</span></div><span class="cstate tag green">Core</span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a1 1 0 0 0 1 1h1"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div><b>Fleet management (UG dispatch)</b><span>Baseline: Newtrax / OptiMine deployment incomplete, payload monitoring not deployed · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg></div><div><b>Fixed plant SCADA</b><span>Baseline: not real-time, manual pump/fan restarts, central SCADA proposed · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div><div><b>People & asset tracking</b><span>Baseline: Morpho / Idemia access control deployed; collision avoidance has person-detection gaps · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></div><div><b>Mine planning system</b><span>Baseline: paper and verbal planning, no planning app confirmed · import 2× daily in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h5"/></svg></div><div><b>ERP work orders</b><span>Baseline: SAP work orders in place, not integrated with operations · 15 min sync in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg></div><div><b>Gas & environmental monitoring</b><span>Baseline: manual air-quality checks · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div><b>Communications &amp; network health</b><span>Baseline: leaky feeder voice deployed, Rajant mesh being deployed, no Minehop nodes in active areas</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="12" r="2"/></svg></div><div><b>Seismic monitoring</b><span>Identified in site audit · not yet deployed</span></div><span class="cstate tag amber">Audit gap</span></div>
+    </div>
+
+    <div class="set-card" id="jsLearn">
+      <h3>Learning</h3>
+      <p>ShiftWise learns from this site's decisions and outcomes only. Every mine is different: models are not transported between sites.</p>
+      <div class="conn"><div><b>Local learning loop</b><span>Decision → outcome comparison feeds future confidence</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Local learning toggled (demo).')"></span></div>
+      <div class="conn"><div><b>Capture operator “gut feel”</b><span>Ask why after unplanned decisions with good outcomes</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Gut-feel capture toggled (demo).')"></span></div>
+    </div>
+
+    <div class="set-card" id="jsTeam">
+      <h3>Control room team</h3>
+      <p>Who can approve and assign actions this shift. Ramjack ROC personnel are the primary operators during the pilot.</p>
+      <div class="conn"><div class="cico"><b style="font-size:12px">NA</b></div><div><b>Nadia Abara</b><span>Control room operator · Ramjack ROC · on shift</span></div><span class="cstate tag green">Approver</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">TM</b></div><div><b>Thabo Mokoena</b><span>Shift boss · KTO underground · on shift</span></div><span class="cstate tag green">Approver</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">EK</b></div><div><b>Esther Kanza</b><span>Dispatcher · night shift</span></div><span class="cstate tag plain">Off shift</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">SA</b></div><div><b>Site administrator</b><span>Configures hierarchy, cycles, thresholds, integrations and users · may be a Ramjack ROC engineer</span></div><span class="cstate tag blue">Admin</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">OO</b></div><div><b>Operations owner</b><span>Approves operating rules, constraints and ranking weights · KTO, to confirm</span></div><span class="cstate tag violet">Approves rules</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">FO</b></div><div><b>Field action owners</b><span>Shift boss, maintenance, geology, survey, services · acknowledge by radio via the operator, or a lightweight mobile view (to decide)</span></div><span class="cstate tag plain">Not logged in</span></div>
+      <button class="btn btn-ghost" style="margin-top:12px" onclick="toast('Invites are managed by the Ramjack ROC administrator during the pilot.')">Invite teammate</button>
+    </div>
+  </section>
+
+  <!-- ═════════ Agent chat pane ═════════ -->
+  <aside class="chatpane" id="chatPane">
+    <div class="chat-inner">
+      <div class="chat-head">
+        <div><b>Ask ShiftWise</b><span>● Live · cites its evidence</span></div>
+        <button onclick="toggleChat(false)">✕</button>
+      </div>
+      <div class="chat-log" id="chatLog">
+        <div class="msg bot">Hi Nadia. I'm watching all six feeds and re-ranking recommendations as events land. Ask me why I've recommended something, what's behind plan, or what a feed is showing.</div>
+      </div>
+      <div class="suggests">
+        <button class="sug" onclick="chatAsk('Why are we behind plan?')">Why are we behind plan?</button>
+        <button class="sug" onclick="chatAsk('What happens if I ignore the crusher recommendation?')">If I ignore #1?</button>
+        <button class="sug" onclick="chatAsk('Is the blast on track?')">Is the blast on track?</button>
+        <button class="sug" onclick="chatAsk('What is wrong with pump P3?')">What's with P3?</button>
+      </div>
+      <div class="chat-input">
+        <input id="chatText" placeholder="Ask about the shift…" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+  </aside>
+  </div>
+</div>
+
+<!-- ═════════ Detail drawer ═════════ -->
+<div class="drawer-scrim" id="drawerScrim" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div style="flex:1;min-width:0">
+      <h2 id="dTitle"></h2>
+      <div class="sub" id="dSub"></div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-tabs" id="dTabs">
+    <button class="dtab on" data-dt="why">Why</button>
+    <button class="dtab" data-dt="evidence">Evidence</button>
+    <button class="dtab" data-dt="impact">Impact</button>
+    <button class="dtab" data-dt="loop">Loop</button>
+  </div>
+  <div class="drawer-body">
+    <div class="dsection on" id="ds-why"></div>
+    <div class="dsection" id="ds-evidence"></div>
+    <div class="dsection" id="ds-impact"></div>
+    <div class="dsection" id="ds-loop"></div>
+  </div>
+  <div class="drawer-foot" id="dFoot"></div>
+</aside>
+
+<!-- ═════════ Operator update modal ═════════ -->
+<div class="modal-scrim" id="updateModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2>Log an operator update</h2>
+        <p>Radio calls, field observations and gut feel are inputs too. ShiftWise treats them as evidence with a stated confidence.</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="f-grid">
+        <div class="field">
+          <label>Area / equipment</label>
+          <select id="updArea">
+            <option>Stope S-214</option><option>Stope S-212</option><option>Heading L1880 N</option>
+            <option>Heading L1865 W</option><option>Pump station P3</option><option>Primary fan VF-2</option>
+            <option>Crusher CR-1</option><option>Decline haulage</option><option>Workshop</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Update type</label>
+          <select id="updType">
+            <option>Field observation</option><option>Radio report</option><option>Condition confirmed</option>
+            <option>Condition NOT as reported</option><option>Manual progress update</option><option>Safety note</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Reported by</label>
+          <input id="updWho" placeholder="e.g. T. Mokoena (shift boss), by radio">
+        </div>
+        <div class="field">
+          <label>Event time</label>
+          <input id="updTime" type="time">
+        </div>
+        <div class="field full">
+          <label>What happened?</label>
+          <textarea id="updNote" rows="3" placeholder="e.g. Fitter on site at P3, suction screen partially blocked, clearing now, expect normal flow within 30 min."></textarea>
+        </div>
+        <div class="field full">
+          <label>How sure is the source?</label>
+          <div class="seg" id="updConf">
+            <button data-c="Confirmed on site">Confirmed on site</button>
+            <button class="on" data-c="Reliable report">Reliable report</button>
+            <button data-c="Unverified / gut feel">Unverified / gut feel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeUpdateModal()">Cancel</button>
+      <button class="btn btn-blue" onclick="submitUpdate()">Log update</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+/* ═════════ Data: KTO Underground, day shift, Wed 25 Sep ═════════ */
+
+const NBA = [
+ {id:"n1", pri:"high", conf:88, area:"Decline haulage", tier:"Recommend",
+  title:"Reassign TK-03 and TK-05 from L1865 waste to S-212 ore haulage",
+  why:"Crusher CR-1 feed buffer is down to <b>42 minutes</b> at the current rate. S-212 bogging is ahead of plan with ore available at the draw point, while L1865 waste movement can slip to night shift without touching the Week 39 plan: Two trucks swapped for the next 3 hours closes the gap.",
+  whyNow:"If the crusher starves it takes ~35 minutes to re-establish steady feed after restart, that turns a 42-minute buffer problem into a 1,200 t shortfall by shift end.",
+  impact:[["red","Crusher starves in ~90 min"],["green","Protects 1,200 t"],["plain","Affects 2 trucks · 3 h"]],
+  evidence:[
+    ["g","Fleet management: truck cycles","TK-03/TK-05 cycle times, updated 12:58","live"],
+    ["g","SCADA: crusher feed rate","312 t/h vs 390 t/h planned, 12:59","live"],
+    ["g","Stockpile level: ROM bin","42 min buffer at current draw","12:55"],
+    ["g","Week 39 plan","L1865 waste has 18 h float","05:48"]],
+  predicted:"Feed buffer recovers to >3 h by 16:30; shift ore tonnage lands within 2% of plan.",
+  a:"Approve & assign to dispatch", b:"Not now",
+  owner:"Dispatch (fleet management system)", age:14, lift:"+13 pts",
+  invalid:"S-212 ore availability drops (hang-up or LHD breakdown), or the ROM buffer recovers on its own.",
+  alts:[["Move TK-03 and TK-05 to S-212 ore (this)","+13 pts"],["Slow crusher feed to stretch the buffer","+4 pts · cuts tonnes"],["Bring spare truck TK-06 into service","+15 pts · not feasible, in service until ~15:00"],["Do nothing","−28% of crusher plan by 18:00"]]},
+
+ {id:"n2", pri:"high", conf:54, area:"Pump station P3", tier:"Confirm first",
+  title:"P3 discharge flow reads 40% low, confirm in the field before I recommend anything",
+  why:"SCADA shows P3 flow at <b>58 l/s against a normal 95 l/s</b>, but pump amps and pressure look normal, the pattern matches the fouled sensor we saw on 12 Aug, not a real flow loss. I can't tell the difference from here, and a wrong call either floods the decline sump overnight or wastes a crew swap.",
+  whyNow:"If it IS real, sump level reaches the Tier-3 threshold in about 4 hours. A field check now keeps every option open.",
+  impact:[["amber","Evidence conflict"],["plain","Sump T3 in ~4 h if real"],["blue","Last time: sensor fault"]],
+  evidence:[
+    ["a","SCADA: P3 flow transmitter","58 l/s (flagged: deviates from amps/pressure)","live"],
+    ["g","SCADA: P3 motor amps","Normal band","live"],
+    ["g","SCADA: sump level L18","Rising 0.4%/h: slow","live"],
+    ["x","Field confirmation","None yet: fitter not dispatched","n/a"]],
+  predicted:"Field check resolves the conflict within 45 min; confidence moves above 60% either way.",
+  a:"Request field check", b:"Snooze 30 min", confirm:true,
+  owner:"Fitter, pump crew", age:22, lift:"Unlocks decision",
+  invalid:"A second independent reading (field gauge, or a drop in sump level trend) settles it either way.",
+  alts:[["Request field check (this)","Resolves in ~45 min"],["Cut P3 duty until confirmed","Risks sump rise if flow is real"],["Ignore the reading","Risks a Tier-3 sump in ~4 h if real"]]},
+
+ {id:"n3", pri:"med", conf:76, area:"Workshop / TK-07", tier:"Recommend",
+  title:"Pull TK-07's 500-hour service forward into the blast clearance window",
+  why:"Work order <b>WO-20441</b> has TK-07 due for its 500 h service this shift. Haulage demand drops during blast clearance (17:30–19:00) anyway: starting the service at 17:00 means the truck is down when it's least needed. Left as scheduled, it slips into night shift peak haulage.",
+  whyNow:"The workshop bay and both fitters are free from 17:00. That alignment doesn't hold tomorrow.",
+  impact:[["green","Zero haulage impact"],["plain","WO-20441 · 6 h service"],["blue","Bay 1 free 17:00"]],
+  evidence:[
+    ["g","ERP: work order WO-20441","500 h service due · TK-07","12:45 sync"],
+    ["g","Fleet management: TK-07 hours","497.6 engine hours","live"],
+    ["g","Shift plan: blast window","Clearance 17:30–19:00, haulage paused","05:48"]],
+  predicted:"Service completes by 23:00 with no lost ore tonnes; night shift starts with a full fleet.",
+  a:"Approve: notify workshop", b:"Keep original slot",
+  owner:"Workshop supervisor", age:5, lift:"+1 pt",
+  invalid:"A breakdown elsewhere that pulls the fitters, or the blast window slipping.",
+  alts:[["Service at 17:00 in the blast window (this)","+1 pt · zero haulage impact"],["Keep the night-shift slot","−2 pts at night peak"],["Defer to tomorrow","Risk of an unplanned stop · parts kitted now"]]},
+
+ {id:"n4", pri:"med", conf:71, area:"Heading L1880 N", tier:"Recommend",
+  title:"Move L1880 N charge-up to 15:30: the second cut misses the re-entry window otherwise",
+  why:"The charging crew is still finishing S-214 and won't reach L1880 N until 15:10 at the earliest. If charge-up starts later than 15:30, the cut can't fire in the 18:40 window and <b>4 m of week development slips</b>. Telling the shift boss now lets the crew move straight over without a break in sequence.",
+  whyNow:"The decision is only free until ~14:30: after that the crew starts a task they can't leave mid-way.",
+  impact:[["amber","4 m dev at risk"],["plain","Crew move · 20 min"],["blue","Fires in 18:40 window"]],
+  evidence:[
+    ["g","People tracking: charge crew","On S-214, est. done 15:05","live"],
+    ["g","Shift plan: L1880 N","2 cuts planned · 1 complete","05:48"],
+    ["g","Blast schedule","Single window 18:40 today","05:48"]],
+  predicted:"Both cuts fire tonight; week development stays on the 84 m target.",
+  a:"Approve: notify shift boss", b:"Let it slip",
+  owner:"Shift boss, T. Mokoena", age:9, lift:"+6 pts",
+  invalid:"S-214 charge-up finishing later than 15:30, or an access restriction on L1880 N.",
+  alts:[["Move charge-up to 15:30 (this)","+6 pts · both cuts fire"],["Second charge crew from night roster","+7 pts · needs call-in, not available before 17:00"],["Let the second cut slip","−6 pts · 4 m development lost"]]},
+
+ {id:"n5", pri:"low", conf:93, area:"Blast 18:40", tier:"On track",
+  title:"18:40 blast readiness is on track, no action needed",
+  why:"All preconditions are trending green: charge-up on S-214 completes ~15:05, ventilation is nominal, and the tag board shows a normal crew count for a 17:30 clearance start. I'll run the pre-blast checklist automatically at 17:30 and alert you only if a precondition fails.",
+  whyNow:"Confidence is high because every input is live and recent. Sometimes the next best action is to not touch anything.",
+  impact:[["green","All checks trending green"],["plain","Auto-check at 17:30"]],
+  evidence:[
+    ["g","People tracking: tag board","118 underground, normal for shift","live"],
+    ["g","Ventilation: VF-1","Nominal (VF-2 on standby: see alert)","live"],
+    ["g","Charge-up progress","S-214 94% complete","13:01"]],
+  predicted:"Blast fires 18:40; re-entry clearance by 19:55 based on last 30 blasts.",
+  a:"Acknowledge", b:null,
+  owner:"n/a", age:3, lift:"No change",
+  invalid:"Any pre-blast precondition failing: S-214 charge-up behind schedule, ventilation fault, or a crew count outside the norm.",
+  alts:[["Leave as is and auto-check at 17:30 (this)","Keeps the 18:40 window"],["Add a manual pre-check at 16:30","No added likelihood · more operator load"]]},
+];
+
+const PLAN = [
+ {id:"p1", cat:"production", name:"Bog & haul ore: stope S-212", sub:"LHD LH-02 + decline fleet → ROM bin",
+  plan:"1,800 t", act:"1,240 t", pct:69, expect:62, risk:false,
+  ready:[["ok","Ventilation"],["ok","LHD available"],["ok","Draw point clear"],["ok","Haul route open"]]},
+ {id:"p2", cat:"production", name:"Clear draw-point hang-up: stope S-214", sub:"Blocked since 08:20 · water-jet crew assigned",
+  plan:"Cleared by 14:00", act:"In progress", pct:70, expect:85, risk:true,
+  ready:[["ok","Crew on site"],["ok","Crew qualified (water-jet)"],["pend","Water supply pressure"],["ok","Exclusion zone set"]]},
+ {id:"p3", cat:"production", name:"Crusher feed: CR-1", sub:"Target 390 t/h steady feed",
+  plan:"3,800 t", act:"2,610 t", pct:69, expect:58, risk:true,
+  ready:[["ok","Crusher healthy"],["no","Feed buffer 42 min"],["ok","Conveyor line"]]},
+ {id:"p4", cat:"development", name:"Develop L1880 N, 2 cuts", sub:"Jumbo J-01 · drill, charge, fire 18:40",
+  plan:"8.0 m", act:"4.1 m", pct:51, expect:50, risk:true,
+  ready:[["ok","Jumbo serviceable"],["pend","Charge crew (on S-214)"],["ok","Crew ticketed for charging"],["ok","Explosives at magazine"],["ok","Vent duct advanced"],["ok","Ground support done"],["ok","Face marked & surveyed"]]},
+ {id:"p5", cat:"development", name:"Install vent duct: L1865 W", sub:"Services crew · 60 m of duct",
+  plan:"60 m", act:"45 m", pct:75, expect:60, risk:false,
+  ready:[["ok","Duct & hangers at face"],["ok","Crew"],["ok","Access"]]},
+ {id:"p6", cat:"services", name:"TK-07 · 500-hour service", sub:"WO-20441 · workshop bay 1 · 6 h",
+  plan:"Complete this shift", act:"Not started", pct:0, expect:10, risk:false,
+  ready:[["ok","Parts kitted"],["ok","Bay 1 free from 17:00"],["ok","Fitters rostered"]]},
+ {id:"p7", cat:"services", name:"Pump transfer: station P3", sub:"Dewatering L18 sump → surface",
+  plan:"2,050 m³", act:"1,410 m³", pct:69, expect:62, risk:true,
+  ready:[["pend","Flow reading unconfirmed"],["ok","Power"],["ok","Discharge line"]]},
+ {id:"p8", cat:"production", name:"Fire blast: S-214 stope ring 12", sub:"Single window 18:40 · re-entry ~19:55",
+  plan:"18:40", act:"On track", pct:58, expect:58, risk:false,
+  ready:[["ok","Charging 94%"],["ok","Ventilation nominal"],["pend","Clearance from 17:30"],["pend","Gas clearance & re-entry time"],["ok","Blast crew briefed"],["ok","Backfill status clear"]]},
+];
+
+const ACTIONS = [
+ {id:"A-118", title:"Water-jet crew to clear S-214 hang-up", src:"From alert T2 · approved 08:41",
+  owner:"U/G services crew", loop:3, status:"prog", impact:"Est. +560 t recovered if cleared by 14:00",
+  timer:"27 min left", timerCls:"flat", verify:"Data: FMS shows bogging resumed at S-214"},
+ {id:"A-117", title:"Swap LHD LH-04 → LH-02 at S-212 (hydraulic temp)", src:"Recommendation · approved 07:55",
+  owner:"Dispatch", loop:5, status:"hand", impact:"Verified: bogging rate held at 315 t/h (predicted 300–330)",
+  timer:"Closed 08:20", timerCls:"up", verify:"Data: FMS rate at S-212"},
+ {id:"A-116", title:"Re-route decline traffic past L1840 remuck during shotcrete", src:"Recommendation · approved 07:12",
+  owner:"Dispatch", loop:4, status:"done", impact:"Verified: zero truck queuing events (predicted ≤2)",
+  timer:"Closed 09:40", timerCls:"up", verify:"Data: FMS queuing events"},
+ {id:"A-115", title:"Confirm VF-2 vibration trip with vent tech", src:"From alert T3 · approved 06:58",
+  owner:"Ventilation tech", loop:3, status:"stall", impact:"No response for 55 min. ShiftWise re-pinged at 12:40",
+  timer:"Overdue 55 min", timerCls:"down", verify:"Person + data: tech confirms, SCADA fan state"},
+ {id:"A-114", title:"Top-up emulsion delivery to S-214 magazine", src:"Readiness check · approved 06:31",
+  owner:"Supply crew", loop:5, status:"hand", impact:"Verified: charge-up unblocked (was the morning's constraint)",
+  timer:"Closed 07:50", timerCls:"up", verify:"Person: magazine stock check"},
+];
+
+const ALERTS = [
+ {id:"al1", tier:3, title:"Primary fan VF-2: vibration trip, auto-shutdown", meta:"SCADA · raised 06:52", cleared:false,
+  body:"VF-2 tripped on high vibration and shut itself down. VF-1 is carrying the north block at 87% capacity. Constraint locked into plan evaluation: no additional headings can be ventilated in the north block until resolved.",
+  resp:"Pre-agreed response: vent tech physically inspects bearing housing before any restart. Do not reset remotely. If VF-1 exceeds 92% for 30 min, pull crews from L1880 N per TARP.",
+  action:"A-115 in the loop: vent tech confirmation is 55 min overdue."},
+ {id:"al2", tier:2, title:"Crusher CR-1 feed buffer below 60 minutes", meta:"SCADA + stockpile survey · raised 12:44", cleared:false,
+  body:"ROM bin drawdown will starve CR-1 in ~90 minutes at current haulage rate. Feed rate already derated 312 t/h vs 390 planned.",
+  resp:"Pre-agreed response: re-prioritise ore haulage over waste. Recommendation #1 implements this: two trucks from L1865 waste to S-212 ore.",
+  action:"Linked to recommendation #1 (88% confidence)."},
+ {id:"al3", tier:2, title:"Stope S-214 draw point hang-up", meta:"Operator report + FMS idle time · raised 08:20", cleared:false,
+  body:"LHD idle at draw point since 08:20; water-jet crew clearing. 560 t of today's ore plan sits behind this constraint.",
+  resp:"Pre-agreed response: exclusion zone, water-jet lance, re-evaluate at 14:00. If not cleared by 14:00, re-sequence to ring 11 ore.",
+  action:"A-118 in the loop: crew on site, est. clear 13:50."},
+ {id:"al4", tier:1, title:"TK-04 engine coolant temp trending high", meta:"FMS telemetry · raised 11:37", cleared:false,
+  body:"Tier-1 machine alert: operator has been made aware by the onboard system. Trend is slow; no derate yet. Logged for the workshop's radar ahead of tonight's service window.",
+  resp:"Pre-agreed response: monitor. If it reaches Tier 2 (machine derates itself), swap TK-04 to short hauls and book a coolant system check.",
+  action:"No action required: watching."},
+ {id:"al5", tier:1, title:"P3 discharge flow deviates from pump signature", meta:"SCADA analytics · raised 12:31", cleared:false,
+  body:"Flow transmitter disagrees with amps + pressure. Evidence conflict: see recommendation #2. Confidence too low to act without a field check.",
+  resp:"Pre-agreed response: dispatch fitter to confirm before any pumping schedule change. Never act on a single conflicted sensor.",
+  action:"Linked to recommendation #2 (confirm first)."},
+];
+
+const SOURCES = [
+ {layer:"Enterprise & planning", items:[
+   {name:"ERP: work orders & maintenance", sub:"15 min sync · last 12:45", conf:96, dot:"g",
+    note:null, icon:"doc"},
+   {name:"Mine planning: Week 39 + shift plan", sub:"Imported 05:48 · next import 17:30", conf:88, dot:"g",
+    note:"Plans assume average rates. ShiftWise tracks live variance against them.", icon:"cal"}]},
+ {layer:"Fleet & work execution", items:[
+   {name:"UG fleet management (dispatch)", sub:"Live · 4 s telemetry · 14 machines", conf:97, dot:"g",
+    note:null, icon:"truck"},
+   {name:"Machine health telemetry", sub:"Live · engine hours, temps, alerts", conf:94, dot:"g",
+    note:"TK-04 coolant trend flagged Tier 1.", icon:"gauge"}]},
+ {layer:"Fixed plant (SCADA / DCS)", items:[
+   {name:"Ventilation fans & airflow", sub:"Live · 1 s scan", conf:92, dot:"a",
+    note:"VF-2 offline after vibration trip. Tier 3 alert active.", icon:"fan"},
+   {name:"Dewatering pumps & sump levels", sub:"Live · 1 s scan", conf:71, dot:"a",
+    note:"P3 flow transmitter conflicts with amps/pressure, field check requested.", icon:"pump"},
+   {name:"Crusher & conveyors", sub:"Live · feed rate, power draw", conf:98, dot:"g",
+    note:null, icon:"crush"}]},
+ {layer:"Environment, safety & people", items:[
+   {name:"People & asset tracking (tag board)", sub:"Live · 118 underground", conf:95, dot:"g",
+    note:null, icon:"people"},
+   {name:"Gas & environmental monitoring", sub:"Live · CO, NO₂, airflow at headings", conf:93, dot:"g",
+    note:null, icon:"gas"},
+   {name:"Seismic monitoring", sub:"Not deployed at KTO", conf:0, dot:"x", gap:true,
+    note:"Identified as a gap in the site audit, decisions near seismic zones fall back to geotech reports.", icon:"wave"}]},
+ {layer:"Operator inputs", items:[
+   {name:"Logged updates & radio reports", sub:"7 this shift · last manual input 2 min ago (12:58)", conf:80, dot:"g",
+    note:"A full source, not a fallback. Weighted by stated confidence: confirmed on site > reliable report > gut feel.", icon:"radio"},
+   {name:"Paper / whiteboard shift changes", sub:"Entered by operator · last 11:20", conf:62, dot:"a",
+    note:"Shift-boss re-sequencing on paper reaches ShiftWise only when someone logs it.", icon:"doc"}]},
+ {layer:"Communications & network", items:[
+   {name:"Leaky feeder voice", sub:"Live · voice coverage on main levels", conf:90, dot:"g",
+    note:"Radio calls are the main channel for field confirmations.", icon:"radio"},
+   {name:"Rajant mesh network", sub:"Being deployed · data coverage partial", conf:68, dot:"a",
+    note:"No data coverage at L1880 N and L1865 W, updates from those headings may only arrive by radio.", icon:"wifi"}]},
+];
+const LAYER_MOD={
+ "Enterprise & planning":"Core",
+ "Fleet & work execution":"Core",
+ "Fixed plant (SCADA / DCS)":"Core · Fixed plant module",
+ "Environment, safety & people":"Module · People, safety & environment",
+ "Operator inputs":"Core",
+ "Communications & network":"Core · system health"
+};
+
+const INTEGRITY=[
+ {id:"i1", title:"TK-09 marked ready by maintenance, but nothing says it is",
+  body:"WO status is complete and the truck is listed available, yet engine hours haven't moved, fuel burn is zero and it has had no assignment for 3 hours. ShiftWise is not counting TK-09 in fleet availability until someone confirms.",
+  meta:"ERP vs FMS · raised 12:20", state:null},
+ {id:"i2", title:"Plan on screen may be stale, paper changes since 07:30",
+  body:"Only source for the plan is the 05:48 import. The shift boss has re-sequenced work on paper twice since then (last operator entry 11:20). Readiness and ranking use the imported plan until the changes are logged.",
+  meta:"Planning vs operator inputs · raised 12:05", state:null},
+];
+const SCORECARD=[
+ ["Plan compliance (weighted)","61%","68%",true,"+7 pts"],
+ ["Target attainment: ore / development","84% / 79%","88% / 82%",true,"+4 / +3 pts"],
+ ["OEE components: availability","81%","84%",true,"+3 pts"],
+ ["Productive utilisation","58%","64%",true,"+6 pts"],
+ ["Avoidable delay per shift","2.4 h","1.7 h",true,"−0.7 h"],
+ ["Workplace readiness at planned start","62%","75%",true,"+13 pts"],
+ ["Disruption recovery time (power, dewatering, ventilation)","74 min","52 min",true,"−22 min"],
+ ["Completion rate of accepted actions","71%","83%",true,"+12 pts"],
+];
+
+const DECISIONS = [
+ {t:"Today 07:55", title:"Swap LHD LH-04 → LH-02 at S-212", by:"Approved by N. Abara · ShiftWise was 91% sure",
+  body:"LH-04 hydraulic temperature trending to derate. Swapping before failure kept bogging continuous.",
+  pred:"Hold bogging ≥ 300 t/h; avoid 2 h unplanned downtime.", act:"Bogging held at 315 t/h. LH-04 confirmed failing seal in workshop.",
+  out:"green", outLabel:"As predicted", learn:"Hydraulic temp signature added to LHD early-warning pattern."},
+ {t:"Today 07:12", title:"Re-route decline traffic during L1840 shotcrete", by:"Approved by N. Abara · ShiftWise was 84% sure",
+  body:"Shotcrete crew needed 90 min of exclusive access; re-route added 4 min per cycle but avoided queuing.",
+  pred:"≤ 2 queuing events, ~40 t cost.", act:"Zero queuing events, 38 t cost.",
+  out:"green", outLabel:"As predicted", learn:null},
+ {t:"Today 06:58", title:"Dispatch vent tech to VF-2 before restart", by:"Approved by T. Mokoena · escalated from Tier 3",
+  body:"Remote reset was available but pre-agreed response requires physical bearing inspection first.",
+  pred:"Inspection inside 60 min; restart decision by 08:30.", act:"Tech diverted to a cage fault, confirmation now 55 min overdue. ShiftWise re-pinged and flagged the stall.",
+  out:"amber", outLabel:"Stalled: follow-up active", learn:"Stall pattern logged: single-tech dependency on day shift."},
+ {t:"Yesterday 21:10", title:"Hold ore pass OP-2 transfers during seismic-quiet window", by:"Approved by E. Kanza · operator override (gut feel)",
+  body:"Operator held transfers on experience despite no data trigger. ShiftWise asked why and logged the reasoning.",
+  pred:"None (override, no platform recommendation)", act:"Geotech inspection this morning found minor brow wear, override was reasonable.",
+  out:"violet", outLabel:"Learned from operator", learn:"Brow-wear precursor question added to OP-2 readiness checks."},
+ {t:"Yesterday 14:22", title:"Bring forward TK-02 brake check", by:"Approved by N. Abara · ShiftWise was 77% sure",
+  body:"Brake temp anomaly on decline descents. Truck pulled at shift change instead of mid-shift.",
+  pred:"Lose 1 truck-hour; avoid unplanned brake failure risk.", act:"Check took 2.5 truck-hours: pads were fine, sensor was mis-calibrated.",
+  out:"amber", outLabel:"Cost more than predicted", learn:"Confidence on single brake-temp sensors reduced until cross-checked against descent profile."},
+];
+
+const FEEDLOG = [
+ ["red","SCADA: CR-1 feed buffer crossed 60-min threshold. Tier 2 raised","12:44"],
+ ["amber","Analytics: P3 flow vs pump signature divergence, recommendation held at 54%","12:31"],
+ ["green","FMS: S-212 bogging rate 315 t/h, ahead of plan","12:10"],
+ ["blue","Operator: water-jet crew reports S-214 hang-up 60% cleared","11:52"],
+ ["amber","FMS: TK-04 coolant temp Tier 1, operator notified onboard","11:37"],
+ ["green","ERP sync: WO-20441 (TK-07 500 h service) confirmed for this shift","10:15"],
+ ["blue","Planning: Week 39 plan v3 imported, no changes to today's shift","05:48"],
+];
+
+/* ═════════ Helpers ═════════ */
+const $=q=>document.querySelector(q), $$=q=>document.querySelectorAll(q);
+function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;$("#toasts").appendChild(el);setTimeout(()=>el.remove(),3400);}
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+const CROSS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+const CLOCKI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg>';
+
+function confBand(c){return c>=88?"hi":c>=60?"md":"lo"}
+function confLabel(c){return c>=88?"Act":c>=60?"Recommend":"Confirm first"}
+function confHTML(c){
+  return `<span class="conf ${confBand(c)}"><span class="cbar"><i style="width:${c}%"></i></span><b>${c}%</b><span>${confLabel(c)}</span></span>`;
+}
+
+/* ═════════ Views / nav ═════════ */
+function showView(v){
+  $$(".view").forEach(x=>x.classList.remove("active"));
+  $("#view-"+v).classList.add("active");
+  if(v==="handover"&&!handoverAccepted)renderHandover();
+  $$(".rail button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+}
+$$(".rail button[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+function scrollToQueue(){$("#queueTitle").scrollIntoView({behavior:"smooth"})}
+
+function toggleAcctMenu(open){
+  const m=$("#acctMenu");
+  m.classList.toggle("open",open===undefined?!m.classList.contains("open"):open);
+}
+document.addEventListener("click",e=>{if(!e.target.closest(".acct-wrap"))toggleAcctMenu(false)});
+
+/* ═════════ Next best actions ═════════ */
+const nbaState={};   // id -> 'approved' | 'confirming' | 'dismissed'
+const NBA_LIFT={n1:13,n2:0,n3:1,n4:6,n5:0};
+NBA.forEach(n=>{n.sec=n.age*60+(n.id.charCodeAt(1)*7)%50});
+const fmtT=s=>{s=Math.abs(Math.round(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+const ageCls=s=>s>=1200?"vhot":s>=720?"hot":"";
+const BASE_LIK=71;
+const TL_EVENTS=[{h:6.87,v:82,k:"bad",l:"VF-2 trip"},{h:7.2,v:83,k:"act",l:"Re-route"},{h:7.92,v:84,k:"act",l:"LHD swap"},{h:8.33,v:62,k:"bad",l:"Hang-up"},{h:8.68,v:65,k:"act",l:"Water-jet"},{h:12.73,v:68,k:"bad",l:"Crusher"}];
+const OUT_BASE={ore:2950,dev:8.0},OUT_TARGET={ore:4200,dev:12},OUT_LIFT={n1:{ore:1200},n4:{dev:4}};
+function renderFinish(){
+  let ore=OUT_BASE.ore,dev=OUT_BASE.dev;
+  NBA.forEach(n=>{if(nbaState[n.id]==="approved"&&OUT_LIFT[n.id]){ore+=OUT_LIFT[n.id].ore||0;dev+=OUT_LIFT[n.id].dev||0}});
+  const op=Math.round(ore/OUT_TARGET.ore*100),dp=Math.round(dev/OUT_TARGET.dev*100);
+  const b0=Math.round(OUT_BASE.ore/OUT_TARGET.ore*100),d0=Math.round(OUT_BASE.dev/OUT_TARGET.dev*100);
+  const changed=ore!==OUT_BASE.ore||dev!==OUT_BASE.dev;
+  // the headline always shows the no-action position; the green part of each bar and the line below show what your approvals buy back
+  $("#finOre").textContent=OUT_BASE.ore.toLocaleString("en-US");$("#finOrePct").textContent=b0+"% of 4,200 t target";
+  $("#finDev").textContent=OUT_BASE.dev.toFixed(1);$("#finDevPct").textContent=d0+"% of 12 m target";
+  $("#finOreBar").style.width=b0+"%";$("#finOreGain").style.left=b0+"%";$("#finOreGain").style.width=Math.min(100,op)-b0+"%";
+  $("#finDevBar").style.width=d0+"%";$("#finDevGain").style.left=d0+"%";$("#finDevGain").style.width=Math.min(100,dp)-d0+"%";
+  const w=$("#finWith");
+  w.classList.add("on");w.classList.toggle("pot",!changed);
+  if(changed)w.textContent=`With your approvals: ${ore.toLocaleString("en-US")} t ore (${op}%) · ${dev.toFixed(1)} m development (${dp}%)`;
+  else{
+    // nothing approved yet: preview what the two recommendations that move output would buy back
+    const po=OUT_BASE.ore+OUT_LIFT.n1.ore,pd=OUT_BASE.dev+OUT_LIFT.n4.dev;
+    w.textContent=`If you approve the truck reassignment and the charge-up move: ${po.toLocaleString("en-US")} t ore (${Math.round(po/OUT_TARGET.ore*100)}%) · ${pd.toFixed(1)} m development (${Math.round(pd/OUT_TARGET.dev*100)}%)`;
+  }
+}
+function renderSummary(){
+  $("#sumNow").innerHTML="It is 13:07, seven hours into a twelve hour shift. You are <b>78% done against 82% expected</b>, so <b>4% behind</b>. At this rate you finish at about <b>2,950 t ore (70%)</b> and <b>8.0 m development (67%)</b>.";
+  $("#sumWrong").innerHTML=[
+    "<b>S-214 draw point hung up at 08:20</b> and has held back about 560 t. It is 70% cleared, with the crew expecting to finish around 13:50.",
+    "<b>The crusher feed buffer is down to 42 minutes</b> since the 12:44 derate, which puts about 1,200 t at risk."
+  ].map(t=>`<li>${t}</li>`).join("");
+  const visible=NBA.filter(n=>nbaState[n.id]!=="dismissed");
+  const openIdx=visible.findIndex(n=>!nbaState[n.id]);
+  let next;
+  if(openIdx<0)next="The queue is clear. ShiftWise will bring the next decision here when there is one.";
+  else{
+    const n=visible[openIdx];
+    next=`Work the queue from the top. <b>#${openIdx+1}</b> is next${n.id==="n1"?", and it recovers about 1,200 t":""}.`;
+  }
+  $("#sumFix").innerHTML=next;
+}
+function drawLikelihood(svgSel,listSel){
+  const svg=$(svgSel);if(!svg)return;
+  const W=720,L=44,R=30,X=h=>L+(h-6)/12*(W-L-R),Y=v=>26+(100-v)/50*134;
+  const all=NBA.reduce((t,n)=>t+(nbaState[n.id]==="dismissed"?0:NBA_LIFT[n.id]),0),endAll=Math.min(99,BASE_LIK+all);
+  const hm=h=>String(Math.floor(h)).padStart(2,"0")+":"+String(Math.round((h%1)*60)).padStart(2,"0");
+  let g="";
+  [100,80,60].forEach(v=>{g+=`<line class="ch-grid" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ch-lab" x="8" y="${Y(v)+4}">${v}%</text>`});
+  [6,9,12,15,18].forEach(h=>{g+=`<text class="ch-lab" x="${X(h)-14}" y="214">${String(h).padStart(2,"0")}:00</text>`});
+  const pts=[[6,84],...TL_EVENTS.map(e=>[e.h,e.v]),[13.12,BASE_LIK]];
+  g+=`<polyline class="ch-actual" points="${pts.map(p=>X(p[0])+","+Y(p[1])).join(" ")}"/>`;
+  g+=`<line x1="${X(13.12)}" x2="${X(13.12)}" y1="16" y2="${Y(50)}" style="stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 4"/>`;
+  g+=`<polyline points="${X(13.12)},${Y(BASE_LIK)} ${X(18)},${Y(64)}" style="fill:none;stroke:var(--ink-faint);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round"/><text class="ch-anno" x="${X(18)-38}" y="${Y(64)+18}" style="fill:var(--ink-faint)">64%</text>`;
+  if(all>0)g+=`<polyline class="ch-proj" points="${X(13.12)},${Y(BASE_LIK)} ${X(18)},${Y(endAll)}"/><text class="ch-anno" x="${X(18)-38}" y="${Y(endAll)-10}" fill="var(--green)">${endAll}%</text>`;
+  g+=`<circle cx="${X(13.12)}" cy="${Y(BASE_LIK)}" r="6.5" style="fill:var(--blue);stroke:var(--bg);stroke-width:2.5"/><text class="ch-anno" x="${X(13.12)-58}" y="12" style="fill:var(--ink)">You are here ${BASE_LIK}%</text>`;
+  TL_EVENTS.forEach((e,i)=>{g+=`<circle class="ch-mark" cx="${X(e.h)}" cy="${Y(e.v)}" r="8" style="stroke:var(--${e.k==="bad"?"red":"green"})"/><text class="ch-mnum" x="${X(e.h)}" y="${Y(e.v)+3.5}" style="text-anchor:middle">${"ABCDEF"[i]}</text>`});
+  svg.innerHTML=g;
+  $(listSel).innerHTML=TL_EVENTS.map((e,i)=>`<div><b class="${e.k}">${"ABCDEF"[i]}</b><i>${hm(e.h)}</i>${e.l}</div>`).join("");
+}
+function renderTimeline(){
+  renderSummary();
+  renderFinish();
+  drawLikelihood("#tl","#evlist");
+  drawLikelihood("#tl2","#evlist2");
+  const add=NBA.reduce((t,n)=>t+(nbaState[n.id]==="approved"?NBA_LIFT[n.id]:0),0);
+  $("#likBig").textContent=BASE_LIK+"%";
+  $("#likArrow").textContent=add?"→ "+Math.min(99,BASE_LIK+add)+"%":"";
+}
+const NBA_UI={
+ n1:{short:"Crusher buffer is down to 42 minutes; S-212 has ore ready while L1865 waste can wait.",big:"High impact",cap:"+13 pts chance of hitting plan",cls:"pos"},
+ n2:{short:"Flow reads 40% low but pump amps and pressure look normal, likely a sensor fault. Needs a field check.",big:"Confirm first",cap:"not enough evidence yet",cls:"warn"},
+ n3:{short:"Haulage drops during blast clearance anyway, and the bay and fitters are free from 17:00.",big:"Low impact",cap:"+1 pt chance of hitting plan",cls:"dim"},
+ n4:{short:"The charge crew reaches L1880 N at 15:10. Starting later than 15:30 misses the 18:40 window.",big:"Medium impact",cap:"+6 pts chance of hitting plan",cls:"track"},
+ n5:{short:"Charge-up, ventilation and crew count are all trending green.",big:"No action",cap:"all on track",cls:"dim"}
+};
+function renderQueue(){
+  const open=NBA.filter(n=>!nbaState[n.id]);
+  $("#queueCount").textContent=open.length;
+  $("#pipShift").textContent=open.length||"";
+  $("#pipShift").style.display=open.length?"grid":"none";
+  $("#queueList").innerHTML=NBA.filter(n=>nbaState[n.id]!=="dismissed").map((n,i)=>{
+    const st=nbaState[n.id],u=NBA_UI[n.id];
+    let sub=u.short;
+    if(st==="approved")sub=`Approved: assigned to ${n.owner}. Tracking in the action loop.`;
+    else if(st==="confirming")sub="Field check requested. I'll re-rank when the confirmation lands.";
+    const chips=(n.owner!=="n/a"?`<span class="tag plain">Owner: ${n.owner}</span>`:"")+(!st?`<span class="tag qtimer ${ageCls(n.sec)}" data-age="${n.id}">Waiting ${fmtT(n.sec)}</span>`:"");
+    return `<div class="imp-row qact ${st?'resolved':''}" role="button" tabindex="0" onclick="openNBA('${n.id}','why')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNBA('${n.id}','why')}">
+      <span class="qrk">${st?"✓":i+1}</span>
+      <div class="im-main"><h4>${i===0&&!st?'<span class="tag first" style="margin-right:8px">Do this first</span>':''}${n.title}</h4><div class="im-sub">${sub}</div><div class="im-meta">${chips}</div></div>
+      <div class="imp-contrib qimp ${st?'dim':u.cls}"><b>${u.big}</b><span>${u.cap}</span>${st?"":`<em class="rv">Review and decide ›</em>`}</div>
+    </div>`;
+  }).join("");
+  renderTimeline();
+}
+function nbaPrimary(id){
+  const n=NBA.find(x=>x.id===id);
+  if(n.confirm){nbaState[id]="confirming";toast(`Field check requested, ${n.owner} notified. No recommendation until it's confirmed.`);}
+  else if(n.b===null){nbaState[id]="approved";toast("Acknowledged. ShiftWise keeps watching.");}
+  else{nbaState[id]="approved";toast(`Approved. Action created and assigned to ${n.owner}.`);}
+  renderQueue();closeDrawer();
+}
+function showRejectForm(id){
+  $("#dFoot").innerHTML=`
+    <div style="width:100%">
+      <div class="field" style="margin-bottom:8px"><label>Why are you rejecting this? (required: it's logged and used to learn)</label>
+        <select id="rejReason"><option value="">Choose a reason…</option><option>I disagree with the evidence</option><option>Not feasible right now</option><option>Already handled</option><option>Conflicts with a higher priority</option><option>Other</option></select></div>
+      <div class="field" style="margin-bottom:10px"><textarea id="rejNote" rows="2" placeholder="Optional note for the decision log"></textarea></div>
+      <button class="btn btn-ink" onclick="confirmReject('${id}')">Reject and remove from list</button>
+      <button class="btn btn-ghost" onclick="openNBA('${id}','why')">Cancel</button>
+    </div>`;
+}
+function confirmReject(id){
+  const r=$("#rejReason").value;
+  if(!r){toast("Choose a reason first: it's what lets ShiftWise learn from the disagreement.");return;}
+  nbaState[id]="dismissed";
+  toast(`Rejected and removed from the queue, “${r}” logged to the decision record.`);
+  renderQueue();closeDrawer();
+}
+
+/* ═════════ Drawer ═════════ */
+let currentNBA=null;
+function openNBA(id,tab){
+  const n=NBA.find(x=>x.id===id);currentNBA=n;
+  const rank=NBA.indexOf(n)+1;
+  $("#dTitle").textContent=n.title;
+  $("#dSub").innerHTML=`<span class="tag plain">#${rank} ranked</span><span class="tag ${n.pri==='high'?'red':n.pri==='med'?'amber':'blue'}">${n.pri==='high'?'High':n.pri==='med'?'Medium':'Low'} priority</span>${confHTML(n.conf)}`;
+  $("#ds-why").innerHTML=`
+    <div class="dblock"><h5>Why this action</h5><p>${n.why}</p></div>
+    <div class="dblock"><h5>Why now</h5><p>${n.whyNow}</p></div>
+    <div class="dblock"><h5>Who executes</h5><p>Execution stays with authorised people and existing control systems. ShiftWise recommends, <b>${n.owner==='n/a'?'no execution needed':n.owner+' executes'}</b>.</p></div>`;
+  $("#ds-evidence").innerHTML=`
+    <div class="dblock"><h5>Evidence cited (${n.evidence.length})</h5>
+    ${n.evidence.map(e=>`<div class="evid"><span class="dot ${e[0]}"></span><div style="flex:1;min-width:0"><b>${e[1]}</b><span>${e[2]}</span></div><div class="ev-val"><small>${e[3]}</small></div></div>`).join("")}
+    <p style="font-size:12px;color:var(--ink-faint);margin-top:8px">Grey = missing input. ShiftWise never fills a gap with an assumption, it asks for confirmation instead.</p></div>`;
+  $("#ds-impact").innerHTML=`
+    <div class="dblock"><h5>Effect on the likelihood of completing the plan</h5><p><b>${n.lift}</b>: this is what ranks it in the queue, not the raw size of the variance.</p></div>
+    <div class="dblock"><h5>Alternatives considered</h5>${n.alts.map(a=>`<div class="altrow"><b>${a[0]}</b><span>${a[1]}</span></div>`).join("")}</div>
+    <div class="dblock"><h5>What would invalidate this</h5><p>${n.invalid}</p></div>
+    <div class="dblock"><h5>Predicted outcome</h5><p>${n.predicted}</p></div>
+    <div class="dblock"><h5>Flags</h5><p>${n.impact.map(t=>`<span class="tag ${t[0]}" style="margin-right:6px">${t[1]}</span>`).join("")}</p></div>
+    <div class="dblock"><h5>After execution</h5><p>The actual outcome is compared to this prediction and logged in the decision record, that comparison is how this site's confidence model learns.</p></div>`;
+  $("#ds-loop").innerHTML=`
+    <div class="dblock"><h5>Action loop: where this goes if approved</h5>
+    <div class="timeline">
+      <div class="tstep done"><b>Recommended</b><div class="tmeta">ShiftWise · ranked #${rank} at ${n.conf}% confidence</div></div>
+      <div class="tstep ${nbaState[n.id]==='approved'?'done':'now'}"><b>Approved & owned</b><div class="tmeta">You approve · ${n.owner}</div><div class="tnote">Nothing executes without a named owner.</div></div>
+      <div class="tstep"><b>In progress</b><div class="tmeta">Tracked live: stalls are flagged, not silently recalculated</div></div>
+      <div class="tstep"><b>Completed & verified</b><div class="tmeta">Outcome vs prediction compared</div></div>
+      <div class="tstep"><b>Handover</b><div class="tmeta">Carried into the shift handover pack if still open</div></div>
+    </div></div>`;
+  $("#dFoot").innerHTML=nbaState[n.id]?`<span style="font-size:13px;font-weight:700;color:var(--ink-faint)">This recommendation has been actioned.</span>`:
+    `<button class="btn ${n.confirm?'btn-ghost':'btn-blue'}" onclick="nbaPrimary('${n.id}')" ${n.confirm?'style="background:var(--amber);color:#fff;border:none"':''}>${n.a}</button>
+     ${n.b?`<button class="btn btn-ghost" onclick="showRejectForm('${n.id}')">Reject…</button>`:""}`;
+  switchDTab(tab||"why");
+  $("#drawerScrim").classList.add("open");$("#drawer").classList.add("open");
+}
+function switchDTab(t){
+  $$(".dtab").forEach(b=>b.classList.toggle("on",b.dataset.dt===t));
+  $$(".dsection").forEach(s=>s.classList.toggle("on",s.id==="ds-"+t));
+}
+$$(".dtab").forEach(b=>b.addEventListener("click",()=>switchDTab(b.dataset.dt)));
+function closeDrawer(){$("#drawerScrim").classList.remove("open");$("#drawer").classList.remove("open")}
+
+/* ═════════ Plan view ═════════ */
+let planFilter="all";
+const planOpen={};   // activity id -> show every readiness check (default: only the ones needing attention)
+function renderPlan(){
+  $("#planList").innerHTML=PLAN.filter(p=>planFilter==="all"?true:planFilter==="risk"?p.risk:p.cat===planFilter).map(p=>{
+    const behind=p.pct<p.expect-2, ahead=p.pct>p.expect+2;
+    const issues=p.ready.filter(r=>r[0]!=="ok"),okN=p.ready.length-issues.length;
+    const showAll=planOpen[p.id]||!issues.length;
+    const chips=(showAll?p.ready:issues).map(r=>`<span class="rchk ${r[0]}">${r[0]==='ok'?CHECK:r[0]==='no'?CROSS:CLOCKI}${r[1]}</span>`).join("");
+    const summary=issues.length&&!showAll?`<span class="rchk ok">${CHECK}${okN} other check${okN===1?"":"s"} ready</span>`:(!issues.length?`<span class="rchk ok">${CHECK}All ${p.ready.length} checks ready</span>`:"");
+    const nums=planOpen[p.id]?`<span class="tag plain">Actual: ${p.act}</span><span class="tag plain">Plan: ${p.plan}</span>`:"";
+    return `<div class="imp-row qact" role="button" tabindex="0" onclick="planOpen['${p.id}']=!planOpen['${p.id}'];renderPlan()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();planOpen['${p.id}']=!planOpen['${p.id}'];renderPlan()}">
+      <div class="im-main"><h4>${p.name}</h4><div class="im-sub">${p.sub}</div><div class="im-meta">${!issues.length?summary:chips+summary}${nums}</div></div>
+      <div class="imp-contrib stack ${behind?'neg':ahead?'pos':'track'}"><b>${p.pct}%</b><span>done · ${p.expect}% expected</span><em class="rv">${planOpen[p.id]?"Hide details":"Details ›"}</em></div>
+    </div>`;
+  }).join("");
+}
+$$("#planFilters .fchip").forEach(b=>b.addEventListener("click",()=>{
+  $$("#planFilters .fchip").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  planFilter=b.dataset.pf;renderPlan();
+}));
+
+function renderMiniPlan(){
+  const worst=[...PLAN].sort((a,b)=>(a.pct-a.expect)-(b.pct-b.expect)).slice(0,4);
+  $("#miniPlan").innerHTML=worst.map(p=>`
+    <div class="mini-row" onclick="showView('plan')">
+      <div style="flex:1;min-width:0"><span class="mr-id">${p.name}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${p.pct}%;background:${p.pct<p.expect-2?'var(--red)':'var(--blue)'}"></div></div>
+      </div>
+      <span style="font-weight:800;font-size:12.5px;color:${p.pct<p.expect-2?'var(--red)':'var(--ink-soft)'}">${p.pct-p.expect>0?'+':''}${p.pct-p.expect} pts</span>
+    </div>`).join("");
+}
+function renderFeedLog(){
+  $("#feedLog").innerHTML=FEEDLOG.map(f=>`
+    <div class="mini-row" onclick="showView('sources')">
+      <span class="dot ${f[0]==='red'?'r':f[0]==='amber'?'a':f[0]==='green'?'g':'x'}" style="background:var(--${f[0]})"></span>
+      <span style="flex:1;font-size:12.5px">${f[1]}</span>
+      <time style="font-size:11px;color:var(--ink-faint);font-weight:700">${f[2]}</time>
+    </div>`).join("");
+}
+
+/* ═════════ Impact view ═════════ */
+const IMPACT = [
+ {t:"08:41 · from recommendation", title:"Water-jet crew to clear S-214 hang-up",
+  sub:"Predicted: <b>+560 t recovered</b> if cleared by 14:00. Crew reports 60% cleared at 11:52: attainment already lifting as partial bogging resumed at 12:30.",
+  meta:[["blue","Tracking: verifies at 14:00"],["plain","Approved by N. Abara · 88% confidence"]],
+  val:"+6 pts", cap:"attainment so far", cls:"track"},
+ {t:"07:55 · from recommendation", title:"Swap LHD LH-04 → LH-02 at S-212 before failure",
+  sub:"Predicted: hold bogging ≥ 300 t/h and avoid ~2 h unplanned downtime. Measured: <b>315 t/h held</b>; LH-04's seal confirmed failing in the workshop, the downtime was real and avoided.",
+  meta:[["green","Verified"],["plain","Approved by N. Abara · 91% confidence"]],
+  val:"+620 t", cap:"protected · +4 pts", cls:"pos"},
+ {t:"07:12 · from recommendation", title:"Re-route decline traffic during L1840 shotcrete",
+  sub:"Predicted: ≤ 2 queuing events, ~40 t cost. Measured: <b>zero queuing events, 38 t cost</b>: cheapest possible way through the shotcrete window.",
+  meta:[["green","Verified"],["plain","Approved by N. Abara · 84% confidence"]],
+  val:"+25 min", cap:"truck time saved", cls:"pos"},
+ {t:"06:31 · from readiness check", title:"Top-up emulsion delivery to S-214 magazine",
+  sub:"Caught before it became a problem: charge-up would have stalled at ~10:00 without stock. Measured: charge-up ran uninterrupted, <b>the 18:40 blast (and both L1880 N cuts) stay possible</b>.",
+  meta:[["green","Verified"],["plain","Approved by T. Mokoena · 79% confidence"]],
+  val:"18:40", cap:"blast protected", cls:"pos"},
+ {t:"Yesterday 14:22 · learning example", title:"Bring forward TK-02 brake check",
+  sub:"Predicted: 1 truck-hour cost. Measured: <b>2.5 truck-hours</b>: the sensor was mis-calibrated, not the brakes. Logged honestly: single-sensor brake alerts now need a cross-check before costing a truck.",
+  meta:[["amber","Cost more than predicted"],["violet","Confidence model updated"]],
+  val:"−1.5 h", cap:"vs prediction", cls:"neg"},
+];
+function renderImpact(){
+  $("#impactList").innerHTML=IMPACT.map(d=>`
+    <div class="imp-row" style="cursor:default">
+      <div class="im-main">
+        <h4>${d.title}</h4>
+        <div class="im-sub">${d.sub}</div>
+        <div class="im-meta">${d.meta.map(m=>`<span class="tag ${m[0]}">${m[1]}</span>`).join("")}<span class="tag plain">${d.t}</span></div>
+      </div>
+      <div class="imp-contrib ${d.cls}"><b>${d.val}</b><span>${d.cap}</span></div>
+    </div>`).join("");
+}
+
+/* ═════════ Actions view ═════════ */
+const LOOPSTEPS=["Owned","Approved","In progress","Completed","Handover"];
+let actFilter="all";
+function loopHTML(n,status){
+  let h="";
+  for(let i=0;i<5;i++){
+    const cls=i<n?"done":i===n&&status!=="done"&&status!=="hand"?"now":"";
+    h+=`<span class="ldot ${cls}" title="${LOOPSTEPS[i]}">${i<n?CHECK:""}</span>`;
+    if(i<4)h+=`<span class="lconn ${i<n-1?'done':''}"></span>`;
+  }
+  return `<div class="loopdots">${h}</div>`;
+}
+function statusChip(s){
+  if(s==="done")return '<span class="status s-done">Completed</span>';
+  if(s==="prog")return '<span class="status s-prog">In progress</span>';
+  if(s==="stall")return '<span class="status s-stall">Stalled</span>';
+  if(s==="hand")return '<span class="status s-hand">Handed over</span>';
+  return '<span class="status s-wait">Awaiting</span>';
+}
+const ACT_UI={
+ "A-118":{big:"27 min",cap:"left",cls:"track",chip:["blue","In progress"],sec:27*60,dir:-1},
+ "A-117":{big:"Done",cap:"closed 08:20",cls:"pos",chip:["violet","Handed over"]},
+ "A-116":{big:"Done",cap:"closed 09:40",cls:"pos",chip:["green","Completed"]},
+ "A-115":{big:"55 min",cap:"overdue",cls:"neg",chip:["red","Stalled"],sec:55*60,dir:1},
+ "A-114":{big:"Done",cap:"closed 07:50",cls:"pos",chip:["violet","Handed over"]}
+};
+function renderActions(){
+  const rows=ACTIONS.filter(a=>{
+    if(actFilter==="all")return true;
+    if(actFilter==="open")return a.status==="prog"||a.status==="stall";
+    if(actFilter==="stalled")return a.status==="stall";
+    return a.status==="done"||a.status==="hand";
+  });
+  $("#actionList").innerHTML=rows.map(a=>{
+    const u=ACT_UI[a.id];
+    return `<div class="imp-row" style="cursor:default">
+      <div class="im-main"><h4>${a.title}</h4><div class="im-sub">${a.impact}</div>
+        <div class="im-meta"><span class="tag ${u.chip[0]}">${u.chip[1]}</span><span class="tag plain">${a.owner}</span><span class="tag plain">Verified by: ${a.verify}</span></div></div>
+      <div class="imp-contrib ${u.cls}"><b>${u.sec!==undefined?`<span data-act="${a.id}">${fmtT(u.sec)}</span>`:u.big}</b><span>${u.cap}</span></div>
+    </div>`;}).join("");
+  const stalls=ACTIONS.filter(a=>a.status==="stall").length;
+  $("#pipActions").textContent=ACTIONS.filter(a=>a.status==="prog"||a.status==="stall").length;
+  $("#pipActions").style.background=stalls?"var(--red)":"var(--amber)";
+}
+$$("#actFilters .fchip").forEach(b=>b.addEventListener("click",()=>{
+  $$("#actFilters .fchip").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  actFilter=b.dataset.af;renderActions();
+}));
+
+/* ═════════ Alerts view ═════════ */
+function renderAlerts(){
+  $("#alertList").innerHTML=ALERTS.map(a=>`
+    <details class="alert-card ${a.cleared?'cleared':''}" ${a.tier===3&&!a.cleared?'open':''}>
+      <summary>
+        <div class="im-main"><h4>${a.title}</h4><div class="im-sub">${a.cleared?'Cleared':a.meta}</div></div>
+        <div class="imp-contrib ${a.tier===3?'neg':a.tier===2?'warn':'track'}"><b>Tier ${a.tier}</b><span>${a.tier===3?'stop':a.tier===2?'derate':'be aware'}</span></div>
+      </summary>
+      <div class="al-body">${a.body}</div>
+      <div class="al-resp"><b>Pre-agreed response</b>${a.resp.replace(/^Pre-agreed response:\s*/,"")}</div>
+      <div class="al-foot">
+        <span class="tag plain">${a.action}</span>
+        ${a.cleared?'<span class="tag green">Cleared</span>':`<button class="act line" onclick="clearAlert('${a.id}')">Mark resolved</button>`}
+      </div>
+    </details>`).join("");
+  const active=ALERTS.filter(a=>!a.cleared&&a.tier===3).length;
+  $("#pipAlerts").textContent=active||ALERTS.filter(a=>!a.cleared).length;
+  $("#pipAlerts").style.background=active?"var(--red)":"var(--amber)";
+}
+function clearAlert(id){
+  const a=ALERTS.find(x=>x.id===id);a.cleared=true;
+  toast(`Alert resolved: closure logged with evidence for the ${a.tier===3?'shift boss':'decision record'}.`);
+  renderAlerts();
+}
+
+/* ═════════ Sources view ═════════ */
+const SICONS={
+ doc:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+ cal:'<path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/>',
+ truck:'<path d="M14 17V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a1 1 0 0 0 1 1h1"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+ gauge:'<circle cx="12" cy="12" r="9"/><path d="M12 12l4-4"/><path d="M7 12h.01M12 7v.01M17 12h.01"/>',
+ fan:'<circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 -1.5-6 -4-6 3 0 4 2 4 6ZM14 12c4 0 6-1.5 6-4 0 3-2 4-6 4ZM12 14c0 4 1.5 6 4 6-3 0-4-2-4-6ZM10 12c-4 0-6 1.5-6 4 0-3 2-4 6-4Z"/>',
+ pump:'<circle cx="12" cy="10" r="5"/><path d="M12 15v6M8 21h8"/><path d="M12 7v3l2 1"/>',
+ crush:'<path d="M3 20h18"/><path d="M6 20V9l6-5 6 5v11"/><path d="M10 20v-6h4v6"/>',
+ people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5 6.5-5s6.5 1.5 6.5 5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 15.2c2.8.3 5 1.7 5 4.8"/>',
+ gas:'<path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/>',
+ wave:'<path d="M2 12h3l2-6 4 12 3-9 2 3h6"/>',
+ radio:'<path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="12" r="2"/><path d="M12 14v7"/>',
+ wifi:'<path d="M2 9a15 15 0 0 1 20 0"/><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M12 20h.01"/>'
+};
+function renderSources(){
+  $("#sourceLayers").innerHTML=SOURCES.map(l=>`
+    <div class="layer ${l.items.every(s=>s.dot==='g')?'collapsed':''}">
+      <div class="layer-head" onclick="this.parentElement.classList.toggle('collapsed')"><h3>${l.layer}</h3><span class="lh-line"></span>${l.items.every(s=>s.dot==='g')?`<span class="tag green">${l.items.length} healthy</span>`:`<span class="tag amber">${l.items.filter(s=>s.dot!=='g').length} need attention</span>`}</div>
+      <div class="src-grid">
+        ${l.items.map(s=>`
+        <div class="imp-row" style="cursor:default">
+          <div class="im-main"><h4>${s.name}</h4><div class="im-sub">${s.sub}${s.note?`, ${s.note}`:""}</div></div>
+          <div class="imp-contrib ${s.gap?'dim':s.conf>=90?'pos':s.conf>=70?'warn':'neg'}"><b>${s.gap?'n/a':s.conf+'%'}</b><span>${s.gap?'not deployed':'data confidence'}</span></div>
+        </div>`).join("")}
+      </div>
+    </div>`).join("");
+}
+
+/* ═════════ Decisions view ═════════ */
+function renderDecisions(){
+  const DC={green:"pos",amber:"warn",violet:"track"};
+  $("#decisionList").innerHTML=DECISIONS.map(d=>`
+    <details class="dec-item">
+      <summary>
+        <div class="im-main"><h4>${d.title}</h4><div class="im-sub">${d.t} · ${d.by}</div></div>
+        <div class="imp-contrib small ${DC[d.out]||'track'}"><b>${d.outLabel}</b><span>outcome</span></div>
+      </summary>
+      <div class="dec-body">${d.body}</div>
+      <div class="dec-grid">
+        <div class="dec-cell"><b>Predicted</b>${d.pred}</div>
+        <div class="dec-cell"><b>Actual</b>${d.act}</div>
+      </div>
+      ${d.learn?`<div class="dec-foot"><span class="learn">Learned: ${d.learn}</span></div>`:""}
+    </details>`).join("");
+}
+
+/* ═════════ Data integrity flags ═════════ */
+function renderIntegrity(){
+  const open=INTEGRITY.filter(f=>!f.state).length;
+  $("#flagCount").textContent=open;
+  $("#flagCount").style.display=open?"inline-block":"none";
+  $("#integrityList").innerHTML=INTEGRITY.map(f=>`
+    <div class="alert-card t2 ${f.state?'cleared':''}">
+      <div class="al-top"><span class="tag amber">Integrity flag</span><h4>${f.title}</h4><span class="al-meta">${f.meta}</span></div>
+      <div class="al-body">${f.body}</div>
+      <div class="al-foot">
+        ${f.state?`<span class="tag ${f.state==='unreliable'?'red':'green'}">${f.state==='unreliable'?'Source flagged unreliable':'Acknowledged'}</span>`:`
+        <button class="act line" onclick="setIntegrity('${f.id}','ack')">Acknowledge</button>
+        <button class="act line" onclick="setIntegrity('${f.id}','unreliable')">Flag source as unreliable</button>
+        <button class="act link" onclick="openUpdateModal()">Record a manual override →</button>`}
+      </div>
+    </div>`).join("");
+}
+function setIntegrity(id,state){
+  INTEGRITY.find(f=>f.id===id).state=state;
+  toast(state==="unreliable"?"Source flagged unreliable: its readings carry lower weight until someone confirms them.":"Acknowledged: flag stays on record for the shift.");
+  renderIntegrity();
+}
+
+/* ═════════ Pilot scorecard ═════════ */
+function renderScorecard(){
+  $("#scorecardRows").innerHTML=SCORECARD.map(r=>`
+    <tr style="cursor:default"><td style="font-weight:700">${r[0]}</td><td>${r[1]}</td><td style="font-weight:800">${r[2]}</td><td class="${r[3]?'delta-good':'delta-bad'}">${r[4]}</td></tr>`).join("");
+}
+
+/* ═════════ Shift handover ═════════ */
+let handoverAccepted=false;
+const HO_CONSTRAINTS=[
+ ["VF-2 offline (Tier 3)","Vibration trip 06:52. VF-1 at 87%. No remote reset: bearing inspection first. Vent tech confirmation overdue."],
+ ["P3 flow reading unconfirmed","Held at low confidence until a field check lands. Sump L18 is the thing to watch."],
+ ["Crusher CR-1 feed buffer","Below 60 minutes. Depends on recommendation #1 being actioned."],
+ ["Rajant mesh coverage gaps","No data coverage at L1880 N and L1865 W, updates from there arrive by radio."]
+];
+const HO_CONTEXT=[
+ ["18:40 blast, S-214 ring 12","Re-entry expected ~19:55 from the last 30 blasts. Gas clearance required before anyone goes in."],
+ ["TK-07 500 h service","WO-20441: workshop bay 1 from 17:00 if recommendation #3 is accepted; night shift needs to know the truck is down until ~23:00."],
+ ["Week 39 position","Development 39% vs 43% expected. L1880 N second cut matters for the week."]
+];
+function renderHandover(){
+  const acts=ACTIONS.filter(a=>a.status==="prog"||a.status==="stall");
+  $("#hoActCount").textContent=acts.length;
+  $("#hoActions").innerHTML=acts.map(a=>`<div class="hand-item"><b>${a.id} · ${a.title}</b><span>${a.owner} · <span class="${a.timerCls}" style="font-weight:700">${a.timer}</span> · verified by ${a.verify}</span></div>`).join("")||'<div class="hand-item"><span>No open actions.</span></div>';
+  $("#hoConCount").textContent=HO_CONSTRAINTS.length;
+  $("#hoConstraints").innerHTML=HO_CONSTRAINTS.map(c=>`<div class="hand-item"><b>${c[0]}</b><span>${c[1]}</span></div>`).join("");
+  const recs=NBA.filter(n=>!nbaState[n.id]||nbaState[n.id]==="confirming");
+  $("#hoRecCount").textContent=recs.length;
+  $("#hoRecs").innerHTML=recs.map(n=>`<div class="hand-item"><b>${n.title}</b><span>${nbaState[n.id]==="confirming"?"Waiting on field check":"Not yet decided"} · ${NBA_UI[n.id].big.toLowerCase()} · waiting ${n.age} min</span></div>`).join("")||'<div class="hand-item"><span>Nothing outstanding.</span></div>';
+  $("#hoContext").innerHTML=HO_CONTEXT.map(c=>`<div class="hand-item"><b>${c[0]}</b><span>${c[1]}</span></div>`).join("");
+}
+function acceptHandover(){
+  handoverAccepted=true;
+  const notes=$("#hoNotes").value.trim();
+  $("#hoStatus").style.color="var(--green)";
+  $("#hoStatus").textContent="✓ Handover accepted by the incoming operator, open actions, constraints and notes carried into the night shift"+(notes?" (notes included).":".");
+  $("#acceptHandover").disabled=true;$("#acceptHandover").style.opacity=.5;
+  toast("Handover accepted and logged to the decision record.");
+}
+
+/* ═════════ Settings interactions ═════════ */
+$$("#segTier button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#segTier button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  toast(`Data tier set to ${b.dataset.t}, ${b.dataset.t==="Core"?"manual and radio updates stay a full input.":"automated feeds replace manual entry where the site's systems allow."}`);
+}));
+$$("#settingsJumpnav button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#settingsJumpnav button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  const card=document.getElementById(b.dataset.jump);
+  card.classList.add("open");
+  card.scrollIntoView({behavior:"smooth",block:"start"});
+}));
+$$("#segHorizon button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#segHorizon button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  toast(`Planning horizon set to ${b.dataset.h}: decision logic now anchors to the ${b.dataset.h.toLowerCase()} plan.`);
+}));
+$$("#segShift button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#segShift button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  toast(`Shift duration set to ${b.dataset.s} hours.`);
+}));
+function updateSlider(id,valId,suffix){$("#"+valId).textContent=$("#"+id).value+suffix}
+
+/* ═════════ Chat ═════════ */
+function toggleChat(open){
+  const p=$("#chatPane");
+  p.classList.toggle("open",open===undefined?!p.classList.contains("open"):open);
+}
+const CANNED=[
+ [/finish|end of (the )?shift|at this rate|project|forecast|do nothing|short/i,"If nothing changes, I project we finish at about 2,950 t of the 4,200 t ore target (70%) and 8.0 of 12 m development (67%).\n\nTwo things drive it:\n• Crusher feed running out in ~90 min: about 1,200 t\n• L1880 N second cut missing the 18:40 window: 4 m of development\n\nApproving recommendation #1 recovers the ore and #4 recovers the development. With both, I project 4,150 t (99%) and 12 m (100%)."],
+ [/behind|attainment|target|likelihood/i,"The likelihood of completing today's plan is 71% (84% at shift start). We're at 78% plan attainment vs 82% expected by 13:00: a 4% gap.\n\nThe gap decomposes as:\n• S-214 hang-up (08:20–now): ~560 t held back: crew expects clear by ~13:50\n• Crusher feed derate since 12:44: ~180 t\n• Everything else is on or ahead of plan\n\nIf you approve recommendation #1 and the hang-up clears on time, I project we finish within 2% of plan."],
+ [/ignore|crusher|#1|starve/i,"If nothing changes, CR-1 starves in ~90 minutes.\n\nRestart from empty takes ~35 min of unstable feed, so the real cost is about 1,200 t by 18:00: roughly 28% of today's crusher plan. It also pushes the shortfall into night shift, who start behind through no fault of theirs.\n\nEvidence: SCADA feed rate (live), ROM bin survey (12:55), truck cycle times (live)."],
+ [/blast|18:40|re-entry/i,"Yes, 18:40 blast is on track at 93% confidence.\n\n• Charge-up on S-214: 94% complete, done ~15:05\n• Ventilation: VF-1 nominal (VF-2 is the standby: see the Tier 3 alert, it doesn't block the blast)\n• Tag board: normal count for a 17:30 clearance start\n\nWatch item: L1880 N's second cut only makes this window if the charge crew moves by 15:30: that's recommendation #4."],
+ [/p3|pump|flow/i,"P3's flow transmitter reads 58 l/s against a normal 95 l/s, but amps and discharge pressure are normal, which usually means a sensor problem, not a flow problem. Same signature as the fouled sensor on 12 Aug.\n\nI'm holding any pumping recommendation at 54% confidence until someone checks it in the field. If it's real, the L18 sump reaches Tier 3 in ~4 hours, so the check is worth doing now, that's recommendation #2."],
+ [/vf-2|fan|vent/i,"VF-2 tripped on high vibration at 06:52 and shut itself down (Tier 3). VF-1 carries the north block at 87%.\n\nThe pre-agreed response requires a physical bearing inspection before restart, no remote resets. The vent tech confirmation is now 55 minutes overdue (action A-115 is stalled); I re-pinged at 12:40 and will escalate to the shift boss at 13:30 if there's still no response."],
+ [/confidence|why.*(trust|sure)/i,"Every recommendation carries a confidence score built from: evidence freshness, sensor health, cross-source agreement, and how similar past decisions played out at this site.\n\nBelow 60% I never recommend an operational action, my next best action becomes \"get me more evidence\". Above 90% I'll say you must act. You can tune both thresholds in Settings."],
+];
+function chatAsk(q){toggleChat(true);$("#chatText").value=q;sendChat();}
+function sendChat(){
+  const inp=$("#chatText"),q=inp.value.trim();if(!q)return;
+  const log=$("#chatLog");
+  log.insertAdjacentHTML("beforeend",`<div class="msg user">${q.replace(/</g,"&lt;")}</div>`);
+  inp.value="";
+  log.insertAdjacentHTML("beforeend",`<div class="msg bot" id="typing"><span class="typing"><i></i><i></i><i></i></span></div>`);
+  log.scrollTop=log.scrollHeight;
+  setTimeout(()=>{
+    const hit=CANNED.find(c=>c[0].test(q));
+    $("#typing").outerHTML=`<div class="msg bot">${hit?hit[1]:"In the live product I'd answer that from the site's feeds and decision history, always citing the evidence I used.\n\nTry asking about the plan gap, the crusher, the blast, pump P3 or fan VF-2."}</div>`;
+    log.scrollTop=log.scrollHeight;
+  },900);
+}
+
+/* ═════════ Operator update modal ═════════ */
+function openUpdateModal(){
+  if(!$("#updTime").value)$("#updTime").value=new Date().toTimeString().slice(0,5);
+  $("#updateModal").classList.add("open");
+}
+function closeUpdateModal(){$("#updateModal").classList.remove("open")}
+$$("#updConf button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#updConf button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+}));
+function submitUpdate(){
+  const area=$("#updArea").value,conf=$("#updConf .on").dataset.c;
+  const who=$("#updWho").value.trim()||"operator",when=$("#updTime").value||new Date().toTimeString().slice(0,5);
+  closeUpdateModal();
+  toast(`Update logged for ${area} (${conf}), ${who}, event time ${when}. Recommendations will re-rank if this changes anything.`);
+  $("#updNote").value="";$("#updWho").value="";
+  if(area==="Pump station P3"&&!nbaState["n2"]){
+    setTimeout(()=>{
+      NBA.find(n=>n.id==="n2").conf=91;
+      NBA.find(n=>n.id==="n2").tier="Act";
+      renderQueue();
+      toast("P3 field report received: confidence on recommendation #2 moved 54% → 91%.");
+    },1600);
+  }
+}
+$("#updateModal").addEventListener("click",e=>{if(e.target.id==="updateModal")closeUpdateModal()});
+
+/* ═════════ Shift clock ═════════ */
+let simSec=13*3600+6*60+59;
+function tickClock(){
+  simSec++;
+  const h=Math.floor(simSec/3600),m=Math.floor(simSec%3600/60),sc=simSec%60;
+  $("#scTime").textContent=[h,m,sc].map(x=>String(x).padStart(2,"0")).join(":");
+}
+
+/* ═════════ Escape key ═════════ */
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){closeDrawer();closeUpdateModal();toggleChat(false);}
+});
+
+/* ═════════ Init ═════════ */
+renderQueue();renderPlan();renderMiniPlan();renderFeedLog();renderImpact();
+renderActions();renderAlerts();renderSources();renderDecisions();
+renderIntegrity();renderScorecard();renderHandover();
+tickClock();
+/* progressive disclosure: settings cards start collapsed, secondary panels sit behind a fold */
+$$("#view-settings .set-card").forEach((c,i)=>{
+  const h=c.querySelector("h3"),body=document.createElement("div");
+  body.className="set-body";
+  while(h.nextSibling)body.appendChild(h.nextSibling);
+  c.appendChild(body);c.classList.add("fold");
+  if(i===0)c.classList.add("open");
+  h.addEventListener("click",()=>c.classList.toggle("open"));
+});
+function foldGrid(sel,label,hint){
+  const g=$(sel),d=document.createElement("details");
+  d.className="fold";d.innerHTML=`<summary>${label}<small>${hint}</small></summary>`;
+  g.replaceWith(d);d.appendChild(g);
+}
+foldGrid("#view-shift .dash-grid","Plan gaps &amp; feed activity","secondary detail");
+foldGrid("#view-impact .dash-grid","Calibration &amp; shift-end trend","secondary detail");
+/* open recommendations age in real time, urgency rises while they sit unresolved */
+let tickN=0;
+setInterval(()=>{
+  tickN++;tickClock();
+  NBA.forEach(n=>{if(!nbaState[n.id]){n.sec++;n.age=Math.floor(n.sec/60)}});
+  $$("[data-age]").forEach(e=>{const n=NBA.find(x=>x.id===e.dataset.age);e.textContent="Waiting "+fmtT(n.sec);const c=ageCls(n.sec);e.classList.toggle("hot",c==="hot");e.classList.toggle("vhot",c==="vhot")});
+  Object.keys(ACT_UI).forEach(id=>{const u=ACT_UI[id];if(u.sec===undefined)return;u.sec+=u.dir;const e=document.querySelector(`[data-act="${id}"]`);if(e)e.textContent=fmtT(u.sec)});
+  if(tickN%60===0)renderHandover();
+},1000);
+</script>
+</body>
+</html>
