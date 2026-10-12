@@ -869,6 +869,25 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 /* Live view: the 3D mine fills the whole content area */
 #view-live{padding:0;overflow:hidden}
 #view-live iframe{display:block;width:100%;height:100%;border:0}
+/* Plan upload */
+.dropzone{display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 16px;border:1.5px dashed #c5cede;border-radius:12px;background:var(--canvas);cursor:pointer;text-align:center;transition:border-color .15s,background .15s}
+.dropzone:hover,.dropzone.over{border-color:var(--blue);background:#f2f5ff}
+.dropzone svg{width:26px;height:26px;color:var(--blue)}
+.dropzone b{font-size:13.5px;font-weight:600}
+.dropzone u{color:var(--blue);text-decoration:none}
+.dropzone span{font-size:12px;color:var(--ink-soft)}
+.file-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.file-chip[hidden],.dropzone[hidden]{display:none}
+.file-chip svg{width:20px;height:20px;color:var(--blue);flex:none}
+.file-chip span{flex:1;min-width:0;display:flex;flex-direction:column}
+.file-chip b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-chip small{font-size:12px;color:var(--ink-soft)}
+.file-chip button{font-size:12.5px;color:var(--red);font-weight:600}
+.plan-msg{margin-top:14px;font-size:13px;line-height:1.45;padding:10px 12px;border-radius:10px;background:var(--canvas);color:var(--ink-soft)}
+.plan-msg:empty{display:none}
+.plan-msg.warn{background:#fdf3e1;color:#8a5a00}
+.plan-msg.err{background:#fde8e8;color:#b42318}
+#planSubmit:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -1062,16 +1081,22 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <h1>Shift plan</h1>
         <p>Imported from the mine planning system at 05:48 · anchored to the Week 39 rolling plan. The big number is how much of each activity is done, with where the plan says it should be underneath. Green is ahead, red is behind, blue is on track.</p>
       </div>
-      <button class="btn btn-ghost" onclick="toast('Plan re-sync requested: planning system usually publishes updates within 2 minutes.')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
-        Re-sync plan
-      </button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="toast('Plan re-sync requested: planning system usually publishes updates within 2 minutes.')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+          Re-sync plan
+        </button>
+        <button class="btn btn-blue" onclick="openPlanModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+          Upload plan
+        </button>
+      </div>
     </div>
     <div class="weekstrip">
       <div class="wk"><div class="wl">Week 39 · ore tonnes</div><div class="wn">41,200 <small>/ 98,000 t</small></div><div class="wd flat">42% vs 43% expected</div></div>
       <div class="wk"><div class="wl">Week 39 · development</div><div class="wn">33 <small>/ 84 m</small></div><div class="wd down">39% vs 43% expected</div></div>
       <div class="wk"><div class="wl">Week 39 · backfill</div><div class="wn">1,950 <small>/ 4,800 m³</small></div><div class="wd up">41% vs 43% expected</div></div>
-      <div class="wk"><div class="wl">Baseline</div><div class="wn">Plan v3 <small>frozen 05:48</small></div><div class="wd flat">0 approved re-plans · 2 in-shift deviations</div></div>
+      <div class="wk"><div class="wl">Baseline</div><div class="wn" id="baseName">Plan v3 <small>frozen 05:48</small></div><div class="wd flat" id="baseSub">0 approved re-plans · 2 in-shift deviations</div></div>
     </div>
     <div class="filters" id="planFilters">
       <button class="fchip on" data-pf="all">All activities</button>
@@ -1591,6 +1616,70 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeUpdateModal()">Cancel</button>
       <button class="btn btn-blue" onclick="submitUpdate()">Log update</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ Plan upload modal ═════════ -->
+<div class="modal-scrim" id="planModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2>Upload a plan</h2>
+        <p>Upload a plan from the planning system or a spreadsheet. ShiftWise freezes it as the baseline for the dates you choose.</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="f-grid">
+        <div class="field full">
+          <label>Plan file</label>
+          <input type="file" id="planFile" accept=".xlsx,.xls,.csv,.pdf,.mpp,.xml" hidden>
+          <div class="dropzone" id="planDrop" role="button" tabindex="0" onclick="$('#planFile').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();$('#planFile').click()}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+            <b>Drop the plan here or <u>browse</u></b>
+            <span>Excel, CSV, PDF or MS Project (.mpp, .xml)</span>
+          </div>
+          <div class="file-chip" id="planChip" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span><b id="planFname"></b><small id="planFsize"></small></span>
+            <button type="button" onclick="clearPlanFile()">Remove</button>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Dates the plan covers</label>
+          <div class="seg" id="planRange">
+            <button data-r="today">Today</button>
+            <button data-r="week" class="on">This week</button>
+            <button data-r="next">Next week</button>
+            <button data-r="custom">Custom</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="planFrom">From</label>
+          <input type="date" id="planFrom">
+        </div>
+        <div class="field">
+          <label for="planTo">To</label>
+          <input type="date" id="planTo">
+        </div>
+        <div class="field">
+          <label for="planType">Plan type</label>
+          <select id="planType"><option>Weekly plan</option><option>Daily plan</option><option>Shift plan</option></select>
+        </div>
+        <div class="field">
+          <label for="planShifts">Shifts</label>
+          <select id="planShifts"><option>Day and night</option><option>Day only</option><option>Night only</option></select>
+        </div>
+        <div class="field full">
+          <label for="planNote">What changed (optional)</label>
+          <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced S-214 after the hang-up, L1880 N second cut moved to Thursday."></textarea>
+        </div>
+      </div>
+      <div class="plan-msg" id="planMsg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closePlanModal()">Cancel</button>
+      <button class="btn btn-blue" id="planSubmit" onclick="submitPlan()" disabled>Upload plan</button>
     </div>
   </div>
 </div>
@@ -2376,6 +2465,68 @@ function submitUpdate(){
 }
 $("#updateModal").addEventListener("click",e=>{if(e.target.id==="updateModal")closeUpdateModal()});
 
+/* ═════════ Plan upload modal ═════════ */
+let planVersion=3;
+const isoDay=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10);};
+const niceDay=s=>new Date(s+"T00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+function weekStart(off){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7)+off*7);return d;}
+function setPlanRange(r){
+  $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r===r));
+  const today=new Date();
+  if(r==="today"){$("#planFrom").value=$("#planTo").value=isoDay(today);$("#planType").value="Daily plan";}
+  if(r==="week"||r==="next"){const s=weekStart(r==="next"?1:0),e=new Date(s);e.setDate(s.getDate()+6);$("#planFrom").value=isoDay(s);$("#planTo").value=isoDay(e);$("#planType").value="Weekly plan";}
+  checkPlan();
+}
+$$("#planRange button").forEach(b=>b.addEventListener("click",()=>setPlanRange(b.dataset.r)));
+["#planFrom","#planTo"].forEach(s=>$(s).addEventListener("change",()=>{$$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));checkPlan();}));
+function openPlanModal(){ if(!$("#planFrom").value) setPlanRange("week"); $("#planModal").classList.add("open"); }
+function closePlanModal(){ $("#planModal").classList.remove("open"); }
+function setPlanFile(f){
+  if(!f) return;
+  if(!/\.(xlsx|xls|csv|pdf|mpp|xml)$/i.test(f.name)){ toast("That file type can't be read. Use Excel, CSV, PDF or MS Project."); return; }
+  planFileObj=f;
+  $("#planFname").textContent=f.name;
+  $("#planFsize").textContent=f.size>1048576?(f.size/1048576).toFixed(1)+" MB":Math.max(1,Math.round(f.size/1024))+" KB";
+  $("#planDrop").hidden=true; $("#planChip").hidden=false; checkPlan();
+}
+let planFileObj=null;
+function clearPlanFile(){ planFileObj=null; $("#planFile").value=""; $("#planDrop").hidden=false; $("#planChip").hidden=true; checkPlan(); }
+$("#planFile").addEventListener("change",e=>setPlanFile(e.target.files[0]));
+["dragenter","dragover"].forEach(ev=>$("#planDrop").addEventListener(ev,e=>{e.preventDefault();$("#planDrop").classList.add("over");}));
+["dragleave","drop"].forEach(ev=>$("#planDrop").addEventListener(ev,e=>{e.preventDefault();$("#planDrop").classList.remove("over");}));
+$("#planDrop").addEventListener("drop",e=>setPlanFile(e.dataTransfer.files[0]));
+function checkPlan(){
+  const from=$("#planFrom").value,to=$("#planTo").value,msg=$("#planMsg"),today=isoDay(new Date());
+  let ok=!!planFileObj&&!!from&&!!to, text="", cls="";
+  if(from&&to&&to<from){ ok=false; text="The end date is before the start date."; cls="err"; }
+  else if(from&&to){
+    const days=Math.round((new Date(to)-new Date(from))/864e5)+1;
+    if(days>31){ ok=false; text="A plan can cover up to 31 days. Split longer plans into weekly uploads."; cls="err"; }
+    else if(from<=today&&today<=to){ text=`This plan covers the current shift. It will be recorded as an approved re-plan (Plan v${planVersion+1}), and Plan v${planVersion} stays frozen for comparison.`; cls="warn"; }
+    else if(to<today){ text="These dates are in the past. The plan is stored for the record but won't change today's recommendations."; }
+    else { text=`Plan v${planVersion+1} becomes the baseline from ${niceDay(from)}. Today's shift keeps Plan v${planVersion}.`; }
+    if(!planFileObj&&cls!=="err") text="Choose a plan file to continue. "+text;
+  }
+  msg.className="plan-msg "+cls; msg.textContent=text; $("#planSubmit").disabled=!ok;
+}
+function submitPlan(){
+  const from=$("#planFrom").value,to=$("#planTo").value,today=isoDay(new Date()),name=planFileObj.name;
+  const range=from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`, v=++planVersion, now=$("#scTime").textContent.slice(0,5);
+  closePlanModal();
+  toast(`Reading ${name}...`);
+  setTimeout(()=>{
+    if(from<=today&&today<=to){
+      $("#baseName").innerHTML=`Plan v${v} <small>uploaded ${now}</small>`;
+      $("#baseSub").textContent=`${range} · 1 approved re-plan · v${v-1} kept for comparison`;
+    } else {
+      $("#baseSub").textContent=`Plan v${v} queued for ${range}`;
+    }
+    toast(`Plan v${v} uploaded for ${range}: 46 activities, 3 dependency warnings to review. Recorded in the decision log.`);
+    clearPlanFile(); $("#planNote").value="";
+  },1300);
+}
+$("#planModal").addEventListener("click",e=>{if(e.target.id==="planModal")closePlanModal()});
+
 /* ═════════ Shift clock ═════════ */
 let simSec=13*3600+6*60+59;
 function tickClock(){
@@ -2386,7 +2537,7 @@ function tickClock(){
 
 /* ═════════ Escape key ═════════ */
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){closeDrawer();closeUpdateModal();toggleChat(false);}
+  if(e.key==="Escape"){closeDrawer();closeUpdateModal();closePlanModal();toggleChat(false);}
 });
 
 /* ═════════ Init ═════════ */
