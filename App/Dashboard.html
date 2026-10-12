@@ -869,6 +869,22 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 /* Live view: the 3D mine fills the whole content area */
 #view-live{padding:0;overflow:hidden}
 #view-live iframe{display:block;width:100%;height:100%;border:0}
+/* Shift performance cards */
+.pcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:8px}
+.pcard{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.pcard h4{font-size:13px;font-weight:600;color:var(--ink-soft)}
+.pcard .pv{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.pcard .pv b{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.pcard .pv span{font-size:12px;color:var(--ink-soft);margin-right:8px}
+.pcard .pv .pg{display:inline-flex;align-items:baseline;gap:6px;white-space:nowrap;margin:0;font-size:inherit;color:inherit}
+.pcard p{font-size:12.5px;line-height:1.45;color:var(--ink-soft);margin-top:auto;padding-top:4px}
+.pbar{position:relative;height:5px;border-radius:5px;background:var(--canvas)}
+.pbar i{display:block;height:100%;border-radius:5px}
+.pbar em{position:absolute;top:-3px;width:2px;height:11px;background:var(--ink-faint);border-radius:1px}
+.pcard.warn .pv b{color:var(--amber)} .pcard.warn .pbar i{background:var(--amber)}
+.pcard.neg .pv b{color:var(--red)} .pcard.neg .pbar i{background:var(--red)}
+.pcard.track .pv b{color:var(--blue)} .pcard.track .pbar i{background:var(--blue)}
+.pcard.pos .pv b{color:var(--green)} .pcard.pos .pbar i{background:var(--green)}
 /* Plan upload */
 .dropzone{display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 16px;border:1.5px dashed #c5cede;border-radius:12px;background:var(--canvas);cursor:pointer;text-align:center;transition:border-color .15s,background .15s}
 .dropzone:hover,.dropzone.over{border-color:var(--blue);background:#f2f5ff}
@@ -1118,25 +1134,38 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <button class="btn btn-ghost" onclick="toast('Shift summary exported: measures, lost time by cause, decision log and response times.')">Export summary</button>
     </div>
 
-    <div class="imp-row" style="cursor:default">
-      <div class="im-main"><h4>Likelihood of completing the plan</h4><div class="im-sub">Started the shift at 84%, fell to 62% after the S-214 hang-up, and has recovered 9 points since.</div></div>
-      <div class="imp-contrib warn"><b>71%</b><span>84% at 06:00</span></div>
-    </div>
-    <div class="imp-row" style="cursor:default">
-      <div class="im-main"><h4>Plan compliance</h4><div class="im-sub">Activities completed to agreed scope and timing: 5 of 8, weighted by the weights fixed before the shift.</div></div>
-      <div class="imp-contrib warn"><b>62%</b><span>target 80%</span></div>
-    </div>
-    <div class="imp-row" style="cursor:default">
-      <div class="im-main"><h4>Output against target</h4><div class="im-sub">Ore 2,890 of 4,200 t · Development 6.5 of 12 m. Development is the one at risk. L1880 N second cut.</div></div>
-      <div class="imp-contrib neg"><b>69% · 54%</b><span>ore · development</span></div>
-    </div>
-    <div class="imp-row" style="cursor:default">
-      <div class="im-main"><h4>Workplace readiness</h4><div class="im-sub">Share of activities that were ready at their planned start. Two were not: S-214 draw point and L1880 N charge crew.</div></div>
-      <div class="imp-contrib track"><b>75%</b><span>6 of 8 ready</span></div>
-    </div>
-    <div class="imp-row" style="cursor:default">
-      <div class="im-main"><h4>Response to problems</h4><div class="im-sub">Median time from a recommendation appearing to a decision. 7 of 9 approved, 2 rejected with a reason, 1 action stalled.</div></div>
-      <div class="imp-contrib pos"><b>6 min</b><span>median decision time</span></div>
+    <div class="pcards">
+      <div class="pcard warn">
+        <h4>Likelihood of completing the plan</h4>
+        <div class="pv"><b>71%</b><span>84% at 06:00</span></div>
+        <div class="pbar"><i style="width:71%"></i></div>
+        <p>Started the shift at 84%, fell to 62% after the S-214 hang-up, and has recovered 9 points since.</p>
+      </div>
+      <div class="pcard warn">
+        <h4>Plan compliance</h4>
+        <div class="pv"><b>62%</b><span>target 80%</span></div>
+        <div class="pbar"><i style="width:62%"></i><em style="left:80%"></em></div>
+        <p>Activities completed to agreed scope and timing: 5 of 8, weighted by the weights fixed before the shift.</p>
+      </div>
+      <div class="pcard neg">
+        <h4>Output against target</h4>
+        <div class="pv"><span class="pg"><b>69%</b><span>ore</span></span><span class="pg"><b>54%</b><span>development</span></span></div>
+        <div class="pbar"><i style="width:69%"></i></div>
+        <div class="pbar"><i style="width:54%"></i></div>
+        <p>Ore 2,890 of 4,200 t · Development 6.5 of 12 m. Development is the one at risk: L1880 N second cut.</p>
+      </div>
+      <div class="pcard track">
+        <h4>Workplace readiness</h4>
+        <div class="pv"><b>75%</b><span>6 of 8 ready</span></div>
+        <div class="pbar"><i style="width:75%"></i></div>
+        <p>Share of activities that were ready at their planned start. Two were not: S-214 draw point and L1880 N charge crew.</p>
+      </div>
+      <div class="pcard pos">
+        <h4>Response to problems</h4>
+        <div class="pv"><b>6 min</b><span>median decision time</span></div>
+        <div class="pbar"><i style="width:78%"></i></div>
+        <p>Median time from a recommendation appearing to a decision. 7 of 9 approved, 2 rejected with a reason, 1 action stalled.</p>
+      </div>
     </div>
 
     <div class="section-title">Lost time by cause <span class="hint">3.3 hours so far</span></div>
