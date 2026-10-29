@@ -308,13 +308,68 @@ tbody tr:last-child td{border-bottom:none}
 .learn svg{width:13px;height:13px}
 
 /* ── Settings ─────────────── */
-.jumpnav-wrap{position:sticky;top:0;z-index:20;background:var(--canvas);padding:2px 0 14px;margin-bottom:8px}
-.jumpnav{display:flex;gap:6px;overflow-x:auto;background:var(--bg);padding:8px 10px;border:1px solid var(--line);border-radius:12px}
-.jumpnav button{flex-shrink:0;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 15px;font-weight:700;font-size:12.5px;color:var(--ink-soft);white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
-.jumpnav button:hover{border-color:var(--ink-faint);color:var(--ink)}
-.jumpnav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.set-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 22px;margin-bottom:14px;max-width:820px}
-.set-card h3{font-size:14.5px;font-weight:800;margin-bottom:4px}
+.set-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;align-items:start;max-width:1100px}
+.set-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:0}
+.set-nav button{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-weight:700;font-size:13.5px;color:var(--ink-soft);text-align:left;transition:background .15s,color .15s}
+.set-nav button svg{width:17px;height:17px;flex-shrink:0}
+.set-nav button:hover{background:var(--canvas);color:var(--ink)}
+.set-nav button.on{background:var(--blue-soft);color:var(--blue)}
+.lvl-row{display:flex;align-items:flex-start;gap:8px;border:1.5px solid var(--line);border-radius:12px;padding:10px 10px 10px 6px;margin-bottom:8px;background:var(--bg);transition:border-color .15s,box-shadow .15s}
+.lvl-row.dragging{opacity:.4}
+.lvl-row.draft{border-style:dashed;border-color:#e3c98a;background:#fffdf7}
+.lvl-meta{grid-column:1/3;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:2px 8px 0;font-size:11.5px;font-weight:700}
+.lvl-tag{color:#8a6420;background:#fff3d6;border-radius:999px;padding:2px 9px}
+.lvl-tag.chk{color:var(--red);background:#fdecee}
+.lvl-confirm{color:var(--blue);font-weight:800;font-size:11.5px;padding:2px 4px}
+.lvl-confirm:hover{text-decoration:underline}
+.lvl-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff6e5;border:1px solid #f1d9a6;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12.5px;font-weight:700;color:#7a4b00;flex-wrap:wrap}
+.lvl-banner button{color:var(--blue);font-weight:800}
+.lvl-reading{background:var(--canvas);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12.5px}
+.lvl-reading i{display:block;height:4px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden;position:relative}
+.lvl-reading i::after{content:"";position:absolute;inset:0;width:40%;background:var(--blue);border-radius:99px;animation:lvlread 1.1s ease-in-out infinite}
+@keyframes lvlread{0%{left:-40%}100%{left:100%}}
+.lvl-empty{font-size:12.5px;color:var(--ink-faint);padding:8px 2px 12px}
+.lvl-row.over-top{box-shadow:0 -3px 0 var(--blue)}
+.lvl-row.over-bottom{box-shadow:0 3px 0 var(--blue)}
+.lvl-row.over-in{border-color:var(--blue);background:var(--blue-soft)}
+.lvl-add{font-size:11.5px;font-weight:700;color:var(--ink-faint);white-space:nowrap;padding:6px 8px;border-radius:8px}
+.lvl-add:hover{color:var(--blue);background:var(--blue-soft)}
+.lvl-grip{border:0;background:transparent;color:var(--ink-faint);cursor:grab;padding:6px 4px;font-size:16px;line-height:1;letter-spacing:-2px;flex-shrink:0}
+.lvl-grip:hover{color:var(--ink)}
+.lvl-grip:active{cursor:grabbing}
+.lvl-body{flex:1;min-width:0;display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,.7fr);gap:6px 10px}
+.lvl-body input{width:100%;border:1.5px solid transparent;border-radius:8px;padding:5px 8px;background:transparent;outline:none;font:inherit;color:inherit}
+.lvl-body input:hover,.lvl-body input:focus{border-color:var(--line);background:var(--bg)}
+.lvl-body input.ln{font-weight:800;font-size:13.5px}
+.lvl-body input.lt{font-size:12px;color:var(--ink-faint);font-weight:700}
+.lvl-body input.ld{grid-column:1/3;font-size:12.5px;color:var(--ink-soft)}
+.lvl-n{font-size:11px;font-weight:800;color:var(--ink-faint);width:18px;text-align:center;padding-top:9px;flex-shrink:0}
+.lvl-rm{font-size:16px;color:var(--ink-faint);padding:4px 8px;line-height:1}
+.lvl-rm:hover{color:var(--red)}
+.prof-prog{font-size:12px;font-weight:700;color:var(--ink-faint);margin-bottom:6px}
+.prof-sec{padding-top:18px;margin-top:18px;border-top:1px dashed var(--line)}
+.prof-sec h4{font-size:13.5px;font-weight:800;margin-bottom:8px}
+.prof-sec .field{margin-bottom:10px}
+.prof-sec textarea{resize:vertical;font-family:inherit}
+.prof-rows{margin-bottom:8px}
+.prof-row{display:grid;grid-template-columns:minmax(120px,1.2fr) 80px minmax(160px,2.4fr) auto;gap:8px;margin-bottom:8px;align-items:center}
+.prof-row input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--bg);outline:none;font-size:13px}
+.prof-row input:focus{border-color:var(--blue)}
+.prof-row .rm{font-size:16px;color:var(--ink-faint);padding:4px 8px;line-height:1}
+.prof-row .rm:hover{color:var(--red)}
+.prof-row.hd{font-size:11px;font-weight:800;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.prof-file{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;margin-top:8px;font-size:13px}
+.prof-file b{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prof-file small{color:var(--ink-faint);font-weight:600}
+.prof-file button{font-size:12px;font-weight:700;color:var(--ink-faint)}
+.prof-file button:hover{color:var(--red)}
+.prof-scroll{overflow-x:auto;padding-bottom:2px}
+.prof-row{min-width:480px}
+.set-panels{min-width:0}
+@media(max-width:820px){.set-layout{grid-template-columns:1fr}.set-nav{flex-direction:row;overflow-x:auto;position:static;padding-bottom:4px}.set-nav button{white-space:nowrap}}
+.set-card{display:none;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 26px}
+.set-card.on{display:block}
+.set-card h3{font-size:15.5px;font-weight:800;margin-bottom:4px}
 .set-card p{color:var(--ink-soft);font-size:13px;margin-bottom:12px;max-width:72ch}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{border:1.5px solid var(--line);border-radius:11px;padding:9px 15px;font-weight:700;font-size:13px;background:var(--bg)}
@@ -324,8 +379,12 @@ tbody tr:last-child td{border-bottom:none}
 .slider-row input[type=range]{flex:1;accent-color:var(--blue)}
 .slider-val{font-weight:800;font-size:15px;min-width:56px;text-align:right}
 .slider-note{font-size:11.5px;color:var(--ink-faint);margin:-2px 0 10px;max-width:70ch}
-.conn{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
-.conn:last-child{border-bottom:none}
+.conn{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.conn:last-child{border-bottom:none;padding-bottom:0}
+.conn .cstate{flex-shrink:0}
+.pill-btn{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--bg);white-space:nowrap}
+.pill-btn:hover{border-color:var(--ink-faint)}
+.toggle.locked{cursor:default;opacity:.55}
 .conn .cico{width:36px;height:36px;border-radius:9px;background:var(--canvas);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);flex-shrink:0}
 .conn .cico svg{width:18px;height:18px}
 .conn b{font-size:13.5px;display:block}
@@ -411,6 +470,22 @@ tbody tr:last-child td{border-bottom:none}
 .altrow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
 .altrow:last-child{border-bottom:none}
 .altrow span{color:var(--ink-soft);text-align:right;max-width:55%}
+.wk .wcmp{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:2px}
+.wk .wcmp b{color:var(--ink)}
+.wk .wm{font-size:11px;color:var(--ink-faint);margin-top:5px;font-weight:600}
+.flowstrip{display:flex;align-items:stretch;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.flowstrip .fl{flex:1;min-width:150px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:11px 14px}
+.flowstrip .fl .wl{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint)}
+.flowstrip .fl .wn{font-size:16px;font-weight:800}
+.flowstrip .fl .wn small{font-size:11.5px;color:var(--ink-faint);font-weight:700}
+.flowstrip .fl .wd{font-size:11.5px;font-weight:700;margin-top:1px}
+.flowstrip .fl.gap{border-color:var(--red)}
+.flowstrip .farr{align-self:center;color:var(--ink-faint);font-weight:800}
+.flowstrip .fl.grade{flex:1.4}
+.safety-strip{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 12px;font-size:11.5px;font-weight:700;color:var(--ink-faint)}
+.safety-strip b{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--ink-soft)}
+.safety-strip b.warn{color:#8a6420;background:#fff3d6;border-color:#f1d9a6}
+.sample-note{font-size:11.5px;color:var(--ink-faint);font-weight:600;margin:-4px 0 10px}
 .weekstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:12px}
 .wk{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
 .wk .wl{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint)}
@@ -426,6 +501,15 @@ tbody tr:last-child td{border-bottom:none}
 .hier .lvl{border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:700;background:var(--bg)}
 .hier .lvl small{display:block;font-size:10.5px;color:var(--ink-faint);font-weight:600}
 .hier .larr{color:var(--ink-faint);font-weight:800}
+.hier .lvl{position:relative;padding:8px 12px}
+.hier .lvl input{display:block;border:0;background:transparent;outline:none;font:inherit;color:inherit;padding:1px 0;width:100%;min-width:60px;border-bottom:1px dashed transparent}
+.hier .lvl input:hover,.hier .lvl input:focus{border-bottom-color:var(--line)}
+.hier .lvl input.lt{font-size:10.5px;color:var(--ink-faint);font-weight:600}
+.hier .lvl .lctl{display:none;position:absolute;top:-10px;right:-6px;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:1px 3px}
+.hier .lvl:hover .lctl,.hier .lvl:focus-within .lctl{display:flex}
+.hier .lvl .lctl button{font-size:11px;line-height:1;padding:3px 4px;color:var(--ink-soft);font-weight:800}
+.hier .lvl .lctl button:hover{color:var(--ink)}
+
 .stage-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .hand-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 @media(max-width:1000px){.hand-grid{grid-template-columns:1fr}}
@@ -675,11 +759,8 @@ button.fc:hover{border-color:var(--blue)}
 .brand small{display:none}
 .shiftclock{min-width:140px}
 /* ── Progressive disclosure ─────────── */
-.set-card.fold h3{cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
-.set-card.fold h3::after,details.fold>summary::after{content:"\2304";color:var(--ink-faint);font-weight:700;font-size:18px;line-height:1}
-.set-card.fold.open h3::after,details.fold[open]>summary::after{content:"\2303"}
-.set-card.fold .set-body{display:none;margin-top:10px}
-.set-card.fold.open .set-body{display:block}
+details.fold>summary::after{content:"\2304";color:var(--ink-faint);font-weight:700;font-size:18px;line-height:1}
+details.fold[open]>summary::after{content:"\2303"}
 details.fold{margin-top:18px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md)}
 details.fold>summary{cursor:pointer;padding:13px 18px;font-weight:800;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
 details.fold>summary::-webkit-details-marker,.alert-card summary::-webkit-details-marker,.dec-item summary::-webkit-details-marker{display:none}
@@ -920,7 +1001,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 
     <button class="site-chip" onclick="toast('Site switching is configured per deployment. KTO Underground is the pilot site.')">
       <b>KTO Underground</b>
-      <span>Day shift · <span id="scTime">13:07</span></span>
+      <span>Shift 1 · 06:00 to 14:00 · <span id="scTime">13:07</span></span>
     </button>
 
     <div class="topbar-right">
@@ -967,10 +1048,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <span class="lbl">Shift</span>
       <span class="pip" id="pipShift">4</span>
     </button>
-    <button data-view="live">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5 12 21l9-4.5"/></svg>
-      <span class="lbl">Live view</span>
-    </button>
     <button data-view="performance">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
       <span class="lbl">Stats</span>
@@ -1005,6 +1082,10 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 3 8l4 4"/><path d="M3 8h13"/><path d="m17 20 4-4-4-4"/><path d="M21 16H8"/></svg>
       <span class="lbl">Handover</span>
     </button>
+    <button data-view="live">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5 12 21l9-4.5"/></svg>
+      <span class="lbl">Live view</span>
+    </button>
     <div class="spacer"></div>
     <button data-view="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg>
@@ -1018,16 +1099,16 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   <section class="view active" id="view-shift">
 
     <div class="fstrip">
-      <div class="fs-top"><span class="fs-lab">If the current rate holds, you finish the shift at</span><span class="fin-with" id="finWith"></span><button class="fs-why" onclick="toggleChat(true);chatAsk('Where will we finish the shift if we do nothing?')">Why short? ›</button></div>
+      <div class="fs-top"><span class="fs-lab">If the current rate holds, you finish the day at</span><span class="fin-with" id="finWith"></span><button class="fs-why" onclick="toggleChat(true);chatAsk('Where will we finish the shift if we do nothing?')">Why short? ›</button></div>
       <div class="fs-grid">
         <div class="fc proj">
-          <small>Ore at end of shift</small>
-          <div class="fr"><b class="red"><span id="finOre">2,950</span><i>t</i></b><span id="finOrePct">70% of 4,200 t target</span></div>
+          <small>Ore hoisted by end of day</small>
+          <div class="fr"><b class="red"><span id="finOre">1,870</span><i>t</i></b><span id="finOrePct">70% of 2,667 t target</span></div>
           <div class="fbar"><i class="base" id="finOreBar" style="width:70%"></i><i class="gain" id="finOreGain"></i></div>
         </div>
         <div class="fc proj">
-          <small>Development at end of shift</small>
-          <div class="fr"><b class="red"><span id="finDev">8.0</span><i>m</i></b><span id="finDevPct">67% of 12 m target</span></div>
+          <small>Development by end of day</small>
+          <div class="fr"><b class="red"><span id="finDev">10.0</span><i>m</i></b><span id="finDevPct">67% of 15 m target</span></div>
           <div class="fbar"><i class="base" id="finDevBar" style="width:67%"></i><i class="gain" id="finDevGain"></i></div>
         </div>
         <div class="fc">
@@ -1054,6 +1135,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           <div><b>Safety first. VF-2 tripped (Tier 3).</b> Vent tech confirmation is overdue.</div>
           <button onclick="showView('alerts')">Open alert →</button>
         </div>
+        <div class="safety-strip"><span>Safety, month to date</span><b>LTI 0</b><b>RWI 0</b><b>MTI 0</b><b class="warn">PFH 1</b><b class="warn">FAI 2</b><b>Fatality 0</b><span>from the daily report (sample)</span></div>
         <div class="queue" id="queueList"></div>
 
         <div class="sidec chartcard">
@@ -1094,8 +1176,8 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   <section class="view" id="view-plan">
     <div class="view-head">
       <div>
-        <h1>Shift plan</h1>
-        <p>Imported from the mine planning system at 05:48 · anchored to the Week 39 rolling plan. The big number is how much of each activity is done, with where the plan says it should be underneath. Green is ahead, red is behind, blue is on track.</p>
+        <h1>Plan</h1>
+        <p>Imported from the mine planning system at 05:48. Today's targets come from the monthly budget and the latest reforecast. The big number on each activity is how much of it is done, with where the plan says it should be underneath. Green is ahead, red is behind, blue is on track.</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-ghost" onclick="toast('Plan re-sync requested: planning system usually publishes updates within 2 minutes.')">
@@ -1109,11 +1191,21 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       </div>
     </div>
     <div class="weekstrip">
-      <div class="wk"><div class="wl">Week 39 · ore tonnes</div><div class="wn">41,200 <small>/ 98,000 t</small></div><div class="wd flat">42% vs 43% expected</div></div>
-      <div class="wk"><div class="wl">Week 39 · development</div><div class="wn">33 <small>/ 84 m</small></div><div class="wd down">39% vs 43% expected</div></div>
-      <div class="wk"><div class="wl">Week 39 · backfill</div><div class="wn">1,950 <small>/ 4,800 m³</small></div><div class="wd up">41% vs 43% expected</div></div>
+      <div class="wk"><div class="wl">Ore hoisted · today</div><div class="wn">1,840 <small>t so far</small></div><div class="wcmp"><span>Reforecast by now <b>1,920</b></span><span>Budget <b>1,990</b></span></div><div class="wd down">−80 t (−4%) vs reforecast · −150 t (−8%) vs budget</div><div class="wm">Day: reforecast 2,550 t · budget 2,667 t. Month to date 50,012 t vs 58,064 t (−14%)</div></div>
+      <div class="wk"><div class="wl">Development · today</div><div class="wn">8.1 <small>m so far</small></div><div class="wcmp"><span>Reforecast by now <b>9.0</b></span><span>Budget <b>9.3</b></span></div><div class="wd down">−0.9 m (−10%) vs reforecast · −1.2 m (−13%) vs budget</div><div class="wm">Day budget 15 m (primary and secondary). Month to date 227 m vs 348 m (−35%)</div></div>
+      <div class="wk"><div class="wl">Backfill · today</div><div class="wn">1,300 <small>t so far</small></div><div class="wcmp"><span>Reforecast by now <b>1,450</b></span><span>Budget <b>1,450</b></span></div><div class="wd down">−150 t (−10%) vs reforecast and budget</div><div class="wm">Waste plus hydraulic. Day budget 2,335 t. Month to date 60,353 t vs 56,044 t (+8%)</div></div>
       <div class="wk"><div class="wl">Baseline</div><div class="wn" id="baseName">Plan v3 <small>frozen 05:48</small></div><div class="wd flat" id="baseSub">0 approved re-plans · 2 in-shift deviations</div></div>
     </div>
+    <div class="section-title" style="margin-top:4px">Where the ore is sticking <span class="hint">today so far, against budget</span></div>
+    <div class="flowstrip">
+      <div class="fl"><div class="wl">Blasted</div><div class="wn">2,140 <small>t</small></div><div class="wd up">+140 t (+7%)</div></div>
+      <span class="farr">→</span>
+      <div class="fl gap"><div class="wl">Trammed</div><div class="wn">1,880 <small>t</small></div><div class="wd down">−70 t (−4%)</div></div>
+      <span class="farr">→</span>
+      <div class="fl gap"><div class="wl">Hoisted</div><div class="wn">1,840 <small>t</small></div><div class="wd down">−150 t (−8%)</div></div>
+      <div class="fl grade"><div class="wl">Hoisted grade</div><div class="wn">Cu 2.50% · Co 0.68%</div><div class="wd flat">Contained: Cu 46 t · Co 12.5 t</div></div>
+    </div>
+    <div class="sample-note">Figures on this page are sample values. Budgets and the month-to-date lines follow the shape of KTO's daily production report.</div>
     <div class="filters" id="planFilters">
       <button class="fchip on" data-pf="all">All activities</button>
       <button class="fchip" data-pf="risk">At risk</button>
@@ -1129,7 +1221,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     <div class="view-head">
       <div>
         <h1>Shift performance</h1>
-        <p>Day shift so far, 06:00 – 13:07. Outputs are shown separately from plan compliance, because a shift can hit tonnes and still miss critical development.</p>
+        <p>Shift 1 so far, 06:00 – 13:07, against the day's targets. Outputs are shown separately from plan compliance, because a shift can hit tonnes and still miss critical development.</p>
       </div>
       <button class="btn btn-ghost" onclick="toast('Shift summary exported: measures, lost time by cause, decision log and response times.')">Export summary</button>
     </div>
@@ -1139,7 +1231,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <h4>Likelihood of completing the plan</h4>
         <div class="pv"><b>71%</b><span>84% at 06:00</span></div>
         <div class="pbar"><i style="width:71%"></i></div>
-        <p>Started the shift at 84%, fell to 62% after the S-214 hang-up, and has recovered 9 points since.</p>
+        <p>Started the shift at 84%, fell to 62% after the Zone 4 OBI hang-up, and has recovered 9 points since.</p>
       </div>
       <div class="pcard warn">
         <h4>Plan compliance</h4>
@@ -1152,13 +1244,13 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <div class="pv"><span class="pg"><b>69%</b><span>ore</span></span><span class="pg"><b>54%</b><span>development</span></span></div>
         <div class="pbar"><i style="width:69%"></i></div>
         <div class="pbar"><i style="width:54%"></i></div>
-        <p>Ore 2,890 of 4,200 t · Development 6.5 of 12 m. Development is the one at risk: L1880 N second cut.</p>
+        <p>Ore 1,840 of 2,667 t · Development 8.1 of 15 m. Development is the one at risk: Etang North 550L second cut.</p>
       </div>
       <div class="pcard track">
         <h4>Workplace readiness</h4>
         <div class="pv"><b>75%</b><span>6 of 8 ready</span></div>
         <div class="pbar"><i style="width:75%"></i></div>
-        <p>Share of activities that were ready at their planned start. Two were not: S-214 draw point and L1880 N charge crew.</p>
+        <p>Share of activities that were ready at their planned start. Two were not: Zone 4 OBI draw point and Etang North 550L charge crew.</p>
       </div>
       <div class="pcard pos">
         <h4>Response to problems</h4>
@@ -1168,14 +1260,27 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       </div>
     </div>
 
-    <div class="section-title">Lost time by cause <span class="hint">3.3 hours so far</span></div>
+    <div class="section-title">Lost time by cause <span class="hint">3.3 hours so far today</span></div>
     <div class="panel">
-      <div class="cal-row"><div class="cl">S-214 draw-point hang-up<span>560 t held back</span></div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--red)"></div></div><em>1.4 h</em></div>
-      <div class="cal-row"><div class="cl">VF-2 trip, north block limited<span>No extra headings ventilated</span></div><div class="bar-wrap"><div class="bar" style="width:64%;background:var(--amber)"></div></div><em>0.9 h</em></div>
-      <div class="cal-row"><div class="cl">Crusher feed derate<span>312 vs 390 t/h</span></div><div class="bar-wrap"><div class="bar" style="width:36%;background:var(--amber)"></div></div><em>0.5 h</em></div>
-      <div class="cal-row"><div class="cl">Waiting on confirmations<span>Vent tech, A-115</span></div><div class="bar-wrap"><div class="bar" style="width:21%;background:var(--blue)"></div></div><em>0.3 h</em></div>
+      <div class="cal-row"><div class="cl">Loading delayed: Zone 4 OBI draw-point hang-up<span>350 t held back</span></div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--red)"></div></div><em>1.4 h</em></div>
+      <div class="cal-row"><div class="cl">Poor or no ventilation: VF-2 trip, north block limited<span>No extra headings ventilated</span></div><div class="bar-wrap"><div class="bar" style="width:64%;background:var(--amber)"></div></div><em>0.9 h</em></div>
+      <div class="cal-row"><div class="cl">Stockpile or ore pocket issue: crusher feed derate<span>312 vs 390 t/h</span></div><div class="bar-wrap"><div class="bar" style="width:36%;background:var(--amber)"></div></div><em>0.5 h</em></div>
+      <div class="cal-row"><div class="cl">No report received: waiting on confirmations<span>Vent tech, A-115</span></div><div class="bar-wrap"><div class="bar" style="width:21%;background:var(--blue)"></div></div><em>0.3 h</em></div>
       <div class="cal-row"><div class="cl">Other<span>Minor delays</span></div><div class="bar-wrap"><div class="bar" style="width:14%;background:var(--ink-faint)"></div></div><em>0.2 h</em></div>
     </div>
+
+    <div class="section-title">Lost production by reason <span class="hint">month to date, tonnes lost</span></div>
+    <div class="panel">
+      <div class="cal-row"><div class="cl">Truck breakdown</div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--red)"></div></div><em>5,600 t</em></div>
+      <div class="cal-row"><div class="cl">Loader breakdown or loading delay</div><div class="bar-wrap"><div class="bar" style="width:77%;background:var(--red)"></div></div><em>4,300 t</em></div>
+      <div class="cal-row"><div class="cl">Hoisting system issues</div><div class="bar-wrap"><div class="bar" style="width:70%;background:var(--amber)"></div></div><em>3,900 t</em></div>
+      <div class="cal-row"><div class="cl">Poor or no ventilation</div><div class="bar-wrap"><div class="bar" style="width:50%;background:var(--amber)"></div></div><em>2,800 t</em></div>
+      <div class="cal-row"><div class="cl">Stockpile issue, full or no space</div><div class="bar-wrap"><div class="bar" style="width:41%;background:var(--amber)"></div></div><em>2,300 t</em></div>
+      <div class="cal-row"><div class="cl">No operator</div><div class="bar-wrap"><div class="bar" style="width:30%;background:var(--blue)"></div></div><em>1,700 t</em></div>
+      <div class="cal-row"><div class="cl">Simba rig breakdown</div><div class="bar-wrap"><div class="bar" style="width:27%;background:var(--blue)"></div></div><em>1,500 t</em></div>
+      <div class="cal-row"><div class="cl">Pump not working</div><div class="bar-wrap"><div class="bar" style="width:16%;background:var(--ink-faint)"></div></div><em>900 t</em></div>
+    </div>
+    <div class="sample-note">Reasons follow the lost production analysis in KTO's daily report. The tonnes are sample values until the report is connected.</div>
 
     <div class="section-title">Where you are now, and where you can get to</div>
     <div class="impact-hero">
@@ -1201,7 +1306,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 
     <div class="kpis">
       <div class="kpi"><div class="n up">+10<small> pts</small></div><div class="l">Plan attainment recovered</div><div class="d flat">since first action at 08:41</div></div>
-      <div class="kpi"><div class="n">1,240<small> t</small></div><div class="l">Tonnes protected (verified)</div><div class="d up">+560 t more tracking</div></div>
+      <div class="kpi"><div class="n">1,240<small> t</small></div><div class="l">Tonnes protected (verified)</div><div class="d up">+350 t more tracking</div></div>
       <div class="kpi"><div class="n">7<small> / 9</small></div><div class="l">Recommendations approved</div><div class="d flat">2 dismissed with reason</div></div>
       <div class="kpi"><div class="n">86<small>%</small></div><div class="l">Predictions within range</div><div class="d flat">outcome vs predicted, 30 days</div></div>
       <div class="kpi"><div class="n">6<small> min</small></div><div class="l">Median time to approve</div><div class="d up">was 14 min in week 1</div></div>
@@ -1325,7 +1430,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     <div class="view-head">
       <div>
         <h1>System &amp; data health</h1>
-        <p>Everything ShiftWise reasons over, grouped by operational layer. Radio calls and manual updates count as full inputs, not a fallback. Confidence reflects freshness, coverage and sensor health, recommendations always cite which feeds they used.</p>
+        <p>Everything ShiftWise reasons over, grouped by operational layer. Much of today's production data comes from the daily production report, which is filled in after each shift, so it is not live until it is automated. Radio calls and manual updates count as full inputs, not a fallback. Confidence reflects freshness, coverage and sensor health, recommendations always cite which feeds they used.</p>
       </div>
       <button class="btn btn-ghost" onclick="toast('Site audit pack exported: the field team template covers application, data and network landscape per layer.')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
@@ -1353,7 +1458,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <div class="panel"><h3>Open actions <span class="tag plain" id="hoActCount"></span></h3><div id="hoActions"></div></div>
       <div class="panel"><h3>Constraints carried over <span class="tag red" id="hoConCount"></span></h3><div id="hoConstraints"></div></div>
       <div class="panel"><h3>Recommendations still open <span class="tag amber" id="hoRecCount"></span></h3><div id="hoRecs"></div></div>
-      <div class="panel"><h3>What night shift needs to know</h3><div id="hoContext"></div></div>
+      <div class="panel"><h3>What Shift 2 needs to know</h3><div id="hoContext"></div></div>
     </div>
     <div class="panel" style="margin-bottom:16px">
       <h3>Operator notes</h3>
@@ -1378,61 +1483,80 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   <section class="view" id="view-settings">
     <div class="view-head">
       <div>
-        <h1>Site configuration</h1>
-        <p>How KTO Underground runs ShiftWise. Every mine configures its own horizons, thresholds and integrations.</p>
+        <h1>Settings</h1>
+        <p>Connections, site profile, thresholds, notifications and team access.</p>
       </div>
     </div>
 
-    <div class="jumpnav-wrap"><div class="jumpnav" id="settingsJumpnav">
-      <button class="on" data-jump="jsHorizon">Planning horizon</button>
-      <button data-jump="jsStructure">Site structure</button>
-      <button data-jump="jsModules">Tiers &amp; modules</button>
-      <button data-jump="jsConfidence">Confidence thresholds</button>
-      <button data-jump="jsRanking">Ranking weights</button>
-      <button data-jump="jsTiers">Alert tiers</button>
-      <button data-jump="jsEscalate">Escalation &amp; notifications</button>
-      <button data-jump="jsConn">Integrations</button>
-      <button data-jump="jsLearn">Learning</button>
-      <button data-jump="jsTeam">Team</button>
-    </div></div>
+    <div class="set-layout">
+    <nav class="set-nav" id="settingsNav">
+      <button class="on" data-jump="jsConn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Connections</button>
+      <button data-jump="jsProfile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Site profile</button>
+      <button data-jump="jsModules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>Tiers &amp; modules</button>
+      <button data-jump="jsConfidence"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg>Confidence thresholds</button>
+      <button data-jump="jsRanking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>Ranking weights</button>
+      <button data-jump="jsTiers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4M12 18h.01"/></svg>Alert tiers</button>
+      <button data-jump="jsEscalate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>Notifications</button>
+      <button data-jump="jsTeam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Team access</button>
+    </nav>
+    <div class="set-panels">
 
-    <div class="set-card" id="jsHorizon">
-      <h3>Planning horizon</h3>
-      <p>Which plan ShiftWise anchors decisions to. KTO executes shifts against a rolling weekly plan; other sites may run daily or monthly.</p>
-      <div class="seg" id="segHorizon">
-        <button data-h="Shift">Shift</button>
-        <button data-h="Daily">Daily</button>
-        <button class="on" data-h="Weekly">Weekly (rolling)</button>
-        <button data-h="Monthly">Monthly</button>
-      </div>
-      <p style="margin:16px 0 8px"><b style="color:var(--ink)">Shift duration</b>: the human time-slice inside the horizon.</p>
-      <div class="seg" id="segShift">
-        <button data-s="8">8 h</button>
-        <button data-s="10">10 h</button>
-        <button class="on" data-s="12">12 h</button>
-      </div>
-      <p style="margin-top:14px;font-size:12px">Shift boundaries: <b style="color:var(--ink)">06:00 / 18:00</b> site time · Handover pack compiles 30 min before each boundary.</p>
+    <div class="set-card on" id="jsConn">
+      <h3>Connections</h3>
+      <p>ShiftWise reads updates from the site's systems, the daily report and the radio log. Baselines are from the October 2025 KTO scoping study, to be reconfirmed before go-live.</p>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h8M8 9h2"/></svg></div><div><b>Daily production report (Excel)</b><span>Filled in after each shift · main production source until feeds are automated</span></div><span class="toggle on cstate locked" title="Core source, always on"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="15" rx="2"/><path d="M10 7 9 2M11 12h2M11 16h2"/></svg></div><div><b>Manual &amp; two-way radio updates</b><span>Always on · timestamped, with who reported it</span></div><span class="toggle on cstate locked" title="Core source, always on"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a1 1 0 0 0 1 1h1"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div><b>Fleet management (UG dispatch)</b><span>Newtrax / OptiMine · deployment incomplete, no payload monitoring · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg></div><div><b>Fixed plant SCADA</b><span>Not real-time, manual pump and fan restarts · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div><div><b>People &amp; asset tracking</b><span>Morpho / Idemia access control · collision avoidance has person-detection gaps</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></div><div><b>Mine planning system</b><span>Paper and verbal planning today · imported twice a day in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></div><div><b>SAP work orders</b><span>In place, not integrated with operations · 15 min sync in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg></div><div><b>Gas &amp; environmental monitoring</b><span>Manual air-quality checks today · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.6a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a14.5 14.5 0 0 1 20 0"/><path d="M12 20h.01"/></svg></div><div><b>Communications &amp; network health</b><span>Leaky feeder voice · Rajant mesh being deployed · no Minehop nodes in active areas</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Connection toggled (demo).')"></span></div>
+      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="12" r="2"/></svg></div><div><b>Seismic monitoring</b><span>Not connected · identified as a gap in the site audit</span></div><button class="cstate pill-btn" onclick="toast('Request logged with the Ramjack ROC administrator (demo).')">Request</button></div>
     </div>
 
-    <div class="set-card" id="jsStructure">
-      <h3>Site structure</h3>
-      <p>The hierarchy follows this site's mine plan and has at least one level between site and activity. Nothing is fixed: other sites can use different levels (e.g. strip → seam → block → RL) or several mines under one site.</p>
-      <div class="hier">
-        <span class="lvl">KTO<small>Site</small></span><span class="larr">→</span>
-        <span class="lvl">KTO Underground<small>Mine / area</small></span><span class="larr">→</span>
-        <span class="lvl">North block<small>Zone / section</small></span><span class="larr">→</span>
-        <span class="lvl">L1880 N heading<small>Location</small></span><span class="larr">→</span>
-        <span class="lvl">Develop 2 cuts<small>Activity</small></span><span class="larr">→</span>
-        <span class="lvl">Charge-up<small>Task</small></span>
-        <button class="btn btn-ghost" style="padding:7px 12px" onclick="toast('Levels are added per site by the site administrator, names and depth are free-form.')">+ Add level</button>
+    <div class="set-card" id="jsProfile">
+      <h3>Site profile</h3>
+      <p>Each site provides this so ShiftWise understands how the mine works and how decisions are made. The more complete it is, the better the recommendations.</p>
+      <div class="prof-prog" id="profProg"></div>
+
+      <div class="prof-sec">
+        <h4>About the mine</h4>
+        <div class="field"><label for="profDesc">Site description</label><textarea id="profDesc" rows="3" placeholder="What the mine produces, how it is laid out, mining methods, and anything that makes this site different."></textarea></div>
       </div>
-      <div class="f-grid">
-        <div class="field"><label>Mining method(s)</label><input value="Long-hole stoping · development"></div>
-        <div class="field"><label>Operating model</label><select><option>Remote ROC (Ramjack)</option><option>On-site control room</option></select></div>
-        <div class="field"><label>Shift pattern / roster</label><input value="2 × 12 h · day 06:00 · night 18:00"></div>
-        <div class="field"><label>Communications</label><input value="Leaky feeder voice · Rajant mesh (rolling out)"></div>
-        <div class="field"><label>Re-entry &amp; gas clearance rules</label><input value="Post-blast re-entry ~75 min · gas clearance required"></div>
-        <div class="field"><label>Languages</label><input value="English · French (to confirm)"></div>
+
+      <div class="prof-sec">
+        <h4>Diagrams and documents</h4>
+        <div class="slider-note" style="margin:0 0 8px">Mine plans, process flows, layouts, schematics, org charts and SOPs. As many as you can. ShiftWise reads them and drafts the site structure below for you to review.</div>
+        <input type="file" id="profFiles" multiple accept=".pdf,.png,.jpg,.jpeg,.svg,.vsdx,.dwg,.dxf,.docx,.xlsx,.pptx" hidden>
+        <div class="dropzone" id="profDrop" role="button" tabindex="0" onclick="$('#profFiles').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();$('#profFiles').click()}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+          <b>Drop files here or <u>browse</u></b>
+          <span>PDF, images, Visio, CAD, Word, Excel, PowerPoint</span>
+        </div>
+        <div id="profFileList"></div>
+      </div>
+
+      <div class="prof-sec">
+        <h4>Site structure</h4>
+        <div class="slider-note" style="margin:0 0 10px">Drafted from the documents above, then yours to correct. Anything ShiftWise suggested is marked until someone confirms it, and editing a level confirms it. A later upload only adds new levels and never changes ones you have edited. Drag a level by its handle to move it: drop it on another level to nest it, or on its top or bottom edge to place it beside. Use + Sub-level to add one by hand.</div>
+        <div class="lvl-reading" id="levelReading" hidden><b id="levelReadingTxt"></b><i></i></div>
+        <div class="lvl-banner" id="levelBanner" hidden></div>
+        <div id="levelList"></div>
+      </div>
+
+      <div class="prof-sec">
+        <h4>How the mine works</h4>
+        <div class="field"><label for="profProcess">Site process and workflows</label><textarea id="profProcess" rows="5" placeholder="Walk through a normal cycle, e.g. drill, charge, blast, re-entry, bog, haul, crush. Include handovers, approvals and who does what."></textarea></div>
+        <div class="field"><label for="profDecide">Decision-making</label><textarea id="profDecide" rows="4" placeholder="Who decides what, and when. What needs approval, what can the operator decide alone, what triggers an escalation, and which decisions are made at the start of shift versus in the moment."></textarea></div>
+      </div>
+
+      <div class="prof-sec">
+        <h4>Assets</h4>
+        <div class="slider-note" style="margin:0 0 8px">How many of each, and what they do.</div>
+        <div class="prof-rows" id="assetRows"></div>
+        <button class="btn btn-ghost" style="padding:7px 12px" onclick="addProfRow()">+ Add asset type</button>
       </div>
     </div>
 
@@ -1497,7 +1621,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     </div>
 
     <div class="set-card" id="jsEscalate">
-      <h3>Escalation &amp; notifications</h3>
+      <h3>Notifications</h3>
       <p>Cutting noise is a core requirement: the in-app queue is the operator's main channel, and outbound messages mostly go to people away from the screen. Underground coverage is limited, so some may still be relayed by radio.</p>
       <div class="ladder"><span class="lstep">Expected duration exceeded</span><span class="larr">→</span><span class="lstep">Up the operator queue</span><span class="larr">→</span><span class="lstep">+15 min · shift boss</span><span class="larr">→</span><span class="lstep">+30 min · superintendent</span></div>
       <div class="slider-note" style="margin-bottom:12px">Escalation timings are set per action type. Response times are logged for performance review and root-cause analysis of plan misses.</div>
@@ -1510,37 +1634,18 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <div class="conn"><div><b>Handover ready</b><span>In-app + email</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Notification rule toggled (demo).')"></span></div>
     </div>
 
-    <div class="set-card" id="jsConn">
-      <h3>Integrations</h3>
-      <p>Source systems feeding this site. Each line shows the baseline from the October 2025 KTO scoping study, all to be reconfirmed before go-live. Manual and radio input is always available as a full source.</p>
-      <div class="conn"><div><b>Manual &amp; two-way radio updates</b><span>Always on · timestamped, with who reported it</span></div><span class="cstate tag green">Core</span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a1 1 0 0 0 1 1h1"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></div><div><b>Fleet management (UG dispatch)</b><span>Baseline: Newtrax / OptiMine deployment incomplete, payload monitoring not deployed · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg></div><div><b>Fixed plant SCADA</b><span>Baseline: not real-time, manual pump/fan restarts, central SCADA proposed · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div><div><b>People & asset tracking</b><span>Baseline: Morpho / Idemia access control deployed; collision avoidance has person-detection gaps · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></div><div><b>Mine planning system</b><span>Baseline: paper and verbal planning, no planning app confirmed · import 2× daily in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h5"/></svg></div><div><b>ERP work orders</b><span>Baseline: SAP work orders in place, not integrated with operations · 15 min sync in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg></div><div><b>Gas & environmental monitoring</b><span>Baseline: manual air-quality checks · live in demo</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div><b>Communications &amp; network health</b><span>Baseline: leaky feeder voice deployed, Rajant mesh being deployed, no Minehop nodes in active areas</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Integration toggled (demo).')"></span></div>
-      <div class="conn"><div class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="12" r="2"/></svg></div><div><b>Seismic monitoring</b><span>Identified in site audit · not yet deployed</span></div><span class="cstate tag amber">Audit gap</span></div>
-    </div>
-
-    <div class="set-card" id="jsLearn">
-      <h3>Learning</h3>
-      <p>ShiftWise learns from this site's decisions and outcomes only. Every mine is different: models are not transported between sites.</p>
-      <div class="conn"><div><b>Local learning loop</b><span>Decision → outcome comparison feeds future confidence</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Local learning toggled (demo).')"></span></div>
-      <div class="conn"><div><b>Capture operator “gut feel”</b><span>Ask why after unplanned decisions with good outcomes</span></div><span class="toggle on cstate" onclick="this.classList.toggle('on');toast('Gut-feel capture toggled (demo).')"></span></div>
-    </div>
-
     <div class="set-card" id="jsTeam">
-      <h3>Control room team</h3>
+      <h3>Team access</h3>
       <p>Who can approve and assign actions this shift. Ramjack ROC personnel are the primary operators during the pilot.</p>
       <div class="conn"><div class="cico"><b style="font-size:12px">NA</b></div><div><b>Nadia Abara</b><span>Control room operator · Ramjack ROC · on shift</span></div><span class="cstate tag green">Approver</span></div>
       <div class="conn"><div class="cico"><b style="font-size:12px">TM</b></div><div><b>Thabo Mokoena</b><span>Shift boss · KTO underground · on shift</span></div><span class="cstate tag green">Approver</span></div>
-      <div class="conn"><div class="cico"><b style="font-size:12px">EK</b></div><div><b>Esther Kanza</b><span>Dispatcher · night shift</span></div><span class="cstate tag plain">Off shift</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">EK</b></div><div><b>Esther Kanza</b><span>Dispatcher · Shift 3</span></div><span class="cstate tag plain">Off shift</span></div>
       <div class="conn"><div class="cico"><b style="font-size:12px">SA</b></div><div><b>Site administrator</b><span>Configures hierarchy, cycles, thresholds, integrations and users · may be a Ramjack ROC engineer</span></div><span class="cstate tag blue">Admin</span></div>
       <div class="conn"><div class="cico"><b style="font-size:12px">OO</b></div><div><b>Operations owner</b><span>Approves operating rules, constraints and ranking weights · KTO, to confirm</span></div><span class="cstate tag violet">Approves rules</span></div>
-      <div class="conn"><div class="cico"><b style="font-size:12px">FO</b></div><div><b>Field action owners</b><span>Shift boss, maintenance, geology, survey, services · acknowledge by radio via the operator, or a lightweight mobile view (to decide)</span></div><span class="cstate tag plain">Not logged in</span></div>
+      <div class="conn"><div class="cico"><b style="font-size:12px">FO</b></div><div><b>Field action owners</b><span>Section managers, maintenance, ventilation, geology, geotechnical, survey, contractor managers · acknowledge by radio via the operator, or a lightweight mobile view (to decide)</span></div><span class="cstate tag plain">Not logged in</span></div>
       <button class="btn btn-ghost" style="margin-top:12px" onclick="toast('Invites are managed by the Ramjack ROC administrator during the pilot.')">Invite teammate</button>
+    </div>
+    </div>
     </div>
   </section>
 
@@ -1558,7 +1663,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <button class="sug" onclick="chatAsk('Why are we behind plan?')">Why are we behind plan?</button>
         <button class="sug" onclick="chatAsk('What happens if I ignore the crusher recommendation?')">If I ignore #1?</button>
         <button class="sug" onclick="chatAsk('Is the blast on track?')">Is the blast on track?</button>
-        <button class="sug" onclick="chatAsk('What is wrong with pump P3?')">What's with P3?</button>
+        <button class="sug" onclick="chatAsk('What is wrong with the Sump 10 pump?')">What's with the pump?</button>
       </div>
       <div class="chat-input">
         <input id="chatText" placeholder="Ask about the shift…" onkeydown="if(event.key==='Enter')sendChat()">
@@ -1608,9 +1713,9 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <div class="field">
           <label>Area / equipment</label>
           <select id="updArea">
-            <option>Stope S-214</option><option>Stope S-212</option><option>Heading L1880 N</option>
-            <option>Heading L1865 W</option><option>Pump station P3</option><option>Primary fan VF-2</option>
-            <option>Crusher CR-1</option><option>Decline haulage</option><option>Workshop</option><option>Other</option>
+            <option>Zone 4 OBI stope</option><option>Zone 5 OBI stope</option><option>Etang North 550L</option>
+            <option>Etang North 640L</option><option>Sump 10 pump station</option><option>Primary fan VF-2</option>
+            <option>Crusher 1</option><option>Decline haulage</option><option>Workshop</option><option>Other</option>
           </select>
         </div>
         <div class="field">
@@ -1629,8 +1734,12 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           <input id="updTime" type="time">
         </div>
         <div class="field full">
+          <label for="updDelay">Delay reason, if production was lost</label>
+          <select id="updDelay"><option value="">No delay</option><option>Truck breakdown</option><option>Simba rig breakdown</option><option>Jumbo rig breakdown</option><option>Hoisting system issues</option><option>Poor or no ventilation</option><option>Fog or rehab blocking the way</option><option>Pump not working</option><option>Charging unit breakdown</option><option>Low service water pressure</option><option>Loader breakdown or loading delay</option><option>No power</option><option>Equipment damage</option><option>No operator</option><option>Stockpile full or no space</option><option>Poor drilling</option><option>Area preparation</option><option>No report received</option><option>Decantation underground</option><option>Ends flooded</option><option>Loading delayed or mud rush</option><option>End not lashed</option></select>
+        </div>
+        <div class="field full">
           <label>What happened?</label>
-          <textarea id="updNote" rows="3" placeholder="e.g. Fitter on site at P3, suction screen partially blocked, clearing now, expect normal flow within 30 min."></textarea>
+          <textarea id="updNote" rows="3" placeholder="e.g. Fitter on site at Sump 10 pump, suction screen partially blocked, clearing now, expect normal flow within 30 min."></textarea>
         </div>
         <div class="field full">
           <label>How sure is the source?</label>
@@ -1678,8 +1787,8 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           <label>Dates the plan covers</label>
           <div class="seg" id="planRange">
             <button data-r="today">Today</button>
-            <button data-r="week" class="on">This week</button>
-            <button data-r="next">Next week</button>
+            <button data-r="month" class="on">This month</button>
+            <button data-r="nextmonth">Next month</button>
             <button data-r="custom">Custom</button>
           </div>
         </div>
@@ -1691,17 +1800,13 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           <label for="planTo">To</label>
           <input type="date" id="planTo">
         </div>
-        <div class="field">
-          <label for="planType">Plan type</label>
-          <select id="planType"><option>Weekly plan</option><option>Daily plan</option><option>Shift plan</option></select>
-        </div>
-        <div class="field">
+        <div class="field full">
           <label for="planShifts">Shifts</label>
-          <select id="planShifts"><option>Day and night</option><option>Day only</option><option>Night only</option></select>
+          <select id="planShifts"><option>All three shifts</option><option>Shift 1</option><option>Shift 2</option><option>Shift 3</option></select>
         </div>
         <div class="field full">
           <label for="planNote">What changed (optional)</label>
-          <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced S-214 after the hang-up, L1880 N second cut moved to Thursday."></textarea>
+          <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced Zone 4 OBI after the hang-up, Etang North 550L second cut moved to Thursday."></textarea>
         </div>
       </div>
       <div class="plan-msg" id="planMsg"></div>
@@ -1720,124 +1825,124 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 
 const NBA = [
  {id:"n1", pri:"high", conf:88, area:"Decline haulage", tier:"Recommend",
-  title:"Reassign TK-03 and TK-05 from L1865 waste to S-212 ore haulage",
-  why:"Crusher CR-1 feed buffer is down to <b>42 minutes</b> at the current rate. S-212 bogging is ahead of plan with ore available at the draw point, while L1865 waste movement can slip to night shift without touching the Week 39 plan: Two trucks swapped for the next 3 hours closes the gap.",
-  whyNow:"If the crusher starves it takes ~35 minutes to re-establish steady feed after restart, that turns a 42-minute buffer problem into a 1,200 t shortfall by shift end.",
-  impact:[["red","Crusher starves in ~90 min"],["green","Protects 1,200 t"],["plain","Affects 2 trucks · 3 h"]],
+  title:"Reassign Truck 6313 and Truck 6315 from 640L waste to Zone 5 OBI ore haulage",
+  why:"Crusher 1 feed buffer is down to <b>42 minutes</b> at the current rate. Zone 5 OBI bogging is ahead of plan with ore available at the draw point, while 640L waste movement can slip to Shift 2 without touching the monthly plan: Two trucks swapped for the next 3 hours closes the gap.",
+  whyNow:"If the crusher starves it takes ~35 minutes to re-establish steady feed after restart, that turns a 42-minute buffer problem into a 750 t shortfall by shift end.",
+  impact:[["red","Crusher starves in ~90 min"],["green","Protects 750 t"],["plain","Affects 2 trucks · 3 h"]],
   evidence:[
-    ["g","Fleet management: truck cycles","TK-03/TK-05 cycle times, updated 12:58","live"],
+    ["g","Fleet management: truck cycles","Truck 6313/Truck 6315 cycle times, updated 12:58","live"],
     ["g","SCADA: crusher feed rate","312 t/h vs 390 t/h planned, 12:59","live"],
-    ["g","Stockpile level: ROM bin","42 min buffer at current draw","12:55"],
-    ["g","Week 39 plan","L1865 waste has 18 h float","05:48"]],
+    ["g","Stockpile level: ore pocket","42 min buffer at current draw","12:55"],
+    ["g","monthly plan","640L waste has 18 h float","05:48"]],
   predicted:"Feed buffer recovers to >3 h by 16:30; shift ore tonnage lands within 2% of plan.",
   a:"Approve & assign to dispatch", b:"Not now",
   owner:"Dispatch (fleet management system)", age:14, lift:"+13 pts",
-  invalid:"S-212 ore availability drops (hang-up or LHD breakdown), or the ROM buffer recovers on its own.",
-  alts:[["Move TK-03 and TK-05 to S-212 ore (this)","+13 pts"],["Slow crusher feed to stretch the buffer","+4 pts · cuts tonnes"],["Bring spare truck TK-06 into service","+15 pts · not feasible, in service until ~15:00"],["Do nothing","−28% of crusher plan by 18:00"]]},
+  invalid:"Zone 5 OBI ore availability drops (hang-up or LHD breakdown), or the ore pocket level recovers on its own.",
+  alts:[["Move Truck 6313 and Truck 6315 to Zone 5 OBI ore (this)","+13 pts"],["Slow crusher feed to stretch the buffer","+4 pts · cuts tonnes"],["Bring spare truck Truck 6316 into service","+15 pts · not feasible, in service until ~15:00"],["Do nothing","−28% of crusher plan by 18:00"]]},
 
- {id:"n2", pri:"high", conf:54, area:"Pump station P3", tier:"Confirm first",
-  title:"P3 discharge flow reads 40% low, confirm in the field before I recommend anything",
-  why:"SCADA shows P3 flow at <b>58 l/s against a normal 95 l/s</b>, but pump amps and pressure look normal, the pattern matches the fouled sensor we saw on 12 Aug, not a real flow loss. I can't tell the difference from here, and a wrong call either floods the decline sump overnight or wastes a crew swap.",
+ {id:"n2", pri:"high", conf:54, area:"Sump 10 pump station", tier:"Confirm first",
+  title:"Sump 10 pump discharge flow reads 40% low, confirm in the field before I recommend anything",
+  why:"SCADA shows Sump 10 pump flow at <b>58 l/s against a normal 95 l/s</b>, but pump amps and pressure look normal, the pattern matches the fouled sensor we saw on 12 Aug, not a real flow loss. I can't tell the difference from here, and a wrong call either floods the decline sump overnight or wastes a crew swap.",
   whyNow:"If it IS real, sump level reaches the Tier-3 threshold in about 4 hours. A field check now keeps every option open.",
   impact:[["amber","Evidence conflict"],["plain","Sump T3 in ~4 h if real"],["blue","Last time: sensor fault"]],
   evidence:[
-    ["a","SCADA: P3 flow transmitter","58 l/s (flagged: deviates from amps/pressure)","live"],
-    ["g","SCADA: P3 motor amps","Normal band","live"],
-    ["g","SCADA: sump level L18","Rising 0.4%/h: slow","live"],
+    ["a","SCADA: Sump 10 pump flow transmitter","58 l/s (flagged: deviates from amps/pressure)","live"],
+    ["g","SCADA: Sump 10 pump motor amps","Normal band","live"],
+    ["g","SCADA: sump level 580L","Rising 0.4%/h: slow","live"],
     ["x","Field confirmation","None yet: fitter not dispatched","n/a"]],
   predicted:"Field check resolves the conflict within 45 min; confidence moves above 60% either way.",
   a:"Request field check", b:"Snooze 30 min", confirm:true,
   owner:"Fitter, pump crew", age:22, lift:"Unlocks decision",
   invalid:"A second independent reading (field gauge, or a drop in sump level trend) settles it either way.",
-  alts:[["Request field check (this)","Resolves in ~45 min"],["Cut P3 duty until confirmed","Risks sump rise if flow is real"],["Ignore the reading","Risks a Tier-3 sump in ~4 h if real"]]},
+  alts:[["Request field check (this)","Resolves in ~45 min"],["Cut Sump 10 pump duty until confirmed","Risks sump rise if flow is real"],["Ignore the reading","Risks a Tier-3 sump in ~4 h if real"]]},
 
- {id:"n3", pri:"med", conf:76, area:"Workshop / TK-07", tier:"Recommend",
-  title:"Pull TK-07's 500-hour service forward into the blast clearance window",
-  why:"Work order <b>WO-20441</b> has TK-07 due for its 500 h service this shift. Haulage demand drops during blast clearance (17:30–19:00) anyway: starting the service at 17:00 means the truck is down when it's least needed. Left as scheduled, it slips into night shift peak haulage.",
+ {id:"n3", pri:"med", conf:76, area:"Workshop / Truck 6317", tier:"Recommend",
+  title:"Pull Truck 6317's 500-hour service forward into the blast clearance window",
+  why:"Work order <b>WO-20441</b> has Truck 6317 due for its 500 h service this shift. Haulage demand drops during blast clearance (17:30–19:00) anyway: starting the service at 17:00 means the truck is down when it's least needed. Left as scheduled, it slips into Shift 2's peak haulage.",
   whyNow:"The workshop bay and both fitters are free from 17:00. That alignment doesn't hold tomorrow.",
   impact:[["green","Zero haulage impact"],["plain","WO-20441 · 6 h service"],["blue","Bay 1 free 17:00"]],
   evidence:[
-    ["g","ERP: work order WO-20441","500 h service due · TK-07","12:45 sync"],
-    ["g","Fleet management: TK-07 hours","497.6 engine hours","live"],
+    ["g","ERP: work order WO-20441","500 h service due · Truck 6317","12:45 sync"],
+    ["g","Fleet management: Truck 6317 hours","497.6 engine hours","live"],
     ["g","Shift plan: blast window","Clearance 17:30–19:00, haulage paused","05:48"]],
-  predicted:"Service completes by 23:00 with no lost ore tonnes; night shift starts with a full fleet.",
+  predicted:"Service completes by 23:00 with no lost ore tonnes; Shift 3 starts with a full fleet.",
   a:"Approve: notify workshop", b:"Keep original slot",
   owner:"Workshop supervisor", age:5, lift:"+1 pt",
   invalid:"A breakdown elsewhere that pulls the fitters, or the blast window slipping.",
-  alts:[["Service at 17:00 in the blast window (this)","+1 pt · zero haulage impact"],["Keep the night-shift slot","−2 pts at night peak"],["Defer to tomorrow","Risk of an unplanned stop · parts kitted now"]]},
+  alts:[["Service at 17:00 in the blast window (this)","+1 pt · zero haulage impact"],["Keep the Shift 3 slot","−2 pts at Shift 3 peak"],["Defer to tomorrow","Risk of an unplanned stop · parts kitted now"]]},
 
- {id:"n4", pri:"med", conf:71, area:"Heading L1880 N", tier:"Recommend",
-  title:"Move L1880 N charge-up to 15:30: the second cut misses the re-entry window otherwise",
-  why:"The charging crew is still finishing S-214 and won't reach L1880 N until 15:10 at the earliest. If charge-up starts later than 15:30, the cut can't fire in the 18:40 window and <b>4 m of week development slips</b>. Telling the shift boss now lets the crew move straight over without a break in sequence.",
+ {id:"n4", pri:"med", conf:71, area:"Etang North 550L", tier:"Recommend",
+  title:"Move Etang North 550L charge-up to 15:30: the second cut misses the re-entry window otherwise",
+  why:"The charging crew is still finishing Zone 4 OBI and won't reach Etang North 550L until 15:10 at the earliest. If charge-up starts later than 15:30, the cut can't fire in the 18:40 window and <b>5 m of the day's development slips</b>. Telling the shift boss now lets the crew move straight over without a break in sequence.",
   whyNow:"The decision is only free until ~14:30: after that the crew starts a task they can't leave mid-way.",
-  impact:[["amber","4 m dev at risk"],["plain","Crew move · 20 min"],["blue","Fires in 18:40 window"]],
+  impact:[["amber","5 m dev at risk"],["plain","Crew move · 20 min"],["blue","Fires in 18:40 window"]],
   evidence:[
-    ["g","People tracking: charge crew","On S-214, est. done 15:05","live"],
-    ["g","Shift plan: L1880 N","2 cuts planned · 1 complete","05:48"],
+    ["g","People tracking: charge crew","On Zone 4 OBI, est. done 15:05","live"],
+    ["g","Shift plan: Etang North 550L","2 cuts planned · 1 complete","05:48"],
     ["g","Blast schedule","Single window 18:40 today","05:48"]],
-  predicted:"Both cuts fire tonight; week development stays on the 84 m target.",
+  predicted:"Both cuts fire tonight; the day's development stays on the 15 m target.",
   a:"Approve: notify shift boss", b:"Let it slip",
   owner:"Shift boss, T. Mokoena", age:9, lift:"+6 pts",
-  invalid:"S-214 charge-up finishing later than 15:30, or an access restriction on L1880 N.",
-  alts:[["Move charge-up to 15:30 (this)","+6 pts · both cuts fire"],["Second charge crew from night roster","+7 pts · needs call-in, not available before 17:00"],["Let the second cut slip","−6 pts · 4 m development lost"]]},
+  invalid:"Zone 4 OBI charge-up finishing later than 15:30, or an access restriction on Etang North 550L.",
+  alts:[["Move charge-up to 15:30 (this)","+6 pts · both cuts fire"],["Second charge crew from night roster","+7 pts · needs call-in, not available before 17:00"],["Let the second cut slip","−6 pts · 5 m development lost"]]},
 
  {id:"n5", pri:"low", conf:93, area:"Blast 18:40", tier:"On track",
   title:"18:40 blast readiness is on track, no action needed",
-  why:"All preconditions are trending green: charge-up on S-214 completes ~15:05, ventilation is nominal, and the tag board shows a normal crew count for a 17:30 clearance start. I'll run the pre-blast checklist automatically at 17:30 and alert you only if a precondition fails.",
+  why:"All preconditions are trending green: charge-up on Zone 4 OBI completes ~15:05, ventilation is nominal, and the tag board shows a normal crew count for a 17:30 clearance start. I'll run the pre-blast checklist automatically at 17:30 and alert you only if a precondition fails.",
   whyNow:"Confidence is high because every input is live and recent. Sometimes the next best action is to not touch anything.",
   impact:[["green","All checks trending green"],["plain","Auto-check at 17:30"]],
   evidence:[
     ["g","People tracking: tag board","118 underground, normal for shift","live"],
     ["g","Ventilation: VF-1","Nominal (VF-2 on standby: see alert)","live"],
-    ["g","Charge-up progress","S-214 94% complete","13:01"]],
+    ["g","Charge-up progress","Zone 4 OBI 94% complete","13:01"]],
   predicted:"Blast fires 18:40; re-entry clearance by 19:55 based on last 30 blasts.",
   a:"Acknowledge", b:null,
   owner:"n/a", age:3, lift:"No change",
-  invalid:"Any pre-blast precondition failing: S-214 charge-up behind schedule, ventilation fault, or a crew count outside the norm.",
+  invalid:"Any pre-blast precondition failing: Zone 4 OBI charge-up behind schedule, ventilation fault, or a crew count outside the norm.",
   alts:[["Leave as is and auto-check at 17:30 (this)","Keeps the 18:40 window"],["Add a manual pre-check at 16:30","No added likelihood · more operator load"]]},
 ];
 
 const PLAN = [
- {id:"p1", cat:"production", name:"Bog & haul ore: stope S-212", sub:"LHD LH-02 + decline fleet → ROM bin",
+ {id:"p1", cat:"production", name:"Bog & haul ore: Zone 5 OBI stope", sub:"LHD Scaltec 3402 + decline fleet → ore pocket",
   plan:"1,800 t", act:"1,240 t", pct:69, expect:62, risk:false,
   ready:[["ok","Ventilation"],["ok","LHD available"],["ok","Draw point clear"],["ok","Haul route open"]]},
- {id:"p2", cat:"production", name:"Clear draw-point hang-up: stope S-214", sub:"Blocked since 08:20 · water-jet crew assigned",
+ {id:"p2", cat:"production", name:"Clear draw-point hang-up: Zone 4 OBI stope", sub:"Blocked since 08:20 · water-jet crew assigned",
   plan:"Cleared by 14:00", act:"In progress", pct:70, expect:85, risk:true,
   ready:[["ok","Crew on site"],["ok","Crew qualified (water-jet)"],["pend","Water supply pressure"],["ok","Exclusion zone set"]]},
- {id:"p3", cat:"production", name:"Crusher feed: CR-1", sub:"Target 390 t/h steady feed",
-  plan:"3,800 t", act:"2,610 t", pct:69, expect:58, risk:true,
+ {id:"p3", cat:"production", name:"Crusher feed: Crusher 1", sub:"Target 390 t/h steady feed",
+  plan:"2,667 t", act:"1,840 t", pct:69, expect:58, risk:true,
   ready:[["ok","Crusher healthy"],["no","Feed buffer 42 min"],["ok","Conveyor line"]]},
- {id:"p4", cat:"development", name:"Develop L1880 N, 2 cuts", sub:"Jumbo J-01 · drill, charge, fire 18:40",
-  plan:"8.0 m", act:"4.1 m", pct:51, expect:50, risk:true,
-  ready:[["ok","Jumbo serviceable"],["pend","Charge crew (on S-214)"],["ok","Crew ticketed for charging"],["ok","Explosives at magazine"],["ok","Vent duct advanced"],["ok","Ground support done"],["ok","Face marked & surveyed"]]},
- {id:"p5", cat:"development", name:"Install vent duct: L1865 W", sub:"Services crew · 60 m of duct",
+ {id:"p4", cat:"development", name:"Develop Etang North 550L, 2 cuts", sub:"Jumbo 3123 · drill, charge, fire 18:40",
+  plan:"10 m", act:"5.1 m", pct:51, expect:50, risk:true,
+  ready:[["ok","Jumbo serviceable"],["pend","Charge crew (on Zone 4 OBI)"],["ok","Crew ticketed for charging"],["ok","Explosives at magazine"],["ok","Vent duct advanced"],["ok","Ground support done"],["ok","Face marked & surveyed"]]},
+ {id:"p5", cat:"development", name:"Install vent duct: Etang North 640L", sub:"Services crew · 60 m of duct",
   plan:"60 m", act:"45 m", pct:75, expect:60, risk:false,
   ready:[["ok","Duct & hangers at face"],["ok","Crew"],["ok","Access"]]},
- {id:"p6", cat:"services", name:"TK-07 · 500-hour service", sub:"WO-20441 · workshop bay 1 · 6 h",
+ {id:"p6", cat:"services", name:"Truck 6317 · 500-hour service", sub:"WO-20441 · workshop bay 1 · 6 h",
   plan:"Complete this shift", act:"Not started", pct:0, expect:10, risk:false,
   ready:[["ok","Parts kitted"],["ok","Bay 1 free from 17:00"],["ok","Fitters rostered"]]},
- {id:"p7", cat:"services", name:"Pump transfer: station P3", sub:"Dewatering L18 sump → surface",
+ {id:"p7", cat:"services", name:"Pump transfer: Sump 10 pump station", sub:"Dewatering 580L sump → surface",
   plan:"2,050 m³", act:"1,410 m³", pct:69, expect:62, risk:true,
   ready:[["pend","Flow reading unconfirmed"],["ok","Power"],["ok","Discharge line"]]},
- {id:"p8", cat:"production", name:"Fire blast: S-214 stope ring 12", sub:"Single window 18:40 · re-entry ~19:55",
+ {id:"p8", cat:"production", name:"Fire blast: Zone 4 OBI stope ring 12", sub:"Single window 18:40 · re-entry ~19:55",
   plan:"18:40", act:"On track", pct:58, expect:58, risk:false,
   ready:[["ok","Charging 94%"],["ok","Ventilation nominal"],["pend","Clearance from 17:30"],["pend","Gas clearance & re-entry time"],["ok","Blast crew briefed"],["ok","Backfill status clear"]]},
 ];
 
 const ACTIONS = [
- {id:"A-118", title:"Water-jet crew to clear S-214 hang-up", src:"From alert T2 · approved 08:41",
-  owner:"U/G services crew", loop:3, status:"prog", impact:"Est. +560 t recovered if cleared by 14:00",
-  timer:"27 min left", timerCls:"flat", verify:"Data: FMS shows bogging resumed at S-214"},
- {id:"A-117", title:"Swap LHD LH-04 → LH-02 at S-212 (hydraulic temp)", src:"Recommendation · approved 07:55",
+ {id:"A-118", title:"Water-jet crew to clear Zone 4 OBI hang-up", src:"From alert T2 · approved 08:41",
+  owner:"U/G services crew", loop:3, status:"prog", impact:"Est. +350 t recovered if cleared by 14:00",
+  timer:"27 min left", timerCls:"flat", verify:"Data: FMS shows bogging resumed at Zone 4 OBI"},
+ {id:"A-117", title:"Swap LHD Scaltec 3404 → Scaltec 3402 at Zone 5 OBI (hydraulic temp)", src:"Recommendation · approved 07:55",
   owner:"Dispatch", loop:5, status:"hand", impact:"Verified: bogging rate held at 315 t/h (predicted 300–330)",
-  timer:"Closed 08:20", timerCls:"up", verify:"Data: FMS rate at S-212"},
- {id:"A-116", title:"Re-route decline traffic past L1840 remuck during shotcrete", src:"Recommendation · approved 07:12",
+  timer:"Closed 08:20", timerCls:"up", verify:"Data: FMS rate at Zone 5 OBI"},
+ {id:"A-116", title:"Re-route decline traffic past 580L remuck during shotcrete", src:"Recommendation · approved 07:12",
   owner:"Dispatch", loop:4, status:"done", impact:"Verified: zero truck queuing events (predicted ≤2)",
   timer:"Closed 09:40", timerCls:"up", verify:"Data: FMS queuing events"},
  {id:"A-115", title:"Confirm VF-2 vibration trip with vent tech", src:"From alert T3 · approved 06:58",
   owner:"Ventilation tech", loop:3, status:"stall", impact:"No response for 55 min. ShiftWise re-pinged at 12:40",
   timer:"Overdue 55 min", timerCls:"down", verify:"Person + data: tech confirms, SCADA fan state"},
- {id:"A-114", title:"Top-up emulsion delivery to S-214 magazine", src:"Readiness check · approved 06:31",
+ {id:"A-114", title:"Top-up emulsion delivery to Zone 4 OBI magazine", src:"Readiness check · approved 06:31",
   owner:"Supply crew", loop:5, status:"hand", impact:"Verified: charge-up unblocked (was the morning's constraint)",
   timer:"Closed 07:50", timerCls:"up", verify:"Person: magazine stock check"},
 ];
@@ -1845,21 +1950,21 @@ const ACTIONS = [
 const ALERTS = [
  {id:"al1", tier:3, title:"Primary fan VF-2: vibration trip, auto-shutdown", meta:"SCADA · raised 06:52", cleared:false,
   body:"VF-2 tripped on high vibration and shut itself down. VF-1 is carrying the north block at 87% capacity. Constraint locked into plan evaluation: no additional headings can be ventilated in the north block until resolved.",
-  resp:"Pre-agreed response: vent tech physically inspects bearing housing before any restart. Do not reset remotely. If VF-1 exceeds 92% for 30 min, pull crews from L1880 N per TARP.",
+  resp:"Pre-agreed response: vent tech physically inspects bearing housing before any restart. Do not reset remotely. If VF-1 exceeds 92% for 30 min, pull crews from Etang North 550L per TARP.",
   action:"A-115 in the loop: vent tech confirmation is 55 min overdue."},
- {id:"al2", tier:2, title:"Crusher CR-1 feed buffer below 60 minutes", meta:"SCADA + stockpile survey · raised 12:44", cleared:false,
-  body:"ROM bin drawdown will starve CR-1 in ~90 minutes at current haulage rate. Feed rate already derated 312 t/h vs 390 planned.",
-  resp:"Pre-agreed response: re-prioritise ore haulage over waste. Recommendation #1 implements this: two trucks from L1865 waste to S-212 ore.",
+ {id:"al2", tier:2, title:"Crusher 1 feed buffer below 60 minutes", meta:"SCADA + stockpile survey · raised 12:44", cleared:false,
+  body:"ore pocket drawdown will starve Crusher 1 in ~90 minutes at current haulage rate. Feed rate already derated 312 t/h vs 390 planned.",
+  resp:"Pre-agreed response: re-prioritise ore haulage over waste. Recommendation #1 implements this: two trucks from 640L waste to Zone 5 OBI ore.",
   action:"Linked to recommendation #1 (88% confidence)."},
- {id:"al3", tier:2, title:"Stope S-214 draw point hang-up", meta:"Operator report + FMS idle time · raised 08:20", cleared:false,
-  body:"LHD idle at draw point since 08:20; water-jet crew clearing. 560 t of today's ore plan sits behind this constraint.",
+ {id:"al3", tier:2, title:"Zone 4 OBI stope draw point hang-up", meta:"Operator report + FMS idle time · raised 08:20", cleared:false,
+  body:"LHD idle at draw point since 08:20; water-jet crew clearing. 350 t of today's ore plan sits behind this constraint.",
   resp:"Pre-agreed response: exclusion zone, water-jet lance, re-evaluate at 14:00. If not cleared by 14:00, re-sequence to ring 11 ore.",
   action:"A-118 in the loop: crew on site, est. clear 13:50."},
- {id:"al4", tier:1, title:"TK-04 engine coolant temp trending high", meta:"FMS telemetry · raised 11:37", cleared:false,
+ {id:"al4", tier:1, title:"Truck 6314 engine coolant temp trending high", meta:"FMS telemetry · raised 11:37", cleared:false,
   body:"Tier-1 machine alert: operator has been made aware by the onboard system. Trend is slow; no derate yet. Logged for the workshop's radar ahead of tonight's service window.",
-  resp:"Pre-agreed response: monitor. If it reaches Tier 2 (machine derates itself), swap TK-04 to short hauls and book a coolant system check.",
+  resp:"Pre-agreed response: monitor. If it reaches Tier 2 (machine derates itself), swap Truck 6314 to short hauls and book a coolant system check.",
   action:"No action required: watching."},
- {id:"al5", tier:1, title:"P3 discharge flow deviates from pump signature", meta:"SCADA analytics · raised 12:31", cleared:false,
+ {id:"al5", tier:1, title:"Sump 10 pump discharge flow deviates from pump signature", meta:"SCADA analytics · raised 12:31", cleared:false,
   body:"Flow transmitter disagrees with amps + pressure. Evidence conflict: see recommendation #2. Confidence too low to act without a field check.",
   resp:"Pre-agreed response: dispatch fitter to confirm before any pumping schedule change. Never act on a single conflicted sensor.",
   action:"Linked to recommendation #2 (confirm first)."},
@@ -1867,20 +1972,22 @@ const ALERTS = [
 
 const SOURCES = [
  {layer:"Enterprise & planning", items:[
+   {name:"Daily production report (Excel)", sub:"Filled in after each shift · covers Shift 3 of the day before and Shifts 1 and 2 of yesterday", conf:80, dot:"a",
+    note:"Tonnes, development, backfill and delays arrive a shift or more late, with data-valid and no-data-entry flags.", icon:"doc"},
    {name:"ERP: work orders & maintenance", sub:"15 min sync · last 12:45", conf:96, dot:"g",
     note:null, icon:"doc"},
-   {name:"Mine planning: Week 39 + shift plan", sub:"Imported 05:48 · next import 17:30", conf:88, dot:"g",
+   {name:"Mine planning: monthly plan + daily plan", sub:"Imported 05:48 · next import 17:30", conf:88, dot:"g",
     note:"Plans assume average rates. ShiftWise tracks live variance against them.", icon:"cal"}]},
  {layer:"Fleet & work execution", items:[
    {name:"UG fleet management (dispatch)", sub:"Live · 4 s telemetry · 14 machines", conf:97, dot:"g",
     note:null, icon:"truck"},
    {name:"Machine health telemetry", sub:"Live · engine hours, temps, alerts", conf:94, dot:"g",
-    note:"TK-04 coolant trend flagged Tier 1.", icon:"gauge"}]},
+    note:"Truck 6314 coolant trend flagged Tier 1.", icon:"gauge"}]},
  {layer:"Fixed plant (SCADA / DCS)", items:[
    {name:"Ventilation fans & airflow", sub:"Live · 1 s scan", conf:92, dot:"a",
     note:"VF-2 offline after vibration trip. Tier 3 alert active.", icon:"fan"},
    {name:"Dewatering pumps & sump levels", sub:"Live · 1 s scan", conf:71, dot:"a",
-    note:"P3 flow transmitter conflicts with amps/pressure, field check requested.", icon:"pump"},
+    note:"Sump 10 pump flow transmitter conflicts with amps/pressure, field check requested.", icon:"pump"},
    {name:"Crusher & conveyors", sub:"Live · feed rate, power draw", conf:98, dot:"g",
     note:null, icon:"crush"}]},
  {layer:"Environment, safety & people", items:[
@@ -1899,7 +2006,7 @@ const SOURCES = [
    {name:"Leaky feeder voice", sub:"Live · voice coverage on main levels", conf:90, dot:"g",
     note:"Radio calls are the main channel for field confirmations.", icon:"radio"},
    {name:"Rajant mesh network", sub:"Being deployed · data coverage partial", conf:68, dot:"a",
-    note:"No data coverage at L1880 N and L1865 W, updates from those headings may only arrive by radio.", icon:"wifi"}]},
+    note:"No data coverage at Etang North 550L and Etang North 640L, updates from those headings may only arrive by radio.", icon:"wifi"}]},
 ];
 const LAYER_MOD={
  "Enterprise & planning":"Core",
@@ -1911,8 +2018,8 @@ const LAYER_MOD={
 };
 
 const INTEGRITY=[
- {id:"i1", title:"TK-09 marked ready by maintenance, but nothing says it is",
-  body:"WO status is complete and the truck is listed available, yet engine hours haven't moved, fuel burn is zero and it has had no assignment for 3 hours. ShiftWise is not counting TK-09 in fleet availability until someone confirms.",
+ {id:"i1", title:"Truck 6319 marked ready by maintenance, but nothing says it is",
+  body:"WO status is complete and the truck is listed available, yet engine hours haven't moved, fuel burn is zero and it has had no assignment for 3 hours. ShiftWise is not counting Truck 6319 in fleet availability until someone confirms.",
   meta:"ERP vs FMS · raised 12:20", state:null},
  {id:"i2", title:"Plan on screen may be stale, paper changes since 07:30",
   body:"Only source for the plan is the 05:48 import. The shift boss has re-sequenced work on paper twice since then (last operator entry 11:20). Readiness and ranking use the imported plan until the changes are logged.",
@@ -1930,11 +2037,11 @@ const SCORECARD=[
 ];
 
 const DECISIONS = [
- {t:"Today 07:55", title:"Swap LHD LH-04 → LH-02 at S-212", by:"Approved by N. Abara · ShiftWise was 91% sure",
-  body:"LH-04 hydraulic temperature trending to derate. Swapping before failure kept bogging continuous.",
-  pred:"Hold bogging ≥ 300 t/h; avoid 2 h unplanned downtime.", act:"Bogging held at 315 t/h. LH-04 confirmed failing seal in workshop.",
+ {t:"Today 07:55", title:"Swap LHD Scaltec 3404 → Scaltec 3402 at Zone 5 OBI", by:"Approved by N. Abara · ShiftWise was 91% sure",
+  body:"Scaltec 3404 hydraulic temperature trending to derate. Swapping before failure kept bogging continuous.",
+  pred:"Hold bogging ≥ 300 t/h; avoid 2 h unplanned downtime.", act:"Bogging held at 315 t/h. Scaltec 3404 confirmed failing seal in workshop.",
   out:"green", outLabel:"As predicted", learn:"Hydraulic temp signature added to LHD early-warning pattern."},
- {t:"Today 07:12", title:"Re-route decline traffic during L1840 shotcrete", by:"Approved by N. Abara · ShiftWise was 84% sure",
+ {t:"Today 07:12", title:"Re-route decline traffic during 580L shotcrete", by:"Approved by N. Abara · ShiftWise was 84% sure",
   body:"Shotcrete crew needed 90 min of exclusive access; re-route added 4 min per cycle but avoided queuing.",
   pred:"≤ 2 queuing events, ~40 t cost.", act:"Zero queuing events, 38 t cost.",
   out:"green", outLabel:"As predicted", learn:null},
@@ -1942,24 +2049,24 @@ const DECISIONS = [
   body:"Remote reset was available but pre-agreed response requires physical bearing inspection first.",
   pred:"Inspection inside 60 min; restart decision by 08:30.", act:"Tech diverted to a cage fault, confirmation now 55 min overdue. ShiftWise re-pinged and flagged the stall.",
   out:"amber", outLabel:"Stalled: follow-up active", learn:"Stall pattern logged: single-tech dependency on day shift."},
- {t:"Yesterday 21:10", title:"Hold ore pass OP-2 transfers during seismic-quiet window", by:"Approved by E. Kanza · operator override (gut feel)",
+ {t:"Yesterday 21:10", title:"Hold ore pocket transfers during seismic-quiet window", by:"Approved by E. Kanza · operator override (gut feel)",
   body:"Operator held transfers on experience despite no data trigger. ShiftWise asked why and logged the reasoning.",
   pred:"None (override, no platform recommendation)", act:"Geotech inspection this morning found minor brow wear, override was reasonable.",
-  out:"violet", outLabel:"Learned from operator", learn:"Brow-wear precursor question added to OP-2 readiness checks."},
- {t:"Yesterday 14:22", title:"Bring forward TK-02 brake check", by:"Approved by N. Abara · ShiftWise was 77% sure",
+  out:"violet", outLabel:"Learned from operator", learn:"Brow-wear precursor question added to ore pocket readiness checks."},
+ {t:"Yesterday 14:22", title:"Bring forward Truck 6312 brake check", by:"Approved by N. Abara · ShiftWise was 77% sure",
   body:"Brake temp anomaly on decline descents. Truck pulled at shift change instead of mid-shift.",
   pred:"Lose 1 truck-hour; avoid unplanned brake failure risk.", act:"Check took 2.5 truck-hours: pads were fine, sensor was mis-calibrated.",
   out:"amber", outLabel:"Cost more than predicted", learn:"Confidence on single brake-temp sensors reduced until cross-checked against descent profile."},
 ];
 
 const FEEDLOG = [
- ["red","SCADA: CR-1 feed buffer crossed 60-min threshold. Tier 2 raised","12:44"],
- ["amber","Analytics: P3 flow vs pump signature divergence, recommendation held at 54%","12:31"],
- ["green","FMS: S-212 bogging rate 315 t/h, ahead of plan","12:10"],
- ["blue","Operator: water-jet crew reports S-214 hang-up 60% cleared","11:52"],
- ["amber","FMS: TK-04 coolant temp Tier 1, operator notified onboard","11:37"],
- ["green","ERP sync: WO-20441 (TK-07 500 h service) confirmed for this shift","10:15"],
- ["blue","Planning: Week 39 plan v3 imported, no changes to today's shift","05:48"],
+ ["red","SCADA: Crusher 1 feed buffer crossed 60-min threshold. Tier 2 raised","12:44"],
+ ["amber","Analytics: Sump 10 pump flow vs pump signature divergence, recommendation held at 54%","12:31"],
+ ["green","FMS: Zone 5 OBI bogging rate 315 t/h, ahead of plan","12:10"],
+ ["blue","Operator: water-jet crew reports Zone 4 OBI hang-up 60% cleared","11:52"],
+ ["amber","FMS: Truck 6314 coolant temp Tier 1, operator notified onboard","11:37"],
+ ["green","ERP sync: WO-20441 (Truck 6317 500 h service) confirmed for this shift","10:15"],
+ ["blue","Planning: Monthly plan v3 imported, no changes to today's plan","05:48"],
 ];
 
 /* ═════════ Helpers ═════════ */
@@ -2000,7 +2107,7 @@ const fmtT=s=>{s=Math.abs(Math.round(s));return String(Math.floor(s/60)).padStar
 const ageCls=s=>s>=1200?"vhot":s>=720?"hot":"";
 const BASE_LIK=71;
 const TL_EVENTS=[{h:6.87,v:82,k:"bad",l:"VF-2 trip"},{h:7.2,v:83,k:"act",l:"Re-route"},{h:7.92,v:84,k:"act",l:"LHD swap"},{h:8.33,v:62,k:"bad",l:"Hang-up"},{h:8.68,v:65,k:"act",l:"Water-jet"},{h:12.73,v:68,k:"bad",l:"Crusher"}];
-const OUT_BASE={ore:2950,dev:8.0},OUT_TARGET={ore:4200,dev:12},OUT_LIFT={n1:{ore:1200},n4:{dev:4}};
+const OUT_BASE={ore:1870,dev:10.0},OUT_TARGET={ore:2667,dev:15},OUT_LIFT={n1:{ore:750},n4:{dev:5}};
 function renderFinish(){
   let ore=OUT_BASE.ore,dev=OUT_BASE.dev;
   NBA.forEach(n=>{if(nbaState[n.id]==="approved"&&OUT_LIFT[n.id]){ore+=OUT_LIFT[n.id].ore||0;dev+=OUT_LIFT[n.id].dev||0}});
@@ -2008,8 +2115,8 @@ function renderFinish(){
   const b0=Math.round(OUT_BASE.ore/OUT_TARGET.ore*100),d0=Math.round(OUT_BASE.dev/OUT_TARGET.dev*100);
   const changed=ore!==OUT_BASE.ore||dev!==OUT_BASE.dev;
   // the headline always shows the no-action position; the green part of each bar and the line below show what your approvals buy back
-  $("#finOre").textContent=OUT_BASE.ore.toLocaleString("en-US");$("#finOrePct").textContent=b0+"% of 4,200 t target";
-  $("#finDev").textContent=OUT_BASE.dev.toFixed(1);$("#finDevPct").textContent=d0+"% of 12 m target";
+  $("#finOre").textContent=OUT_BASE.ore.toLocaleString("en-US");$("#finOrePct").textContent=b0+"% of 2,667 t target";
+  $("#finDev").textContent=OUT_BASE.dev.toFixed(1);$("#finDevPct").textContent=d0+"% of 15 m target";
   $("#finOreBar").style.width=b0+"%";$("#finOreGain").style.left=b0+"%";$("#finOreGain").style.width=Math.min(100,op)-b0+"%";
   $("#finDevBar").style.width=d0+"%";$("#finDevGain").style.left=d0+"%";$("#finDevGain").style.width=Math.min(100,dp)-d0+"%";
   const w=$("#finWith");
@@ -2022,10 +2129,10 @@ function renderFinish(){
   }
 }
 function renderSummary(){
-  $("#sumNow").innerHTML="It is 13:07, seven hours into a twelve hour shift. You are <b>78% done against 82% expected</b>, so <b>4% behind</b>. At this rate you finish at about <b>2,950 t ore (70%)</b> and <b>8.0 m development (67%)</b>.";
+  $("#sumNow").innerHTML="It is 13:07, seven hours into the day. Shift 1 hands over to Shift 2 at 14:00. You are <b>78% done against 82% expected</b>, so <b>4% behind</b>. At this rate you finish at about <b>1,870 t ore (70%)</b> and <b>10.0 m development (67%)</b>.";
   $("#sumWrong").innerHTML=[
-    "<b>S-214 draw point hung up at 08:20</b> and has held back about 560 t. It is 70% cleared, with the crew expecting to finish around 13:50.",
-    "<b>The crusher feed buffer is down to 42 minutes</b> since the 12:44 derate, which puts about 1,200 t at risk."
+    "<b>Zone 4 OBI draw point hung up at 08:20</b> and has held back about 350 t. It is 70% cleared, with the crew expecting to finish around 13:50.",
+    "<b>The crusher feed buffer is down to 42 minutes</b> since the 12:44 derate, which puts about 750 t at risk."
   ].map(t=>`<li>${t}</li>`).join("");
   const visible=NBA.filter(n=>nbaState[n.id]!=="dismissed");
   const openIdx=visible.findIndex(n=>!nbaState[n.id]);
@@ -2033,7 +2140,7 @@ function renderSummary(){
   if(openIdx<0)next="The queue is clear. ShiftWise will bring the next decision here when there is one.";
   else{
     const n=visible[openIdx];
-    next=`Work the queue from the top. <b>#${openIdx+1}</b> is next${n.id==="n1"?", and it recovers about 1,200 t":""}.`;
+    next=`Work the queue from the top. <b>#${openIdx+1}</b> is next${n.id==="n1"?", and it recovers about 750 t":""}.`;
   }
   $("#sumFix").innerHTML=next;
 }
@@ -2065,10 +2172,10 @@ function renderTimeline(){
   $("#likArrow").textContent=add?"→ "+Math.min(99,BASE_LIK+add)+"%":"";
 }
 const NBA_UI={
- n1:{short:"Crusher buffer is down to 42 minutes; S-212 has ore ready while L1865 waste can wait.",big:"High impact",cap:"+13 pts chance of hitting plan",cls:"pos"},
+ n1:{short:"Crusher buffer is down to 42 minutes; Zone 5 OBI has ore ready while 640L waste can wait.",big:"High impact",cap:"+13 pts chance of hitting plan",cls:"pos"},
  n2:{short:"Flow reads 40% low but pump amps and pressure look normal, likely a sensor fault. Needs a field check.",big:"Confirm first",cap:"not enough evidence yet",cls:"warn"},
  n3:{short:"Haulage drops during blast clearance anyway, and the bay and fitters are free from 17:00.",big:"Low impact",cap:"+1 pt chance of hitting plan",cls:"dim"},
- n4:{short:"The charge crew reaches L1880 N at 15:10. Starting later than 15:30 misses the 18:40 window.",big:"Medium impact",cap:"+6 pts chance of hitting plan",cls:"track"},
+ n4:{short:"The charge crew reaches Etang North 550L at 15:10. Starting later than 15:30 misses the 18:40 window.",big:"Medium impact",cap:"+6 pts chance of hitting plan",cls:"track"},
  n5:{short:"Charge-up, ventilation and crew count are all trending green.",big:"No action",cap:"all on track",cls:"dim"}
 };
 function renderQueue(){
@@ -2202,23 +2309,23 @@ function renderFeedLog(){
 
 /* ═════════ Impact view ═════════ */
 const IMPACT = [
- {t:"08:41 · from recommendation", title:"Water-jet crew to clear S-214 hang-up",
-  sub:"Predicted: <b>+560 t recovered</b> if cleared by 14:00. Crew reports 60% cleared at 11:52: attainment already lifting as partial bogging resumed at 12:30.",
+ {t:"08:41 · from recommendation", title:"Water-jet crew to clear Zone 4 OBI hang-up",
+  sub:"Predicted: <b>+350 t recovered</b> if cleared by 14:00. Crew reports 60% cleared at 11:52: attainment already lifting as partial bogging resumed at 12:30.",
   meta:[["blue","Tracking: verifies at 14:00"],["plain","Approved by N. Abara · 88% confidence"]],
   val:"+6 pts", cap:"attainment so far", cls:"track"},
- {t:"07:55 · from recommendation", title:"Swap LHD LH-04 → LH-02 at S-212 before failure",
-  sub:"Predicted: hold bogging ≥ 300 t/h and avoid ~2 h unplanned downtime. Measured: <b>315 t/h held</b>; LH-04's seal confirmed failing in the workshop, the downtime was real and avoided.",
+ {t:"07:55 · from recommendation", title:"Swap LHD Scaltec 3404 → Scaltec 3402 at Zone 5 OBI before failure",
+  sub:"Predicted: hold bogging ≥ 300 t/h and avoid ~2 h unplanned downtime. Measured: <b>315 t/h held</b>; Scaltec 3404's seal confirmed failing in the workshop, the downtime was real and avoided.",
   meta:[["green","Verified"],["plain","Approved by N. Abara · 91% confidence"]],
   val:"+620 t", cap:"protected · +4 pts", cls:"pos"},
- {t:"07:12 · from recommendation", title:"Re-route decline traffic during L1840 shotcrete",
+ {t:"07:12 · from recommendation", title:"Re-route decline traffic during 580L shotcrete",
   sub:"Predicted: ≤ 2 queuing events, ~40 t cost. Measured: <b>zero queuing events, 38 t cost</b>: cheapest possible way through the shotcrete window.",
   meta:[["green","Verified"],["plain","Approved by N. Abara · 84% confidence"]],
   val:"+25 min", cap:"truck time saved", cls:"pos"},
- {t:"06:31 · from readiness check", title:"Top-up emulsion delivery to S-214 magazine",
-  sub:"Caught before it became a problem: charge-up would have stalled at ~10:00 without stock. Measured: charge-up ran uninterrupted, <b>the 18:40 blast (and both L1880 N cuts) stay possible</b>.",
+ {t:"06:31 · from readiness check", title:"Top-up emulsion delivery to Zone 4 OBI magazine",
+  sub:"Caught before it became a problem: charge-up would have stalled at ~10:00 without stock. Measured: charge-up ran uninterrupted, <b>the 18:40 blast (and both Etang North 550L cuts) stay possible</b>.",
   meta:[["green","Verified"],["plain","Approved by T. Mokoena · 79% confidence"]],
   val:"18:40", cap:"blast protected", cls:"pos"},
- {t:"Yesterday 14:22 · learning example", title:"Bring forward TK-02 brake check",
+ {t:"Yesterday 14:22 · learning example", title:"Bring forward Truck 6312 brake check",
   sub:"Predicted: 1 truck-hour cost. Measured: <b>2.5 truck-hours</b>: the sensor was mis-calibrated, not the brakes. Logged honestly: single-sensor brake alerts now need a cross-check before costing a truck.",
   meta:[["amber","Cost more than predicted"],["violet","Confidence model updated"]],
   val:"−1.5 h", cap:"vs prediction", cls:"neg"},
@@ -2389,14 +2496,14 @@ function renderScorecard(){
 let handoverAccepted=false;
 const HO_CONSTRAINTS=[
  ["VF-2 offline (Tier 3)","Vibration trip 06:52. VF-1 at 87%. No remote reset: bearing inspection first. Vent tech confirmation overdue."],
- ["P3 flow reading unconfirmed","Held at low confidence until a field check lands. Sump L18 is the thing to watch."],
- ["Crusher CR-1 feed buffer","Below 60 minutes. Depends on recommendation #1 being actioned."],
- ["Rajant mesh coverage gaps","No data coverage at L1880 N and L1865 W, updates from there arrive by radio."]
+ ["Sump 10 pump flow reading unconfirmed","Held at low confidence until a field check lands. Sump 580L is the thing to watch."],
+ ["Crusher 1 feed buffer","Below 60 minutes. Depends on recommendation #1 being actioned."],
+ ["Rajant mesh coverage gaps","No data coverage at Etang North 550L and Etang North 640L, updates from there arrive by radio."]
 ];
 const HO_CONTEXT=[
- ["18:40 blast, S-214 ring 12","Re-entry expected ~19:55 from the last 30 blasts. Gas clearance required before anyone goes in."],
- ["TK-07 500 h service","WO-20441: workshop bay 1 from 17:00 if recommendation #3 is accepted; night shift needs to know the truck is down until ~23:00."],
- ["Week 39 position","Development 39% vs 43% expected. L1880 N second cut matters for the week."]
+ ["18:40 blast, Zone 4 OBI ring 12","Re-entry expected ~19:55 from the last 30 blasts. Gas clearance required before anyone goes in."],
+ ["Truck 6317 500 h service","WO-20441: workshop bay 1 from 17:00 if recommendation #3 is accepted; Shift 3 needs to know the truck is down until ~23:00."],
+ ["Month-to-date position","Development is 35% behind the monthly plan. Etang North 550L second cut matters for the day."]
 ];
 function renderHandover(){
   const acts=ACTIONS.filter(a=>a.status==="prog"||a.status==="stall");
@@ -2413,7 +2520,7 @@ function acceptHandover(){
   handoverAccepted=true;
   const notes=$("#hoNotes").value.trim();
   $("#hoStatus").style.color="var(--green)";
-  $("#hoStatus").textContent="✓ Handover accepted by the incoming operator, open actions, constraints and notes carried into the night shift"+(notes?" (notes included).":".");
+  $("#hoStatus").textContent="✓ Handover accepted by the incoming operator, open actions, constraints and notes carried into Shift 2"+(notes?" (notes included).":".");
   $("#acceptHandover").disabled=true;$("#acceptHandover").style.opacity=.5;
   toast("Handover accepted and logged to the decision record.");
 }
@@ -2423,20 +2530,178 @@ $$("#segTier button").forEach(b=>b.addEventListener("click",()=>{
   $$("#segTier button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
   toast(`Data tier set to ${b.dataset.t}, ${b.dataset.t==="Core"?"manual and radio updates stay a full input.":"automated feeds replace manual entry where the site's systems allow."}`);
 }));
-$$("#settingsJumpnav button").forEach(b=>b.addEventListener("click",()=>{
-  $$("#settingsJumpnav button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-  const card=document.getElementById(b.dataset.jump);
-  card.classList.add("open");
-  card.scrollIntoView({behavior:"smooth",block:"start"});
+$$("#settingsNav button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#settingsNav button").forEach(x=>x.classList.toggle("on",x===b));
+  $$("#view-settings .set-card").forEach(c=>c.classList.toggle("on",c.id===b.dataset.jump));
 }));
-$$("#segHorizon button").forEach(b=>b.addEventListener("click",()=>{
-  $$("#segHorizon button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-  toast(`Planning horizon set to ${b.dataset.h}: decision logic now anchors to the ${b.dataset.h.toLowerCase()} plan.`);
-}));
-$$("#segShift button").forEach(b=>b.addEventListener("click",()=>{
-  $$("#segShift button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-  toast(`Shift duration set to ${b.dataset.s} hours.`);
-}));
+let lvlId=0;
+const mk=(n,t,d,c=[],st="confirmed")=>({id:++lvlId,n,t,d,c,st,src:"",conf:""});
+const TREE=mk("KTO","Site","The operating site: everything under one licence and one management team.");
+/* what ShiftWise would draft from the KTO documents (front end only: stands in for the document reader) */
+const DRAFT=["KTO Underground","Mine / area","The underground mine at Kamoto, worked from Shaft 1 and a decline and ramp system.","UG|Plan|OBS|OBI",[
+  ["OBS orebody","Orebody","One of the two orebodies mined underground, stoped in a quarterly sequence with hydraulic and waste backfill.","OBS",[]],
+  ["OBI orebody","Orebody","The second orebody, divided into numbered zones and mined in the same quarterly sequence.","OBI",[
+    ["Zone 3 OBI","Zone / section","Development and stoping zone in the OBI orebody.","Plan|OBI",[]],
+    ["Zone 4 OBI","Zone / section","Development and stoping zone in the OBI orebody.","Plan|OBI",[]],
+    ["Zone 5 OBI","Zone / section","Stoping and backfill zone in the OBI orebody.","Plan|OBI",[]],
+    ["Zone 8 OBI","Zone / section","Operating development zone in the OBI orebody.","KPI|Info",[],"check"]]],
+  ["Etang North","Area","Capital development and stoping, with backlog and daily targets tracked separately.","KPI|Info",[
+    ["550L","Level","Capital development level.","KPI|Info",[]],
+    ["640L","Level","Capital development level.","KPI|Info",[]]]],
+  ["Etang South","Area","Separate area reporting its own ore hoisted, grade and development.","KPI|Info",[],"check"],
+  ["Shaft 1 ore extraction","Infrastructure","Brings ore from underground to surface: skips, crushers, conveyors, silos and stockpile.","Extraction",[
+    ["Skips A and B","Equipment","13 t payload, about 40 skips an hour (roughly 500 t/h).","Extraction",[]],
+    ["Crushers 1 and 2","Equipment","Primary crushing ahead of the conveyors.","Extraction",[]],
+    ["TF1 conveyor","Equipment","Main conveyor, rated 1,000 t/h.","Extraction",[]],
+    ["Ore pockets and stockpile","Storage","Buffer between hoisting and crushing.","Extraction",[],"check"]]]
+]];
+function lvlPickSrc(keys,names){const re=new RegExp(keys,"i");return names.find(n=>re.test(n))||names[0]}
+function lvlMerge(tpl,parent,names,stat){
+  let node=parent.c.find(x=>x.n.toLowerCase()===tpl[0].toLowerCase());
+  if(!node){
+    node=mk(tpl[0],tpl[1],tpl[2],[],"draft");
+    node.src=lvlPickSrc(tpl[3],names);node.conf=tpl[5]||"";
+    parent.c.push(node);stat.added++;
+  }
+  tpl[4].forEach(c=>lvlMerge(c,node,names,stat));
+}
+let lvlReadT;
+function readDocsForStructure(files){
+  const names=files.map(f=>f.name);
+  $("#levelReadingTxt").textContent=`Reading ${names.length} document${names.length>1?"s":""} to draft the site structure...`;
+  $("#levelReading").hidden=false;
+  clearTimeout(lvlReadT);
+  lvlReadT=setTimeout(()=>{
+    const stat={added:0};lvlMerge(DRAFT,TREE,names,stat);
+    $("#levelReading").hidden=true;renderLevels();
+    toast(stat.added?`${stat.added} levels suggested from your documents. Review and confirm them below.`:"No new levels found. Your existing levels were kept.");
+  },1900);
+}
+let lvlDrag=null;
+function lvlFind(id,node=TREE,parent=null){
+  if(node.id===id)return{node,parent};
+  for(const c of node.c){const r=lvlFind(id,c,node);if(r)return r}
+  return null;
+}
+const lvlHas=(node,id)=>node.id===id||node.c.some(c=>lvlHas(c,id));
+function lvlFlat(node=TREE,depth=0,out=[]){out.push({node,depth});node.c.forEach(c=>lvlFlat(c,depth+1,out));return out}
+function lvlBanner(){
+  const all=lvlFlat().map(x=>x.node),d=all.filter(n=>n.st==="draft").length,c=all.length-d;
+  const b=$("#levelBanner");b.hidden=!d;
+  if(d)b.innerHTML=`<span>${d} level${d>1?"s":""} suggested from your documents, ${c} confirmed.</span><button onclick="confirmAllLevels()">Confirm all</button>`;
+}
+function lvlTouch(id){
+  const n=lvlFind(id).node;
+  if(n.st==="draft"){n.st="confirmed";const row=$(`#levelList [data-id="${id}"]`);row.classList.remove("draft");const m=row.querySelector(".lvl-meta");if(m)m.remove();lvlBanner()}
+}
+function confirmLevel(id){lvlTouch(id)}
+function confirmAllLevels(){lvlFlat().forEach(x=>{x.node.st="confirmed"});renderLevels();toast("All suggested levels confirmed.")}
+function renderLevels(focusId){
+  const esc=v=>String(v).replace(/"/g,"&quot;");
+  $("#levelList").innerHTML=lvlFlat().map(({node:l,depth})=>`<div class="lvl-row${l.st==="draft"?" draft":""}" data-id="${l.id}" style="margin-left:${Math.min(depth*14,70)}px">
+    ${depth?`<button class="lvl-grip" title="Drag to move, or use the arrow keys (up, down, right to nest, left to move out)" aria-label="Move ${esc(l.n)}" data-grip="${l.id}">⋮⋮</button>`:`<span class="lvl-grip" style="cursor:default;visibility:hidden">⋮⋮</span>`}
+    <div class="lvl-body">
+      <input class="ln" value="${esc(l.n)}" aria-label="Level name" placeholder="Name" onchange="lvlFind(${l.id}).node.n=this.value;lvlTouch(${l.id})">
+      <input class="lt" value="${esc(l.t)}" aria-label="Level type" placeholder="Type" onchange="lvlFind(${l.id}).node.t=this.value;lvlTouch(${l.id})">
+      <input class="ld" value="${esc(l.d)}" aria-label="Level description" placeholder="What this level is" onchange="lvlFind(${l.id}).node.d=this.value;lvlTouch(${l.id})">
+      ${l.st==="draft"?`<div class="lvl-meta"><span class="lvl-tag">Suggested from ${esc(l.src)}</span>${l.conf==="check"?`<span class="lvl-tag chk">Check this one</span>`:""}<button class="lvl-confirm" onclick="confirmLevel(${l.id})">Confirm</button></div>`:""}
+    </div>
+    <button class="lvl-add" title="Add a level under ${esc(l.n)}" onclick="addLevel(${l.id})">+ Sub-level</button>
+    ${depth?`<button class="lvl-rm" title="Remove" onclick="removeLevel(${l.id})">×</button>`:`<span style="width:26px"></span>`}
+  </div>`).join("")+(TREE.c.length?"":`<div class="lvl-empty">No levels yet. Upload your documents above and ShiftWise will draft them, or use + Sub-level to add one by hand.</div>`);
+  lvlBanner();
+  $$("#levelList .lvl-row").forEach(row=>{
+    const id=+row.dataset.id,grip=row.querySelector("button.lvl-grip");
+    if(!grip)return;
+    grip.addEventListener("mousedown",()=>{row.draggable=true});
+    grip.addEventListener("keydown",e=>{
+      if(e.key==="ArrowUp"){e.preventDefault();stepLevel(id,"up")}
+      if(e.key==="ArrowDown"){e.preventDefault();stepLevel(id,"down")}
+      if(e.key==="ArrowRight"){e.preventDefault();stepLevel(id,"in")}
+      if(e.key==="ArrowLeft"){e.preventDefault();stepLevel(id,"out")}
+    });
+    row.addEventListener("dragstart",e=>{lvlDrag=id;row.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",String(id))});
+    row.addEventListener("dragend",()=>{row.draggable=false;lvlDrag=null;clearLvlMarks()});
+  });
+  $$("#levelList .lvl-row").forEach(row=>{
+    const id=+row.dataset.id;
+    row.addEventListener("dragover",e=>{
+      if(!lvlDrag||lvlHas(lvlFind(lvlDrag).node,id))return;
+      e.preventDefault();clearLvlMarks(true);
+      row.classList.add("over-"+lvlZone(row,e,id));
+    });
+    row.addEventListener("drop",e=>{
+      if(!lvlDrag||lvlHas(lvlFind(lvlDrag).node,id))return;
+      e.preventDefault();
+      const z=lvlZone(row,e,id),drag=lvlDrag;lvlDrag=null;
+      moveLevel(drag,id,z==="top"?"before":z==="bottom"?"after":"inside");
+    });
+  });
+  if(focusId){const g=$(`#levelList [data-grip="${focusId}"]`);if(g)g.focus()}
+}
+function lvlZone(row,e,id){
+  if(id===TREE.id)return"in";
+  const r=row.getBoundingClientRect(),y=(e.clientY-r.top)/r.height;
+  return y<.28?"top":y>.72?"bottom":"in";
+}
+function clearLvlMarks(keepDragging){$$("#levelList .lvl-row").forEach(r=>{r.classList.remove("over-top","over-bottom","over-in");if(!keepDragging)r.classList.remove("dragging")})}
+function moveLevel(dragId,targetId,pos){
+  if(dragId===TREE.id||dragId===targetId)return;
+  const d=lvlFind(dragId);if(lvlHas(d.node,targetId))return;
+  d.parent.c.splice(d.parent.c.indexOf(d.node),1);
+  const t=lvlFind(targetId);
+  if(pos==="inside")t.node.c.push(d.node);
+  else{const i=t.parent.c.indexOf(t.node);t.parent.c.splice(pos==="before"?i:i+1,0,d.node)}
+  renderLevels(dragId);
+}
+function stepLevel(id,dir){
+  const f=lvlFind(id);if(!f||!f.parent)return;
+  const sib=f.parent.c,i=sib.indexOf(f.node);
+  if(dir==="up"&&i>0){sib.splice(i,1);sib.splice(i-1,0,f.node)}
+  else if(dir==="down"&&i<sib.length-1){sib.splice(i,1);sib.splice(i+1,0,f.node)}
+  else if(dir==="in"&&i>0){sib.splice(i,1);sib[i-1].c.push(f.node)}
+  else if(dir==="out"){const g=lvlFind(f.parent.id);if(!g.parent)return;sib.splice(i,1);const j=g.parent.c.indexOf(f.parent);g.parent.c.splice(j+1,0,f.node)}
+  else return;
+  renderLevels(id);
+}
+function addLevel(parentId){
+  const p=lvlFind(parentId).node,n=mk("New level","Level type","");
+  p.c.push(n);renderLevels();
+  const inp=$(`#levelList [data-id="${n.id}"] .ln`);inp.focus();inp.select();
+}
+function removeLevel(id){
+  const f=lvlFind(id);if(!f||!f.parent)return;
+  const sub=lvlFlat(f.node).length-1;
+  if(sub&&!confirm(`Remove "${f.node.n}" and the ${sub} level${sub>1?"s":""} under it?`))return;
+  f.parent.c.splice(f.parent.c.indexOf(f.node),1);renderLevels();
+}
+renderLevels();
+const PROF={
+ assets:[["Primary ventilation fans","2","Move air through the north block; VF-2 is the standby"],["Crusher","1","Primary crushing, feeds the surface stockpile"],["Jumbo drill","1","Drills development headings"],["Load-haul-dump units (LHD)","","Bog ore from draw points to trucks or the bin"],["Dewatering pumps","","Keep levels and sumps dry"]]
+};
+let profFiles=[];
+function profCount(){
+  const filled=[$("#profDesc").value.trim(),$("#profProcess").value.trim(),$("#profDecide").value.trim(),PROF.assets.some(r=>r[0]&&r[1]),profFiles.length].filter(Boolean).length;
+  $("#profProg").textContent=`${filled} of 5 provided`;
+}
+function renderProf(){
+  const esc=v=>String(v).replace(/"/g,"&quot;");
+  const cols="minmax(120px,1.2fr) 84px minmax(160px,2.4fr) auto";
+  $("#assetRows").innerHTML=`<div class="prof-scroll"><div class="prof-row hd" style="grid-template-columns:${cols}"><span>Asset type</span><span>How many</span><span>What they do</span><span></span></div>`+PROF.assets.map((r,i)=>`<div class="prof-row" style="grid-template-columns:${cols}"><input value="${esc(r[0])}" placeholder="Asset type" oninput="PROF.assets[${i}][0]=this.value;profCount()"><input type="number" min="0" value="${esc(r[1])}" placeholder="?" aria-label="How many" oninput="PROF.assets[${i}][1]=this.value;profCount()"><input value="${esc(r[2])}" placeholder="What they do" oninput="PROF.assets[${i}][2]=this.value"><button class="rm" title="Remove" onclick="PROF.assets.splice(${i},1);renderProf()">×</button></div>`).join("")+"</div>";
+  profCount();
+}
+function addProfRow(){PROF.assets.push(["","",""]);renderProf();const rows=$$("#assetRows .prof-row:not(.hd)");rows[rows.length-1].querySelector("input").focus()}
+function renderProfFiles(){
+  $("#profFileList").innerHTML=profFiles.map((f,i)=>`<div class="prof-file"><b>${f.name.replace(/</g,"&lt;")}</b><small>${f.size>1048576?(f.size/1048576).toFixed(1)+" MB":Math.max(1,Math.round(f.size/1024))+" KB"}</small><button onclick="profFiles.splice(${i},1);renderProfFiles()">Remove</button></div>`).join("");
+  profCount();
+}
+function addProfFiles(list){profFiles.push(...list);renderProfFiles();readDocsForStructure(list)}
+$("#profFiles").addEventListener("change",e=>{addProfFiles([...e.target.files]);e.target.value=""});
+["dragenter","dragover"].forEach(ev=>$("#profDrop").addEventListener(ev,e=>{e.preventDefault();$("#profDrop").classList.add("over")}));
+["dragleave","drop"].forEach(ev=>$("#profDrop").addEventListener(ev,e=>{e.preventDefault();$("#profDrop").classList.remove("over")}));
+$("#profDrop").addEventListener("drop",e=>{if(e.dataTransfer.files.length)addProfFiles([...e.dataTransfer.files])});
+["#profDesc","#profProcess","#profDecide"].forEach(x=>$(x).addEventListener("input",profCount));
+renderProf();
 function updateSlider(id,valId,suffix){$("#"+valId).textContent=$("#"+id).value+suffix}
 
 /* ═════════ Chat ═════════ */
@@ -2445,11 +2710,11 @@ function toggleChat(open){
   p.classList.toggle("open",open===undefined?!p.classList.contains("open"):open);
 }
 const CANNED=[
- [/finish|end of (the )?shift|at this rate|project|forecast|do nothing|short/i,"If nothing changes, I project we finish at about 2,950 t of the 4,200 t ore target (70%) and 8.0 of 12 m development (67%).\n\nTwo things drive it:\n• Crusher feed running out in ~90 min: about 1,200 t\n• L1880 N second cut missing the 18:40 window: 4 m of development\n\nApproving recommendation #1 recovers the ore and #4 recovers the development. With both, I project 4,150 t (99%) and 12 m (100%)."],
- [/behind|attainment|target|likelihood/i,"The likelihood of completing today's plan is 71% (84% at shift start). We're at 78% plan attainment vs 82% expected by 13:00: a 4% gap.\n\nThe gap decomposes as:\n• S-214 hang-up (08:20–now): ~560 t held back: crew expects clear by ~13:50\n• Crusher feed derate since 12:44: ~180 t\n• Everything else is on or ahead of plan\n\nIf you approve recommendation #1 and the hang-up clears on time, I project we finish within 2% of plan."],
- [/ignore|crusher|#1|starve/i,"If nothing changes, CR-1 starves in ~90 minutes.\n\nRestart from empty takes ~35 min of unstable feed, so the real cost is about 1,200 t by 18:00: roughly 28% of today's crusher plan. It also pushes the shortfall into night shift, who start behind through no fault of theirs.\n\nEvidence: SCADA feed rate (live), ROM bin survey (12:55), truck cycle times (live)."],
- [/blast|18:40|re-entry/i,"Yes, 18:40 blast is on track at 93% confidence.\n\n• Charge-up on S-214: 94% complete, done ~15:05\n• Ventilation: VF-1 nominal (VF-2 is the standby: see the Tier 3 alert, it doesn't block the blast)\n• Tag board: normal count for a 17:30 clearance start\n\nWatch item: L1880 N's second cut only makes this window if the charge crew moves by 15:30: that's recommendation #4."],
- [/p3|pump|flow/i,"P3's flow transmitter reads 58 l/s against a normal 95 l/s, but amps and discharge pressure are normal, which usually means a sensor problem, not a flow problem. Same signature as the fouled sensor on 12 Aug.\n\nI'm holding any pumping recommendation at 54% confidence until someone checks it in the field. If it's real, the L18 sump reaches Tier 3 in ~4 hours, so the check is worth doing now, that's recommendation #2."],
+ [/finish|end of (the )?shift|at this rate|project|forecast|do nothing|short/i,"If nothing changes, I project we finish at about 1,870 t of the 2,667 t ore target (70%) and 10.0 of 15 m development (67%).\n\nTwo things drive it:\n• Crusher feed running out in ~90 min: about 750 t\n• Etang North 550L second cut missing the 18:40 window: 5 m of development\n\nApproving recommendation #1 recovers the ore and #4 recovers the development. With both, I project 2,620 t (98%) and 15 m (100%)."],
+ [/behind|attainment|target|likelihood/i,"The likelihood of completing today's plan is 71% (84% at shift start). We're at 78% plan attainment vs 82% expected by 13:00: a 4% gap.\n\nThe gap decomposes as:\n• Zone 4 OBI hang-up (08:20–now): ~350 t held back: crew expects clear by ~13:50\n• Crusher feed derate since 12:44: ~180 t\n• Everything else is on or ahead of plan\n\nIf you approve recommendation #1 and the hang-up clears on time, I project we finish within 2% of plan."],
+ [/ignore|crusher|#1|starve/i,"If nothing changes, Crusher 1 starves in ~90 minutes.\n\nRestart from empty takes ~35 min of unstable feed, so the real cost is about 750 t by 18:00: roughly 28% of today's crusher plan. It also pushes the shortfall into the next shift, who start behind through no fault of theirs.\n\nEvidence: SCADA feed rate (live), ore pocket survey (12:55), truck cycle times (live)."],
+ [/blast|18:40|re-entry/i,"Yes, 18:40 blast is on track at 93% confidence.\n\n• Charge-up on Zone 4 OBI: 94% complete, done ~15:05\n• Ventilation: VF-1 nominal (VF-2 is the standby: see the Tier 3 alert, it doesn't block the blast)\n• Tag board: normal count for a 17:30 clearance start\n\nWatch item: Etang North 550L's second cut only makes this window if the charge crew moves by 15:30: that's recommendation #4."],
+ [/p3|pump|flow/i,"Sump 10 pump's flow transmitter reads 58 l/s against a normal 95 l/s, but amps and discharge pressure are normal, which usually means a sensor problem, not a flow problem. Same signature as the fouled sensor on 12 Aug.\n\nI'm holding any pumping recommendation at 54% confidence until someone checks it in the field. If it's real, the 580L sump reaches Tier 3 in ~4 hours, so the check is worth doing now, that's recommendation #2."],
  [/vf-2|fan|vent/i,"VF-2 tripped on high vibration at 06:52 and shut itself down (Tier 3). VF-1 carries the north block at 87%.\n\nThe pre-agreed response requires a physical bearing inspection before restart, no remote resets. The vent tech confirmation is now 55 minutes overdue (action A-115 is stalled); I re-pinged at 12:40 and will escalate to the shift boss at 13:30 if there's still no response."],
  [/confidence|why.*(trust|sure)/i,"Every recommendation carries a confidence score built from: evidence freshness, sensor health, cross-source agreement, and how similar past decisions played out at this site.\n\nBelow 60% I never recommend an operational action, my next best action becomes \"get me more evidence\". Above 90% I'll say you must act. You can tune both thresholds in Settings."],
 ];
@@ -2463,7 +2728,7 @@ function sendChat(){
   log.scrollTop=log.scrollHeight;
   setTimeout(()=>{
     const hit=CANNED.find(c=>c[0].test(q));
-    $("#typing").outerHTML=`<div class="msg bot">${hit?hit[1]:"In the live product I'd answer that from the site's feeds and decision history, always citing the evidence I used.\n\nTry asking about the plan gap, the crusher, the blast, pump P3 or fan VF-2."}</div>`;
+    $("#typing").outerHTML=`<div class="msg bot">${hit?hit[1]:"In the live product I'd answer that from the site's feeds and decision history, always citing the evidence I used.\n\nTry asking about the plan gap, the crusher, the blast, pump Sump 10 pump or fan VF-2."}</div>`;
     log.scrollTop=log.scrollHeight;
   },900);
 }
@@ -2481,14 +2746,14 @@ function submitUpdate(){
   const area=$("#updArea").value,conf=$("#updConf .on").dataset.c;
   const who=$("#updWho").value.trim()||"operator",when=$("#updTime").value||new Date().toTimeString().slice(0,5);
   closeUpdateModal();
-  toast(`Update logged for ${area} (${conf}), ${who}, event time ${when}. Recommendations will re-rank if this changes anything.`);
-  $("#updNote").value="";$("#updWho").value="";
-  if(area==="Pump station P3"&&!nbaState["n2"]){
+  const dr=$("#updDelay").value;toast(`Update logged for ${area} (${conf}), ${who}, event time ${when}${dr?", delay reason: "+dr:""}. Recommendations will re-rank if this changes anything.`);
+  $("#updNote").value="";$("#updWho").value="";$("#updDelay").value="";
+  if(area==="Sump 10 pump station"&&!nbaState["n2"]){
     setTimeout(()=>{
       NBA.find(n=>n.id==="n2").conf=91;
       NBA.find(n=>n.id==="n2").tier="Act";
       renderQueue();
-      toast("P3 field report received: confidence on recommendation #2 moved 54% → 91%.");
+      toast("Sump 10 pump field report received: confidence on recommendation #2 moved 54% → 91%.");
     },1600);
   }
 }
@@ -2502,13 +2767,13 @@ function weekStart(off){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDa
 function setPlanRange(r){
   $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r===r));
   const today=new Date();
-  if(r==="today"){$("#planFrom").value=$("#planTo").value=isoDay(today);$("#planType").value="Daily plan";}
-  if(r==="week"||r==="next"){const s=weekStart(r==="next"?1:0),e=new Date(s);e.setDate(s.getDate()+6);$("#planFrom").value=isoDay(s);$("#planTo").value=isoDay(e);$("#planType").value="Weekly plan";}
+  if(r==="today"){$("#planFrom").value=$("#planTo").value=isoDay(today);}
+  if(r==="month"||r==="nextmonth"){const o=r==="nextmonth"?1:0,s=new Date(today.getFullYear(),today.getMonth()+o,1),e=new Date(today.getFullYear(),today.getMonth()+o+1,0);$("#planFrom").value=isoDay(s);$("#planTo").value=isoDay(e);}
   checkPlan();
 }
 $$("#planRange button").forEach(b=>b.addEventListener("click",()=>setPlanRange(b.dataset.r)));
 ["#planFrom","#planTo"].forEach(s=>$(s).addEventListener("change",()=>{$$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));checkPlan();}));
-function openPlanModal(){ if(!$("#planFrom").value) setPlanRange("week"); $("#planModal").classList.add("open"); }
+function openPlanModal(){ if(!$("#planFrom").value) setPlanRange("month"); $("#planModal").classList.add("open"); }
 function closePlanModal(){ $("#planModal").classList.remove("open"); }
 function setPlanFile(f){
   if(!f) return;
@@ -2574,15 +2839,7 @@ renderQueue();renderPlan();renderMiniPlan();renderFeedLog();renderImpact();
 renderActions();renderAlerts();renderSources();renderDecisions();
 renderIntegrity();renderScorecard();renderHandover();
 tickClock();
-/* progressive disclosure: settings cards start collapsed, secondary panels sit behind a fold */
-$$("#view-settings .set-card").forEach((c,i)=>{
-  const h=c.querySelector("h3"),body=document.createElement("div");
-  body.className="set-body";
-  while(h.nextSibling)body.appendChild(h.nextSibling);
-  c.appendChild(body);c.classList.add("fold");
-  if(i===0)c.classList.add("open");
-  h.addEventListener("click",()=>c.classList.toggle("open"));
-});
+/* progressive disclosure: secondary panels sit behind a fold */
 function foldGrid(sel,label,hint){
   const g=$(sel),d=document.createElement("details");
   d.className="fold";d.innerHTML=`<summary>${label}<small>${hint}</small></summary>`;
