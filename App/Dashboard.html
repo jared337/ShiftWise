@@ -247,16 +247,7 @@ tbody tr:last-child td{border-bottom:none}
 .lconn{width:14px;height:2px;background:var(--line);flex-shrink:0}
 .lconn.done{background:var(--green)}
 
-/* ── Alerts view ─────────────── */
-.tier-legend{display:none;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-@media(max-width:900px){.tier-legend{grid-template-columns:1fr}}
-.tierdef{border:1px solid var(--line);border-radius:var(--r-md);background:var(--bg);padding:13px 16px;display:flex;gap:12px;align-items:flex-start}
-.tierdef .tnum{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:14px;flex-shrink:0}
-.tierdef.t1 .tnum{background:var(--blue-soft);color:var(--blue)}
-.tierdef.t2 .tnum{background:var(--amber-soft);color:var(--amber)}
-.tierdef.t3 .tnum{background:var(--red-soft);color:var(--red)}
-.tierdef b{font-size:13px;display:block}
-.tierdef span{font-size:11.5px;color:var(--ink-soft)}
+/* ── Alert cards (shared with the decision history) ─────────────── */
 .alert-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 18px;margin-bottom:10px;position:relative;overflow:hidden}
 .alert-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
 .alert-card.t1::before{background:var(--blue)}
@@ -272,11 +263,6 @@ tbody tr:last-child td{border-bottom:none}
 .al-foot{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
 
 /* ── Sources view ─────────────── */
-.layer{margin-bottom:22px}
-.layer-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.layer-head h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
-.layer-head .lh-line{flex:1;height:1px;background:var(--line)}
-.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
 .src{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:13px 16px;display:flex;gap:12px;align-items:flex-start}
 .src .sico{width:38px;height:38px;border-radius:9px;background:var(--canvas);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);flex-shrink:0}
 .src .sico svg{width:18px;height:18px}
@@ -465,6 +451,7 @@ tbody tr:last-child td{border-bottom:none}
 .imp-contrib{text-align:right;flex-shrink:0;min-width:110px}
 .imp-contrib b{display:block;font-size:19px;font-weight:800;letter-spacing:-.4px}
 .imp-contrib span{font-size:10.5px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.3px}
+.imp-contrib b span{font:inherit;color:inherit;letter-spacing:inherit;text-transform:none}
 .imp-contrib.pos b{color:var(--green)}
 .imp-contrib.track b{color:var(--blue)}
 .imp-contrib.neg b{color:var(--red)}
@@ -504,28 +491,100 @@ tbody tr:last-child td{border-bottom:none}
 .altrow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
 .altrow:last-child{border-bottom:none}
 .altrow span{color:var(--ink-soft);text-align:right;max-width:55%}
-.wk .wcmp{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:2px}
-.wk .wcmp b{color:var(--ink)}
-.wk .wm{font-size:11px;color:var(--ink-faint);margin-top:5px;font-weight:600}
-.flowstrip{display:flex;align-items:stretch;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.flowstrip .fl{flex:1;min-width:150px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:11px 14px}
-.flowstrip .fl .wl{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint)}
-.flowstrip .fl .wn{font-size:16px;font-weight:800}
-.flowstrip .fl .wn small{font-size:11.5px;color:var(--ink-faint);font-weight:700}
-.flowstrip .fl .wd{font-size:11.5px;font-weight:700;margin-top:1px}
-.flowstrip .fl.gap{border-color:var(--red)}
-.flowstrip .farr{align-self:center;color:var(--ink-faint);font-weight:800}
-.flowstrip .fl.grade{flex:1.4}
 .safety-strip{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 12px;font-size:11.5px;font-weight:700;color:var(--ink-faint)}
 .safety-strip b{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--ink-soft)}
 .safety-strip b.warn{color:#8a6420;background:#fff3d6;border-color:#f1d9a6}
 .sample-note{font-size:11.5px;color:var(--ink-faint);font-weight:600;margin:-4px 0 10px}
-.weekstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:12px}
-.wk{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
-.wk .wl{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint)}
-.wk .wn{font-size:17px;font-weight:800;letter-spacing:-.3px}
-.wk .wn small{font-size:12px;color:var(--ink-faint);font-weight:700}
-.wk .wd{font-size:11.5px;font-weight:700;margin-top:1px}
+/* Plan view */
+.plan-base{font-size:12px;font-weight:700;color:var(--ink-faint);margin-top:6px}
+.plan-base small{font-size:inherit;font-weight:inherit}
+.plan-sum{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+.plan-sum b{color:var(--ink);font-weight:800}
+.plan-sum i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.plan-sum i.neg{background:var(--red)}.plan-sum i.warn{background:var(--amber)}.plan-sum i.track{background:var(--blue)}
+.plan-sum-of{margin-left:auto;font-size:12px;color:var(--ink-faint);font-weight:600}
+.plan-why{font-size:12.5px;font-weight:600;margin-top:3px;color:var(--ink-soft)}
+.plan-why.no{color:var(--red)}.plan-why.pend{color:var(--amber)}
+.plan-act{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:700;color:var(--blue);padding:0}
+.plan-act:hover{text-decoration:underline}
+.plan-act.done{color:var(--ink-faint);font-weight:600}
+.plan-det{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.plan-row .imp-contrib b{font-size:15px;letter-spacing:0}
+.plan-row .imp-contrib span{text-transform:none;letter-spacing:0;font-size:11.5px}
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 0 16px}
+.ptabs button{padding:9px 14px;font-weight:700;font-size:13.5px;color:var(--ink-faint);border-bottom:3px solid transparent;margin-bottom:-1px}
+.ptabs button:hover{color:var(--ink)}
+.ptabs button.on{color:var(--ink);border-bottom-color:var(--blue)}
+.ptab-panel{display:none}
+.ptab-panel.on{display:block}
+.ptab-lead{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+/* Also watching, under the next best actions */
+.watching{margin:4px 0 14px}
+.watch-h{font-size:12.5px;font-weight:800;color:var(--ink-soft);margin:10px 0 6px}
+.watch-h span{font-weight:600;color:var(--ink-faint);margin-left:6px}
+.watch-row{border:1px dashed var(--line);border-radius:var(--r-md);padding:10px 14px;background:var(--bg);margin-bottom:6px}
+.watch-row b{display:block;font-size:13px;font-weight:700}
+.watch-row span{display:block;font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:2px}
+/* Data health */
+.dh-sum{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 18px;margin-bottom:20px}
+.dh-score{display:flex;flex-direction:column;line-height:1.15}
+.dh-score b{font-size:24px;font-weight:800}
+.dh-score span{font-size:12px;font-weight:700;color:var(--ink-faint)}
+.dh-bar{flex:1;min-width:120px;max-width:280px}
+.dh-chips{display:flex;gap:6px;flex-wrap:wrap}
+.dh-card{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:var(--r-md);padding:14px 18px;margin-bottom:10px}
+.dh-card.done{border-left-color:var(--line);opacity:.75}
+.dh-card-top{display:flex;gap:18px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.dh-card h4{font-size:14px}
+.dh-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:4px}
+.dh-side{width:260px;max-width:100%}
+.dh-axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-faint);font-weight:600;margin-top:3px}
+.dh-issue{font-size:13px;color:var(--ink);margin-top:10px;max-width:80ch}
+.dh-aff{font-size:12.5px;color:var(--ink-soft);margin-top:8px;max-width:80ch}
+.dh-aff b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);margin-bottom:1px}
+.dh-strip{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;height:16px}
+.dh-strip i{border-radius:2px;background:var(--green)}
+.dh-strip i.p{background:var(--amber)}
+.dh-strip i.m{background:var(--red)}
+.dh-k{display:inline-flex;align-items:center;gap:5px;margin-left:10px}
+.dh-k i{width:9px;height:9px;border-radius:2px;background:var(--green)}
+.dh-k i.p{background:var(--amber)}.dh-k i.m{background:var(--red)}
+.dh-table{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:2px 18px}
+.dh-row{display:grid;grid-template-columns:minmax(0,1.6fr) 130px minmax(160px,1.2fr) 70px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px dashed var(--line)}
+.dh-row:last-child{border-bottom:0}
+.dh-name b{display:block;font-size:13px;font-weight:700}
+.dh-name span,.dh-cad span,.dh-cov span{display:block;font-size:11.5px;color:var(--ink-faint);font-weight:600;margin-top:1px}
+.dh-cad{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.dh-cov{font-size:13.5px;font-weight:800;text-align:right}
+.dh-na{font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.dh-off{display:block;background:var(--bg);border:1px dashed var(--line);border-radius:var(--r-md);padding:12px 18px}
+@media(max-width:820px){.dh-row{grid-template-columns:1fr auto}.dh-cad{grid-column:1;grid-row:2}.dh-24{grid-column:1/-1;grid-row:3}.dh-cov{grid-column:2;grid-row:1/3}}
+.section-title .sec-btn{padding:6px 11px;font-size:12.5px;flex-shrink:0}
+.act-det{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--ink-soft);max-width:76ch}
+.act-det b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-faint);margin-bottom:1px}
+.pt-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px;margin-bottom:12px}
+.pt-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.pt-h h4{font-size:14px;font-weight:800}
+.pt-key{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--ink-faint)}
+.pt-k-fill{display:inline-block;width:14px;height:8px;border-radius:2px;background:var(--blue)}
+.pt-k-tick{display:inline-block;width:2px;height:14px;background:var(--ink);margin-left:12px}
+.pt-lead{font-size:13px;color:var(--ink-soft);margin:0 0 4px}
+.pt-lead b{color:var(--ink)}
+.pt-row{display:grid;grid-template-columns:170px minmax(0,1fr) 150px;gap:18px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line)}
+.pt-row:last-child{border-bottom:0;padding-bottom:2px}
+.pt-name{font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+.pt-name b{display:block;font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.3px;margin-top:1px}
+.pt-step{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--canvas);border:1px solid var(--line);font-size:10px;font-weight:800;margin-right:6px;vertical-align:1px}
+.pt-bar{position:relative;height:12px;border-radius:4px;background:var(--canvas);border:1px solid var(--line)}
+.pt-bar i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:4px}
+.pt-bar u{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:var(--ink);border-radius:1px}
+.pt-sub{font-size:11.5px;color:var(--ink-faint);font-weight:600;margin-top:7px}
+.pt-st{text-align:right}
+.pt-d{display:block;font-size:13.5px;font-weight:800}
+.pt-d.neg{color:var(--red)}.pt-d.pos{color:var(--green)}.pt-d.ok{color:var(--ink-soft)}
+.pt-st small{font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.pt-foot{font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+@media(max-width:700px){.pt-row{grid-template-columns:1fr auto;gap:8px 12px}.pt-mid{grid-column:1/-1;grid-row:2}}
 .note-strip{background:var(--blue-soft);border:1px solid #d3dcff;border-radius:var(--r-md);padding:10px 14px;font-size:12.5px;color:var(--ink-soft);margin-bottom:16px}
 .note-strip b{color:var(--ink)}
 .ladder{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
@@ -561,7 +620,6 @@ tbody tr:last-child td{border-bottom:none}
 .imp-contrib.small b{font-size:14px;letter-spacing:0}
 .imp-row.resolved{opacity:.45}
 .imp-row h4{line-height:1.4}
-.src-grid{display:block}
 .alert-card::before{display:none}
 .alert-card,.dec-item{padding:13px 18px}
 .alert-card summary,.dec-item summary{display:flex;gap:14px;align-items:flex-start}
@@ -685,7 +743,6 @@ tbody tr:last-child td{border-bottom:none}
   .btn-ghost{padding:8px 10px}
   .brand .bname{display:none}
     .kpis{grid-template-columns:1fr 1fr}
-  .weekstrip{grid-template-columns:1fr 1fr}
   .evlist{grid-template-columns:1fr}
   .filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
   .fchip{flex-shrink:0}
@@ -704,22 +761,17 @@ tbody tr:last-child td{border-bottom:none}
 /* ── Make clickable things look clickable, static things look static ─────────── */
 .imp-row[style*="cursor:default"]:hover{border-color:var(--line)}
 .imp-row.qact:not(.resolved):hover,.imp-row.qact:focus-visible{border-color:var(--blue)}
-.alert-card summary::after,.dec-item summary::after,.layer-head::after{content:"\2304";display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--line);border-radius:50%;color:var(--ink-soft);font-weight:700;font-size:15px;line-height:1;flex-shrink:0;align-self:center;background:var(--bg)}
+.alert-card summary::after,.dec-item summary::after{content:"\2304";display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--line);border-radius:50%;color:var(--ink-soft);font-weight:700;font-size:15px;line-height:1;flex-shrink:0;align-self:center;background:var(--bg)}
 .alert-card[open] summary::after,.dec-item[open] summary::after{content:"\2303"}
-.layer:not(.collapsed) .layer-head::after{content:"\2303"}
 .alert-card:hover,.dec-item:hover{border-color:#c9cfdb}
-.alert-card summary:hover::after,.dec-item summary:hover::after,.layer-head:hover::after{border-color:var(--blue);color:var(--blue)}
+.alert-card summary:hover::after,.dec-item summary:hover::after{border-color:var(--blue);color:var(--blue)}
 /* ── End-of-shift projection card ─────────── */
 .fin{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
 .fin-i b{display:block;font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1.1;font-variant-numeric:tabular-nums}
 .fin-i b.down{color:var(--red)}.fin-i b.up{color:var(--green)}
 .fin-i em{display:block;font-style:normal;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-top:1px}
 .fin-i span{display:block;font-size:11.5px;font-weight:700;color:var(--ink-faint)}
-.fin-with{display:none;margin-top:10px;padding:8px 10px;border-radius:9px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:700}
-.fin-with.on{display:block}
-.fs-top .fin-with{display:none;margin:0 14px 0 auto;padding:3px 12px;border-radius:99px;font-size:11.5px;line-height:1.5}
-.fs-top .fin-with.on{display:inline-block}
-@media(max-width:900px){.fs-top{flex-wrap:wrap;gap:6px}.fs-top .fin-with{order:3;width:100%;margin:0;border-radius:9px}}
+@media(max-width:900px){.fs-top{flex-wrap:wrap;gap:6px}}
 .sidec .sub2{font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:12px;padding-top:10px;border-top:1px solid rgba(16,24,43,.1)}
 .sidec .sub2 b{color:var(--ink)}.sidec .sub2 b.down{color:var(--red)}
 @media(max-width:560px){.fin-i b{font-size:28px}}
@@ -727,8 +779,6 @@ tbody tr:last-child td{border-bottom:none}
 .fstrip{margin-bottom:14px}
 .fs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .fs-lab{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-soft)}
-.fs-why{font-size:12px;font-weight:700;color:var(--blue)}
-.fs-why:hover{text-decoration:underline}
 .fs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .fc{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 16px 11px;text-align:left;font:inherit;display:block;width:100%}
 .fc.proj{background:linear-gradient(180deg,var(--brand-soft),var(--bg));border-color:var(--brand)}
@@ -747,8 +797,6 @@ button.fc:hover{border-color:var(--blue)}
 .fbar .base.mid{background:var(--ink-faint)}
 .fbar .gain{background:var(--green);opacity:.85;border-radius:0 99px 99px 0}
 .fbar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.5}
-.fin-with{display:none;margin-top:10px;padding:8px 12px;border-radius:9px;background:var(--green-soft);color:var(--green);font-size:12px;font-weight:700}
-.fin-with.on{display:block}
 #queueTitle .hint{margin-left:6px}
 #view-shift .section-title{margin-bottom:8px}
 @media(max-width:1100px){.fs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -803,9 +851,6 @@ details.fold>*:not(summary){margin-left:18px;margin-right:18px}
 details.fold[open]{padding-bottom:16px}
 details.fold .dash-grid{margin-top:0}
 .alert-card summary,.dec-item summary{list-style:none;cursor:pointer}
-.layer.collapsed .src-grid{display:none}
-.layer-head{cursor:pointer}
-.layer.collapsed{margin-bottom:12px}
 .alert-card[open] summary,.dec-item[open] summary{margin-bottom:6px}
 .alert-card summary .chev,.dec-item summary .chev{color:var(--ink-faint);font-weight:700}
 .drawer-scrim{position:fixed;inset:0;background:rgba(16,24,43,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
@@ -940,8 +985,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 .imp-row.qact:not(.resolved):hover,.imp-row.qact:not(.resolved):focus-visible{transform:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(99,91,255,.14),var(--shadow)}
 .imp-row[style*="cursor:default"]:hover{border-color:var(--line)}
 .fc.proj{background:var(--bg);border-color:var(--line)}
-.fs-why,.sumlink{font-weight:600}
-.fin-with{border-radius:999px;background:var(--green-soft);color:var(--green);font-weight:600}
+.sumlink{font-weight:600}
 .safety-banner{background:var(--red-soft);border:1px solid #fbc9d5;border-radius:8px}
 .safety-banner b{color:var(--red)}
 
@@ -1090,27 +1134,14 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
       <span class="lbl">Plan</span>
     </button>
-    <button data-view="impact">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
-      <span class="lbl">Impact</span>
-    </button>
     <button data-view="actions">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m9 11 3 3L22 4"/></svg>
       <span class="lbl">Actions</span>
       <span class="pip" id="pipActions" style="background:var(--amber)">3</span>
     </button>
-    <button data-view="alerts">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg>
-      <span class="lbl">Alerts</span>
-      <span class="pip" id="pipAlerts">1</span>
-    </button>
     <button data-view="sources">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
-      <span class="lbl">Sources</span>
-    </button>
-    <button data-view="decisions">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/><path d="M12 10v2.5l1.8 1"/></svg>
-      <span class="lbl">Decisions</span>
+      <span class="lbl">Data health</span>
     </button>
     <button data-view="handover">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 3 8l4 4"/><path d="M3 8h13"/><path d="m17 20 4-4-4-4"/><path d="M21 16H8"/></svg>
@@ -1133,7 +1164,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   <section class="view active" id="view-shift">
 
     <div class="fstrip">
-      <div class="fs-top"><span class="fs-lab">If the current rate holds, you finish the day at</span><span class="fin-with" id="finWith"></span><button class="fs-why" onclick="toggleChat(true);chatAsk('Where will we finish the shift if we do nothing?')">Why short? ›</button></div>
+      <div class="fs-top"><span class="fs-lab">If the current rate holds, you finish the day at</span></div>
       <div class="fs-grid">
         <div class="fc proj">
           <small>Ore hoisted by end of day</small>
@@ -1166,11 +1197,12 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         </div>
         <div class="safety-banner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4"/><path d="M12 18h.01"/></svg>
-          <div><b>Safety first. VF-2 tripped (Tier 3).</b> Vent tech confirmation is overdue.</div>
-          <button onclick="showView('alerts')">Open alert →</button>
+          <div><b>Stop: fan VF-2 tripped and shut itself down.</b> No more headings can be ventilated in the north block. Agreed response: a vent tech inspects before any restart, never reset remotely. The tech's confirmation is 55 min overdue.</div>
+          <button onclick="showView('actions')">See the action →</button>
         </div>
         <div class="safety-strip"><span>Safety, month to date</span><b>LTI 0</b><b>RWI 0</b><b>MTI 0</b><b class="warn">PFH 1</b><b class="warn">FAI 2</b><b>Fatality 0</b><span>from the daily report (sample)</span></div>
         <div class="queue" id="queueList"></div>
+        <div class="watching" id="watchList"></div>
 
         <div class="sidec chartcard">
           <div class="eb">Where you are now, and where you can get to</div>
@@ -1185,7 +1217,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
             <div id="miniPlan"></div>
           </div>
           <div class="panel">
-            <h3>Feed activity <button onclick="showView('sources')">All sources →</button></h3>
+            <h3>Feed activity <button onclick="showView('sources')">Data health →</button></h3>
             <div id="feedLog"></div>
           </div>
         </div>
@@ -1210,44 +1242,80 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   <section class="view" id="view-plan">
     <div class="view-head">
       <div>
-        <h1>Plan</h1>
-        <p>Imported from the mine planning system at 05:48. Today's targets come from the monthly budget and the latest reforecast. The big number on each activity is how much of it is done, with where the plan says it should be underneath. Green is ahead, red is behind, blue is on track.</p>
+        <h1>Today's plan</h1>
+        <p>Activities shows each piece of work planned for today and whether it is on track. Performance shows how the plan is tracking through the shift and production against budget. When something needs fixing, the recommended action is on the Shift page.</p>
+        <div class="plan-base"><span id="baseName">Plan v3 <small>imported 05:48</small></span> · <span id="baseSub">from the mine planning system</span></div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="toast('Plan re-sync requested: planning system usually publishes updates within 2 minutes.')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
-          Re-sync plan
-        </button>
-        <button class="btn btn-blue" onclick="openPlanModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
-          Upload plan
-        </button>
+      <button class="btn btn-blue" onclick="openPlanModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        Upload plan
+      </button>
+    </div>
+    <div class="ptabs" role="tablist" aria-label="Plan">
+      <button role="tab" class="on" aria-selected="true" aria-controls="ptAct" data-pt="ptAct">Activities</button>
+      <button role="tab" aria-selected="false" aria-controls="ptPerf" data-pt="ptPerf">Performance</button>
+    </div>
+    <div class="ptab-panel on" id="ptAct" role="tabpanel">
+      <div class="plan-sum" id="planSum"></div>
+      <div id="planList"></div>
+    </div>
+
+    <div class="ptab-panel" id="ptPerf" role="tabpanel">
+      <p class="ptab-lead">How much of the plan is done through the shift, production so far against budget, and where in the chain the ore is getting held up.</p>
+      <div class="impact-hero">
+        <h3>Back on track: plan attainment through this shift</h3>
+        <div class="ih-sub">The hang-up at 08:20 pulled attainment to 68%. Each numbered marker is an approved recommendation; the dotted green line is the projection if recommendation #1 is approved now.</div>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 720 230" role="img" aria-label="Plan attainment recovery chart">
+            <line class="ch-grid" x1="40" y1="45"  x2="690" y2="45"/>
+            <line class="ch-grid" x1="40" y1="80"  x2="690" y2="80"/>
+            <line class="ch-grid" x1="40" y1="115" x2="690" y2="115"/>
+            <line class="ch-grid" x1="40" y1="150" x2="690" y2="150"/>
+            <line class="ch-grid" x1="40" y1="185" x2="690" y2="185"/>
+            <text class="ch-lab" x="8" y="49">100%</text>
+            <text class="ch-lab" x="14" y="84">90%</text>
+            <text class="ch-lab" x="14" y="119">80%</text>
+            <text class="ch-lab" x="14" y="154">70%</text>
+            <text class="ch-lab" x="14" y="189">60%</text>
+            <text class="ch-lab" x="28" y="208">06:00</text>
+            <text class="ch-lab" x="136" y="208">08:00</text>
+            <text class="ch-lab" x="244" y="208">10:00</text>
+            <text class="ch-lab" x="353" y="208">12:00</text>
+            <text class="ch-lab" x="461" y="208">14:00</text>
+            <text class="ch-lab" x="569" y="208">16:00</text>
+            <text class="ch-lab" x="670" y="208">18:00</text>
+            <line class="ch-target" x1="40" y1="45" x2="690" y2="45"/>
+            <polygon class="ch-fill" points="40,52 141,55 163,59 200,110 240,150 265,157 330,143 380,132 425,122 425,190 40,190"/>
+            <polyline class="ch-actual" points="40,52 141,55 163,59 200,110 240,150 265,157 330,143 380,132 425,122"/>
+            <polyline class="ch-proj" points="425,122 540,80 690,59"/>
+            <text class="ch-anno" x="205" y="98" fill="var(--red)">hang-up 08:20</text>
+            <text class="ch-anno" x="300" y="170" fill="var(--green)">+10 pts recovered since 08:41</text>
+            <text class="ch-anno" x="505" y="70" fill="var(--green)">→ 96% if #1 approved</text>
+            <circle class="ch-mark" cx="141" cy="55" r="8"/><text class="ch-mnum" x="138" y="58.5">1</text>
+            <circle class="ch-mark" cx="186" cy="88" r="8"/><text class="ch-mnum" x="183" y="91.5">2</text>
+            <circle class="ch-mark pending" cx="425" cy="122" r="8"/><text class="ch-mnum" x="422" y="125.5">3</text>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span><i style="border-color:var(--blue)"></i>Actual attainment</span>
+          <span><i style="border-color:var(--ink-faint);border-top-style:dashed"></i>Plan (100%)</span>
+          <span><i style="border-color:var(--green);border-top-style:dashed"></i>Projection with #1 approved</span>
+          <span><i style="border-color:var(--amber)"></i>③ awaiting your approval</span>
+        </div>
       </div>
+  
+      <div class="pt-card">
+        <div class="pt-h"><h4>Today so far</h4><span class="pt-key"><i class="pt-k-fill"></i>Done so far<i class="pt-k-tick"></i>Budget for this time of day</span></div>
+        <div id="ptToday"></div>
+      </div>
+      <div class="pt-card">
+        <div class="pt-h"><h4>Where the ore is getting stuck</h4></div>
+        <p class="pt-lead" id="ptFlowLead"></p>
+        <div id="ptFlow"></div>
+        <div class="pt-foot">Hoisted grade: Cu 2.50%, Co 0.68%. That is 46 t of copper and 12.5 t of cobalt.</div>
+      </div>
+      <div class="sample-note">Sample values. Budgets follow the shape of KTO's daily production report.</div>
     </div>
-    <div class="weekstrip">
-      <div class="wk"><div class="wl">Ore hoisted · today</div><div class="wn">1,840 <small>t so far</small></div><div class="wcmp"><span>Reforecast by now <b>1,920</b></span><span>Budget <b>1,990</b></span></div><div class="wd down">−80 t (−4%) vs reforecast · −150 t (−8%) vs budget</div><div class="wm">Day: reforecast 2,550 t · budget 2,667 t. Month to date 50,012 t vs 58,064 t (−14%)</div></div>
-      <div class="wk"><div class="wl">Development · today</div><div class="wn">8.1 <small>m so far</small></div><div class="wcmp"><span>Reforecast by now <b>9.0</b></span><span>Budget <b>9.3</b></span></div><div class="wd down">−0.9 m (−10%) vs reforecast · −1.2 m (−13%) vs budget</div><div class="wm">Day budget 15 m (primary and secondary). Month to date 227 m vs 348 m (−35%)</div></div>
-      <div class="wk"><div class="wl">Backfill · today</div><div class="wn">1,300 <small>t so far</small></div><div class="wcmp"><span>Reforecast by now <b>1,450</b></span><span>Budget <b>1,450</b></span></div><div class="wd down">−150 t (−10%) vs reforecast and budget</div><div class="wm">Waste plus hydraulic. Day budget 2,335 t. Month to date 60,353 t vs 56,044 t (+8%)</div></div>
-      <div class="wk"><div class="wl">Baseline</div><div class="wn" id="baseName">Plan v3 <small>frozen 05:48</small></div><div class="wd flat" id="baseSub">0 approved re-plans · 2 in-shift deviations</div></div>
-    </div>
-    <div class="section-title" style="margin-top:4px">Where the ore is sticking <span class="hint">today so far, against budget</span></div>
-    <div class="flowstrip">
-      <div class="fl"><div class="wl">Blasted</div><div class="wn">2,140 <small>t</small></div><div class="wd up">+140 t (+7%)</div></div>
-      <span class="farr">→</span>
-      <div class="fl gap"><div class="wl">Trammed</div><div class="wn">1,880 <small>t</small></div><div class="wd down">−70 t (−4%)</div></div>
-      <span class="farr">→</span>
-      <div class="fl gap"><div class="wl">Hoisted</div><div class="wn">1,840 <small>t</small></div><div class="wd down">−150 t (−8%)</div></div>
-      <div class="fl grade"><div class="wl">Hoisted grade</div><div class="wn">Cu 2.50% · Co 0.68%</div><div class="wd flat">Contained: Cu 46 t · Co 12.5 t</div></div>
-    </div>
-    <div class="sample-note">Figures on this page are sample values. Budgets and the month-to-date lines follow the shape of KTO's daily production report.</div>
-    <div class="filters" id="planFilters">
-      <button class="fchip on" data-pf="all">All activities</button>
-      <button class="fchip" data-pf="risk">At risk</button>
-      <button class="fchip" data-pf="production">Production</button>
-      <button class="fchip" data-pf="development">Development</button>
-      <button class="fchip" data-pf="services">Services & maintenance</button>
-    </div>
-    <div id="planList"></div>
   </section>
 
   <!-- ── Performance view ────────────────────────── -->
@@ -1328,152 +1396,89 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     </div>
   </section>
 
-  <!-- ── Impact view ────────────────────────── -->
-  <section class="view" id="view-impact">
-    <div class="view-head">
-      <div>
-        <h1>Recommendation impact</h1>
-        <p>Not another reporting platform: this answers one question: <b>did acting on ShiftWise recommendations bring the shift back on track, and by how much?</b></p>
-      </div>
-      <button class="btn btn-ghost" onclick="toast('Impact report exported: recommendation, approver, predicted vs actual, and plan contribution per action.')">Export report</button>
-    </div>
-
-    <div class="kpis">
-      <div class="kpi"><div class="n up">+10<small> pts</small></div><div class="l">Plan attainment recovered</div><div class="d flat">since first action at 08:41</div></div>
-      <div class="kpi"><div class="n">1,240<small> t</small></div><div class="l">Tonnes protected (verified)</div><div class="d up">+350 t more tracking</div></div>
-      <div class="kpi"><div class="n">7<small> / 9</small></div><div class="l">Recommendations approved</div><div class="d flat">2 dismissed with reason</div></div>
-      <div class="kpi"><div class="n">86<small>%</small></div><div class="l">Predictions within range</div><div class="d flat">outcome vs predicted, 30 days</div></div>
-      <div class="kpi"><div class="n">6<small> min</small></div><div class="l">Median time to approve</div><div class="d up">was 14 min in week 1</div></div>
-    </div>
-
-    <div class="impact-hero">
-      <h3>Back on track: plan attainment through this shift</h3>
-      <div class="ih-sub">The hang-up at 08:20 pulled attainment to 68%. Each numbered marker is an approved recommendation; the dotted green line is the projection if recommendation #1 is approved now.</div>
-      <div class="chart-wrap">
-        <svg viewBox="0 0 720 230" role="img" aria-label="Plan attainment recovery chart">
-          <line class="ch-grid" x1="40" y1="45"  x2="690" y2="45"/>
-          <line class="ch-grid" x1="40" y1="80"  x2="690" y2="80"/>
-          <line class="ch-grid" x1="40" y1="115" x2="690" y2="115"/>
-          <line class="ch-grid" x1="40" y1="150" x2="690" y2="150"/>
-          <line class="ch-grid" x1="40" y1="185" x2="690" y2="185"/>
-          <text class="ch-lab" x="8" y="49">100%</text>
-          <text class="ch-lab" x="14" y="84">90%</text>
-          <text class="ch-lab" x="14" y="119">80%</text>
-          <text class="ch-lab" x="14" y="154">70%</text>
-          <text class="ch-lab" x="14" y="189">60%</text>
-          <text class="ch-lab" x="28" y="208">06:00</text>
-          <text class="ch-lab" x="136" y="208">08:00</text>
-          <text class="ch-lab" x="244" y="208">10:00</text>
-          <text class="ch-lab" x="353" y="208">12:00</text>
-          <text class="ch-lab" x="461" y="208">14:00</text>
-          <text class="ch-lab" x="569" y="208">16:00</text>
-          <text class="ch-lab" x="670" y="208">18:00</text>
-          <line class="ch-target" x1="40" y1="45" x2="690" y2="45"/>
-          <polygon class="ch-fill" points="40,52 141,55 163,59 200,110 240,150 265,157 330,143 380,132 425,122 425,190 40,190"/>
-          <polyline class="ch-actual" points="40,52 141,55 163,59 200,110 240,150 265,157 330,143 380,132 425,122"/>
-          <polyline class="ch-proj" points="425,122 540,80 690,59"/>
-          <text class="ch-anno" x="205" y="98" fill="var(--red)">hang-up 08:20</text>
-          <text class="ch-anno" x="300" y="170" fill="var(--green)">+10 pts recovered since 08:41</text>
-          <text class="ch-anno" x="505" y="70" fill="var(--green)">→ 96% if #1 approved</text>
-          <circle class="ch-mark" cx="141" cy="55" r="8"/><text class="ch-mnum" x="138" y="58.5">1</text>
-          <circle class="ch-mark" cx="186" cy="88" r="8"/><text class="ch-mnum" x="183" y="91.5">2</text>
-          <circle class="ch-mark pending" cx="425" cy="122" r="8"/><text class="ch-mnum" x="422" y="125.5">3</text>
-        </svg>
-      </div>
-      <div class="chart-legend">
-        <span><i style="border-color:var(--blue)"></i>Actual attainment</span>
-        <span><i style="border-color:var(--ink-faint);border-top-style:dashed"></i>Plan (100%)</span>
-        <span><i style="border-color:var(--green);border-top-style:dashed"></i>Projection with #1 approved</span>
-        <span><i style="border-color:var(--amber)"></i>③ awaiting your approval</span>
-      </div>
-    </div>
-
-    <div class="section-title">What each recommendation did <span class="hint">Predicted vs measured, updated live, verified numbers only after the outcome lands.</span></div>
-    <div id="impactList"></div>
-
-    <details class="fold"><summary>Pilot scorecard<small>8 measures vs a baseline frozen at go-live</small></summary>
-    <div class="stage-row">
-      <span class="tag green">✓ 1 · Replay historical events</span>
-      <span class="tag green">✓ 2 · Shadow mode alongside operators</span>
-      <span class="tag brand">3 · Operator-approved recommendations (current)</span>
-    </div>
-    <div class="tbl" style="margin-bottom:6px"><div class="tbl-scroll"><table>
-      <thead><tr><th>Measure</th><th>Frozen baseline</th><th>Now</th><th>Change</th></tr></thead>
-      <tbody id="scorecardRows"></tbody>
-    </table></div></div>
-    <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px">Demo values. Operator and crew figures are adjusted for time outside their control using the site's time usage model. Improvement is a hypothesis being tested, not a promised percentage.</p></details>
-
-    <div class="dash-grid">
-      <div class="panel">
-        <h3>Confidence calibration, 30 days <button onclick="toast('Calibration detail: every recommendation bucketed by stated confidence vs measured outcome.')">Detail →</button></h3>
-        <div class="cal-row"><div class="cl">Said ≥ 88% (“you must”)<span>34 recommendations</span></div><div class="bar-wrap"><div class="bar" style="width:91%;background:var(--green)"></div></div><em>91%</em></div>
-        <div class="cal-row"><div class="cl">Said 60–87% (“I think you should”)<span>52 recommendations</span></div><div class="bar-wrap"><div class="bar" style="width:78%;background:var(--blue)"></div></div><em>78%</em></div>
-        <div class="cal-row"><div class="cl">Below 60%: held for evidence<span>21 held · never actioned blind</span></div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--canvas)"></div></div><em>n/a</em></div>
-        <p style="font-size:12px;color:var(--ink-soft);margin-top:8px">% of recommendations whose measured outcome landed inside the predicted range. This is what earns the right to say “you must”.</p>
-      </div>
-      <div class="panel">
-        <h3>Shift-end attainment: last 6 shifts <button onclick="toast('Attainment history export queued.')">Export →</button></h3>
-        <div class="ms-wrap">
-          <div class="ms"><i style="height:52%"></i><b>74%</b><span>Sun N</span></div>
-          <div class="ms"><i style="height:58%"></i><b>79%</b><span>Mon D</span></div>
-          <div class="ms"><i style="height:62%"></i><b>81%</b><span>Mon N</span></div>
-          <div class="ms hot"><i style="height:70%"></i><b>88%</b><span>Tue D</span></div>
-          <div class="ms hot"><i style="height:74%"></i><b>90%</b><span>Tue N</span></div>
-          <div class="ms hot"><i style="height:82%;border-style:dashed"></i><b>96%*</b><span>Now (proj)</span></div>
-        </div>
-        <p style="font-size:12px;color:var(--ink-soft);margin-top:10px">Trend since pilot go-live. * projection assumes recommendation #1 is approved and the hang-up clears by 14:00.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ── Actions view ────────────────────────── -->
   <section class="view" id="view-actions">
     <div class="view-head">
       <div>
-        <h1>Action loop</h1>
-        <p>Approved recommendations, tracked until the result is verified.</p>
+        <h1>Actions</h1>
+        <p>Recommendations you approved, followed from owner to verified result. Track record is the full decision history, and shows whether ShiftWise's predictions hold up over time.</p>
+      </div>
+      <button class="btn btn-ghost" onclick="toast('Actions report exported: recommendation, approver, predicted vs actual, and plan contribution per action.')">Export report</button>
+    </div>
+    <div class="ptabs" role="tablist" aria-label="Actions">
+      <button role="tab" class="on" aria-selected="true" aria-controls="atAct" data-pt="atAct">Actions</button>
+      <button role="tab" aria-selected="false" aria-controls="atTrack" data-pt="atTrack">Track record</button>
+    </div>
+    <div class="ptab-panel on" id="atAct" role="tabpanel">
+      <div class="plan-sum act-sum"><span><b>+10 pts</b> plan attainment recovered since 08:41</span><span><b>1,240 t</b> protected (verified)</span><span><b>7 of 9</b> recommendations approved</span><span><b>6 min</b> median time to approve</span></div>
+      <div class="filters" id="actFilters">
+        <button class="fchip on" data-af="all">All</button>
+        <button class="fchip" data-af="open">Open</button>
+        <button class="fchip" data-af="stalled">Stalled</button>
+        <button class="fchip" data-af="done">Done</button>
+      </div>
+      <div id="actionList"></div>
+    </div>
+    <div class="ptab-panel" id="atTrack" role="tabpanel">
+      <p class="ptab-lead">Is ShiftWise getting it right? Every prediction is checked against what really happened.</p>
+      <div class="plan-sum act-sum"><span><b>86%</b> of predictions landed within range, last 30 days</span></div>
+      <div class="section-title">Decision history <span class="hint">approvals, rejections and operator overrides</span><button class="btn btn-ghost sec-btn" onclick="toast('Decision log export queued (CSV + evidence references).')">Export log</button></div>
+      <div id="decisionList"></div>
+      <details class="fold"><summary>Pilot scorecard<small>8 measures vs a baseline frozen at go-live</small></summary>
+      <div class="stage-row">
+        <span class="tag green">✓ 1 · Replay historical events</span>
+        <span class="tag green">✓ 2 · Shadow mode alongside operators</span>
+        <span class="tag brand">3 · Operator-approved recommendations (current)</span>
+      </div>
+      <div class="tbl" style="margin-bottom:6px"><div class="tbl-scroll"><table>
+        <thead><tr><th>Measure</th><th>Frozen baseline</th><th>Now</th><th>Change</th></tr></thead>
+        <tbody id="scorecardRows"></tbody>
+      </table></div></div>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-bottom:6px">Demo values. Operator and crew figures are adjusted for time outside their control using the site's time usage model. Improvement is a hypothesis being tested, not a promised percentage.</p></details>
+  
+      <div class="dash-grid">
+        <div class="panel">
+          <h3>Confidence calibration, 30 days <button onclick="toast('Calibration detail: every recommendation bucketed by stated confidence vs measured outcome.')">Detail →</button></h3>
+          <div class="cal-row"><div class="cl">Said ≥ 88% (“you must”)<span>34 recommendations</span></div><div class="bar-wrap"><div class="bar" style="width:91%;background:var(--green)"></div></div><em>91%</em></div>
+          <div class="cal-row"><div class="cl">Said 60–87% (“I think you should”)<span>52 recommendations</span></div><div class="bar-wrap"><div class="bar" style="width:78%;background:var(--blue)"></div></div><em>78%</em></div>
+          <div class="cal-row"><div class="cl">Below 60%: held for evidence<span>21 held · never actioned blind</span></div><div class="bar-wrap"><div class="bar" style="width:100%;background:var(--canvas)"></div></div><em>n/a</em></div>
+          <p style="font-size:12px;color:var(--ink-soft);margin-top:8px">% of recommendations whose measured outcome landed inside the predicted range. This is what earns the right to say “you must”.</p>
+        </div>
+        <div class="panel">
+          <h3>Shift-end attainment: last 6 shifts <button onclick="toast('Attainment history export queued.')">Export →</button></h3>
+          <div class="ms-wrap">
+            <div class="ms"><i style="height:52%"></i><b>74%</b><span>Sun N</span></div>
+            <div class="ms"><i style="height:58%"></i><b>79%</b><span>Mon D</span></div>
+            <div class="ms"><i style="height:62%"></i><b>81%</b><span>Mon N</span></div>
+            <div class="ms hot"><i style="height:70%"></i><b>88%</b><span>Tue D</span></div>
+            <div class="ms hot"><i style="height:74%"></i><b>90%</b><span>Tue N</span></div>
+            <div class="ms hot"><i style="height:82%;border-style:dashed"></i><b>96%*</b><span>Now (proj)</span></div>
+          </div>
+          <p style="font-size:12px;color:var(--ink-soft);margin-top:10px">Trend since pilot go-live. * projection assumes recommendation #1 is approved and the hang-up clears by 14:00.</p>
+        </div>
       </div>
     </div>
-    <div class="filters" id="actFilters">
-      <button class="fchip on" data-af="all">All</button>
-      <button class="fchip" data-af="open">Open</button>
-      <button class="fchip" data-af="stalled">Stalled</button>
-      <button class="fchip" data-af="done">Completed</button>
-    </div>
-    <div id="actionList"></div>
-  </section>
-
-  <!-- ── Alerts view ────────────────────────── -->
-  <section class="view" id="view-alerts">
-    <div class="view-head">
-      <div>
-        <h1>Constraint alerts</h1>
-        <p><b>Tier 1</b> be aware · <b>Tier 2</b> derate, intervention recommended · <b>Tier 3</b> stop / shutdown. Each alert carries a pre-agreed response. Open an alert to see it.</p>
-      </div>
-    </div>
-    <div class="tier-legend">
-      <div class="tierdef t1"><span class="tnum">1</span><div><b>Tier 1: Be aware</b><span>Operator is informed. No constraint on the plan yet.</span></div></div>
-      <div class="tierdef t2"><span class="tnum">2</span><div><b>Tier 2: Derate</b><span>A constraint is actively degrading the plan. Intervention recommended.</span></div></div>
-      <div class="tierdef t3"><span class="tnum">3</span><div><b>Tier 3: Stop / shutdown</b><span>Hard constraint. Activity must stop or will stop itself.</span></div></div>
-    </div>
-    <div id="alertList"></div>
   </section>
 
   <!-- ── Sources view ────────────────────────── -->
   <section class="view" id="view-sources">
     <div class="view-head">
       <div>
-        <h1>System &amp; data health</h1>
-        <p>Everything ShiftWise reasons over, grouped by operational layer. Much of today's production data comes from the daily production report, which is filled in after each shift, so it is not live until it is automated. Radio calls and manual updates count as full inputs, not a fallback. Confidence reflects freshness, coverage and sensor health, recommendations always cite which feeds they used.</p>
+        <h1>Data health</h1>
+        <p>Is ShiftWise getting the data it needs, on time and complete? A feed that stops, arrives late, goes quiet or reports values that don't add up is caught here, so no decision is made on missing or wrong data without anyone knowing.</p>
       </div>
       <button class="btn btn-ghost" onclick="toast('Site audit pack exported: the field team template covers application, data and network landscape per layer.')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
         Export audit pack
       </button>
     </div>
-    <div class="section-title" style="margin-top:0">Data integrity flags <span class="count" id="flagCount">2</span><span class="hint">Cross-source checks ShiftWise runs itself, a reading can be live and still wrong.</span></div>
-    <div id="integrityList" style="margin-bottom:22px"></div>
-    <div id="sourceLayers"></div>
+    <div class="dh-sum" id="dhSum"></div>
+    <div class="section-title" style="margin-top:0">Needs attention <span class="count" id="flagCount"></span><span class="hint">Last 24 hours of data arrival on the right</span></div>
+    <div id="dhAttention"></div>
+    <div class="section-title">Healthy feeds <span class="hint" id="dhKey"></span></div>
+    <div class="dh-table" id="dhHealthy"></div>
+    <div class="section-title">Not connected</div>
+    <div id="dhOff"></div>
   </section>
 
   <!-- ── Handover view ────────────────────────── -->
@@ -1499,18 +1504,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <div class="field" style="margin-bottom:0"><textarea id="hoNotes" rows="3" placeholder="Context that isn't in the systems: e.g. what the shift boss said on the radio, what you've already chased."></textarea></div>
     </div>
     <div id="hoStatus" style="font-size:13px;font-weight:700;color:var(--ink-faint)">Handover not yet accepted.</div>
-  </section>
-
-  <!-- ── Decisions view ────────────────────────── -->
-  <section class="view" id="view-decisions">
-    <div class="view-head">
-      <div>
-        <h1>Decision log</h1>
-        <p>Every recommendation, who approved it, the predicted impact and what actually happened. This is the site's local learning loop: and the defence file for every call made in this room.</p>
-      </div>
-      <button class="btn btn-ghost" onclick="toast('Decision log export queued (CSV + evidence references).')">Export log</button>
-    </div>
-    <div id="decisionList"></div>
   </section>
 
   <!-- ── Settings view ────────────────────────── -->
@@ -1817,6 +1810,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 
 const NBA = [
  {id:"n1", pri:"high", conf:88, area:"Decline haulage", tier:"Recommend",
+  alert:"Crusher 1 feed buffer below 60 minutes", resp:"Re-prioritise ore haulage over waste until the buffer recovers.",
   title:"Reassign Truck 6313 and Truck 6315 from 640L waste to Zone 5 OBI ore haulage",
   why:"Crusher 1 feed buffer is down to <b>42 minutes</b> at the current rate. Zone 5 OBI bogging is ahead of plan with ore available at the draw point, while 640L waste movement can slip to Shift 2 without touching the monthly plan: Two trucks swapped for the next 3 hours closes the gap.",
   whyNow:"If the crusher starves it takes ~35 minutes to re-establish steady feed after restart, that turns a 42-minute buffer problem into a 750 t shortfall by shift end.",
@@ -1833,6 +1827,7 @@ const NBA = [
   alts:[["Move Truck 6313 and Truck 6315 to Zone 5 OBI ore (this)","+13 pts"],["Slow crusher feed to stretch the buffer","+4 pts · cuts tonnes"],["Bring spare truck Truck 6316 into service","+15 pts · not feasible, in service until ~15:00"],["Do nothing","−28% of crusher plan by 18:00"]]},
 
  {id:"n2", pri:"high", conf:54, area:"Sump 10 pump station", tier:"Confirm first",
+  alert:"Sump 10 flow does not match the pump", resp:"Send a fitter to confirm before any change to the pumping schedule. Never act on a single conflicting sensor.",
   title:"Sump 10 pump discharge flow reads 40% low, confirm in the field before I recommend anything",
   why:"SCADA shows Sump 10 pump flow at <b>58 l/s against a normal 95 l/s</b>, but pump amps and pressure look normal, the pattern matches the fouled sensor we saw on 12 Aug, not a real flow loss. I can't tell the difference from here, and a wrong call either floods the decline sump overnight or wastes a crew swap.",
   whyNow:"If it IS real, sump level reaches the Tier-3 threshold in about 4 hours. A field check now keeps every option open.",
@@ -1895,7 +1890,7 @@ const NBA = [
 ];
 
 const PLAN = [
- {id:"p1", cat:"production", name:"Bog & haul ore: Zone 5 OBI stope", sub:"LHD Scaltec 3402 + decline fleet → ore pocket",
+ {id:"p1", nba:"n1", cat:"production", name:"Bog & haul ore: Zone 5 OBI stope", sub:"LHD Scaltec 3402 + decline fleet → ore pocket",
   plan:"1,800 t", act:"1,240 t", pct:69, expect:62, risk:false,
   ready:[["ok","Ventilation"],["ok","LHD available"],["ok","Draw point clear"],["ok","Haul route open"]]},
  {id:"p2", cat:"production", name:"Clear draw-point hang-up: Zone 4 OBI stope", sub:"Blocked since 08:20 · water-jet crew assigned",
@@ -1904,118 +1899,91 @@ const PLAN = [
  {id:"p3", cat:"production", name:"Crusher feed: Crusher 1", sub:"Target 390 t/h steady feed",
   plan:"2,667 t", act:"1,840 t", pct:69, expect:58, risk:true,
   ready:[["ok","Crusher healthy"],["no","Feed buffer 42 min"],["ok","Conveyor line"]]},
- {id:"p4", cat:"development", name:"Develop Etang North 550L, 2 cuts", sub:"Jumbo 3123 · drill, charge, fire 18:40",
+ {id:"p4", nba:"n4", cat:"development", name:"Develop Etang North 550L, 2 cuts", sub:"Jumbo 3123 · drill, charge, fire 18:40",
   plan:"10 m", act:"5.1 m", pct:51, expect:50, risk:true,
   ready:[["ok","Jumbo serviceable"],["pend","Charge crew (on Zone 4 OBI)"],["ok","Crew ticketed for charging"],["ok","Explosives at magazine"],["ok","Vent duct advanced"],["ok","Ground support done"],["ok","Face marked & surveyed"]]},
  {id:"p5", cat:"development", name:"Install vent duct: Etang North 640L", sub:"Services crew · 60 m of duct",
   plan:"60 m", act:"45 m", pct:75, expect:60, risk:false,
   ready:[["ok","Duct & hangers at face"],["ok","Crew"],["ok","Access"]]},
- {id:"p6", cat:"services", name:"Truck 6317 · 500-hour service", sub:"WO-20441 · workshop bay 1 · 6 h",
+ {id:"p6", nba:"n3", cat:"services", name:"Truck 6317 · 500-hour service", sub:"WO-20441 · workshop bay 1 · 6 h",
   plan:"Complete this shift", act:"Not started", pct:0, expect:10, risk:false,
   ready:[["ok","Parts kitted"],["ok","Bay 1 free from 17:00"],["ok","Fitters rostered"]]},
- {id:"p7", cat:"services", name:"Pump transfer: Sump 10 pump station", sub:"Dewatering 580L sump → surface",
+ {id:"p7", nba:"n2", cat:"services", name:"Pump transfer: Sump 10 pump station", sub:"Dewatering 580L sump → surface",
   plan:"2,050 m³", act:"1,410 m³", pct:69, expect:62, risk:true,
   ready:[["pend","Flow reading unconfirmed"],["ok","Power"],["ok","Discharge line"]]},
- {id:"p8", cat:"production", name:"Fire blast: Zone 4 OBI stope ring 12", sub:"Single window 18:40 · re-entry ~19:55",
+ {id:"p8", nba:"n5", cat:"production", name:"Fire blast: Zone 4 OBI stope ring 12", sub:"Single window 18:40 · re-entry ~19:55",
   plan:"18:40", act:"On track", pct:58, expect:58, risk:false,
   ready:[["ok","Charging 94%"],["ok","Ventilation nominal"],["pend","Clearance from 17:30"],["pend","Gas clearance & re-entry time"],["ok","Blast crew briefed"],["ok","Backfill status clear"]]},
 ];
 
+/* approved recommendations: tracked from owner to verified result.
+   detail is what was predicted and what was measured; result shows once it is verified. */
 const ACTIONS = [
  {id:"A-118", title:"Water-jet crew to clear Zone 4 OBI hang-up", src:"From alert T2 · approved 08:41",
-  owner:"U/G services crew", loop:3, status:"prog", impact:"Est. +350 t recovered if cleared by 14:00",
-  timer:"27 min left", timerCls:"flat", verify:"Data: FMS shows bogging resumed at Zone 4 OBI"},
- {id:"A-117", title:"Swap LHD Scaltec 3404 → Scaltec 3402 at Zone 5 OBI (hydraulic temp)", src:"Recommendation · approved 07:55",
-  owner:"Dispatch", loop:5, status:"hand", impact:"Verified: bogging rate held at 315 t/h (predicted 300–330)",
-  timer:"Closed 08:20", timerCls:"up", verify:"Data: FMS rate at Zone 5 OBI"},
+  owner:"U/G services crew", loop:3, status:"prog", by:"Approved by N. Abara · 88% confidence", timer:"27 min left", timerCls:"flat",
+  detail:"Predicted: <b>+350 t recovered</b> if cleared by 14:00. Crew reports 60% cleared at 11:52, and attainment is already lifting (+6 pts so far) as partial bogging resumed at 12:30.",
+  why:"The hang-up blocked the main ore source for the shift. A water-jet crew was the fastest safe way to clear it.",
+  verify:"Data: FMS shows bogging resumed at Zone 4 OBI"},
+ {id:"A-117", title:"Swap LHD Scaltec 3404 → Scaltec 3402 at Zone 5 OBI before failure", src:"Recommendation · approved 07:55",
+  owner:"Dispatch", loop:5, status:"hand", by:"Approved by N. Abara · 91% confidence",
+  detail:"Predicted: hold bogging ≥ 300 t/h and avoid ~2 h unplanned downtime. Measured: <b>315 t/h held</b>; Scaltec 3404's seal confirmed failing in the workshop, so the downtime was real and avoided.",
+  why:"Scaltec 3404 hydraulic temperature was trending to derate. Swapping before failure kept bogging continuous.", learn:"Hydraulic temp signature added to the LHD early-warning pattern.",
+  result:["+620 t","protected · +4 pts"], verify:"Data: FMS rate at Zone 5 OBI"},
  {id:"A-116", title:"Re-route decline traffic past 580L remuck during shotcrete", src:"Recommendation · approved 07:12",
-  owner:"Dispatch", loop:4, status:"done", impact:"Verified: zero truck queuing events (predicted ≤2)",
-  timer:"Closed 09:40", timerCls:"up", verify:"Data: FMS queuing events"},
+  owner:"Dispatch", loop:4, status:"done", by:"Approved by N. Abara · 84% confidence",
+  detail:"Predicted: ≤ 2 queuing events, ~40 t cost. Measured: <b>zero queuing events, 38 t cost</b>: the cheapest way through the shotcrete window.",
+  why:"The shotcrete crew needed 90 min of exclusive access. The re-route added 4 min per cycle but avoided queuing.",
+  result:["+25 min","truck time saved"], verify:"Data: FMS queuing events"},
  {id:"A-115", title:"Confirm VF-2 vibration trip with vent tech", src:"From alert T3 · approved 06:58",
-  owner:"Ventilation tech", loop:3, status:"stall", impact:"No response for 55 min. ShiftWise re-pinged at 12:40",
-  timer:"Overdue 55 min", timerCls:"down", verify:"Person + data: tech confirms, SCADA fan state"},
+  owner:"Ventilation tech", loop:3, status:"stall", by:"Approved by T. Mokoena", timer:"Overdue 55 min", timerCls:"down",
+  detail:"No response for 55 min. ShiftWise re-pinged the vent tech at 12:40.",
+  why:"A remote reset was available, but the pre-agreed response requires a physical bearing inspection first. The tech was diverted to a cage fault.", learn:"Stall pattern logged: single-tech dependency on day shift.",
+  verify:"Person + data: tech confirms, SCADA fan state"},
  {id:"A-114", title:"Top-up emulsion delivery to Zone 4 OBI magazine", src:"Readiness check · approved 06:31",
-  owner:"Supply crew", loop:5, status:"hand", impact:"Verified: charge-up unblocked (was the morning's constraint)",
-  timer:"Closed 07:50", timerCls:"up", verify:"Person: magazine stock check"},
+  owner:"Supply crew", loop:5, status:"hand", by:"Approved by T. Mokoena · 79% confidence",
+  detail:"Caught before it became a problem: charge-up would have stalled at ~10:00 without stock. Measured: charge-up ran uninterrupted, so <b>the 18:40 blast and both Etang North 550L cuts stay possible</b>.",
+  why:"The readiness check showed magazine stock would run out before charge-up finished.",
+  result:["18:40","blast protected"], verify:"Person: magazine stock check"},
 ];
 
-const ALERTS = [
- {id:"al1", tier:3, title:"Primary fan VF-2: vibration trip, auto-shutdown", meta:"SCADA · raised 06:52", cleared:false,
-  body:"VF-2 tripped on high vibration and shut itself down. VF-1 is carrying the north block at 87% capacity. Constraint locked into plan evaluation: no additional headings can be ventilated in the north block until resolved.",
-  resp:"Pre-agreed response: vent tech physically inspects bearing housing before any restart. Do not reset remotely. If VF-1 exceeds 92% for 30 min, pull crews from Etang North 550L per TARP.",
-  action:"A-115 in the loop: vent tech confirmation is 55 min overdue."},
- {id:"al2", tier:2, title:"Crusher 1 feed buffer below 60 minutes", meta:"SCADA + stockpile survey · raised 12:44", cleared:false,
-  body:"ore pocket drawdown will starve Crusher 1 in ~90 minutes at current haulage rate. Feed rate already derated 312 t/h vs 390 planned.",
-  resp:"Pre-agreed response: re-prioritise ore haulage over waste. Recommendation #1 implements this: two trucks from 640L waste to Zone 5 OBI ore.",
-  action:"Linked to recommendation #1 (88% confidence)."},
- {id:"al3", tier:2, title:"Zone 4 OBI stope draw point hang-up", meta:"Operator report + FMS idle time · raised 08:20", cleared:false,
-  body:"LHD idle at draw point since 08:20; water-jet crew clearing. 350 t of today's ore plan sits behind this constraint.",
-  resp:"Pre-agreed response: exclusion zone, water-jet lance, re-evaluate at 14:00. If not cleared by 14:00, re-sequence to ring 11 ore.",
-  action:"A-118 in the loop: crew on site, est. clear 13:50."},
- {id:"al4", tier:1, title:"Truck 6314 engine coolant temp trending high", meta:"FMS telemetry · raised 11:37", cleared:false,
-  body:"Tier-1 machine alert: operator has been made aware by the onboard system. Trend is slow; no derate yet. Logged for the workshop's radar ahead of tonight's service window.",
-  resp:"Pre-agreed response: monitor. If it reaches Tier 2 (machine derates itself), swap Truck 6314 to short hauls and book a coolant system check.",
-  action:"No action required: watching."},
- {id:"al5", tier:1, title:"Sump 10 pump discharge flow deviates from pump signature", meta:"SCADA analytics · raised 12:31", cleared:false,
-  body:"Flow transmitter disagrees with amps + pressure. Evidence conflict: see recommendation #2. Confidence too low to act without a field check.",
-  resp:"Pre-agreed response: dispatch fitter to confirm before any pumping schedule change. Never act on a single conflicted sensor.",
-  action:"Linked to recommendation #2 (confirm first)."},
+/* watch-level alerts: nothing to approve yet, shown under the next best actions on Shift.
+   Stop-level alerts sit in the safety banner, and the rest are next best actions or already on Actions. */
+const WATCH = [
+ {title:"Truck 6314 engine coolant temperature trending high", meta:"FMS telemetry · since 11:37",
+  resp:"No derate yet. If the truck derates itself, move it to short hauls and book a coolant check."},
 ];
 
-const SOURCES = [
- {layer:"Enterprise & planning", items:[
-   {name:"Daily production report (Excel)", sub:"Filled in after each shift · covers Shift 3 of the day before and Shifts 1 and 2 of yesterday", conf:80, dot:"a",
-    note:"Tonnes, development, backfill and delays arrive a shift or more late, with data-valid and no-data-entry flags.", icon:"doc"},
-   {name:"ERP: work orders & maintenance", sub:"15 min sync · last 12:45", conf:96, dot:"g",
-    note:null, icon:"doc"},
-   {name:"Mine planning: monthly plan + daily plan", sub:"Imported 05:48 · next import 17:30", conf:88, dot:"g",
-    note:"Plans assume average rates. ShiftWise tracks live variance against them.", icon:"cal"}]},
- {layer:"Fleet & work execution", items:[
-   {name:"UG fleet management (dispatch)", sub:"Live · 4 s telemetry · 14 machines", conf:97, dot:"g",
-    note:null, icon:"truck"},
-   {name:"Machine health telemetry", sub:"Live · engine hours, temps, alerts", conf:94, dot:"g",
-    note:"Truck 6314 coolant trend flagged Tier 1.", icon:"gauge"}]},
- {layer:"Fixed plant (SCADA / DCS)", items:[
-   {name:"Ventilation fans & airflow", sub:"Live · 1 s scan", conf:92, dot:"a",
-    note:"VF-2 offline after vibration trip. Tier 3 alert active.", icon:"fan"},
-   {name:"Dewatering pumps & sump levels", sub:"Live · 1 s scan", conf:71, dot:"a",
-    note:"Sump 10 pump flow transmitter conflicts with amps/pressure, field check requested.", icon:"pump"},
-   {name:"Crusher & conveyors", sub:"Live · feed rate, power draw", conf:98, dot:"g",
-    note:null, icon:"crush"}]},
- {layer:"Environment, safety & people", items:[
-   {name:"People & asset tracking (tag board)", sub:"Live · 118 underground", conf:95, dot:"g",
-    note:null, icon:"people"},
-   {name:"Gas & environmental monitoring", sub:"Live · CO, NO₂, airflow at headings", conf:93, dot:"g",
-    note:null, icon:"gas"},
-   {name:"Seismic monitoring", sub:"Not deployed at KTO", conf:0, dot:"x", gap:true,
-    note:"Identified as a gap in the site audit, decisions near seismic zones fall back to geotech reports.", icon:"wave"}]},
- {layer:"Operator inputs", items:[
-   {name:"Logged updates & radio reports", sub:"7 this shift · last manual input 2 min ago (12:58)", conf:80, dot:"g",
-    note:"A full source, not a fallback. Weighted by stated confidence: confirmed on site > reliable report > gut feel.", icon:"radio"},
-   {name:"Paper / whiteboard shift changes", sub:"Entered by operator · last 11:20", conf:62, dot:"a",
-    note:"Shift-boss re-sequencing on paper reaches ShiftWise only when someone logs it.", icon:"doc"}]},
- {layer:"Communications & network", items:[
-   {name:"Leaky feeder voice", sub:"Live · voice coverage on main levels", conf:90, dot:"g",
-    note:"Radio calls are the main channel for field confirmations.", icon:"radio"},
-   {name:"Rajant mesh network", sub:"Being deployed · data coverage partial", conf:68, dot:"a",
-    note:"No data coverage at Etang North 550L and Etang North 640L, updates from those headings may only arrive by radio.", icon:"wifi"}]},
-];
-const LAYER_MOD={
- "Enterprise & planning":"Core",
- "Fleet & work execution":"Core",
- "Fixed plant (SCADA / DCS)":"Core · Fixed plant module",
- "Environment, safety & people":"Module · People, safety & environment",
- "Operator inputs":"Core",
- "Communications & network":"Core · system health"
-};
-
-const INTEGRITY=[
- {id:"i1", title:"Truck 6319 marked ready by maintenance, but nothing says it is",
-  body:"WO status is complete and the truck is listed available, yet engine hours haven't moved, fuel burn is zero and it has had no assignment for 3 hours. ShiftWise is not counting Truck 6319 in fleet availability until someone confirms.",
-  meta:"ERP vs FMS · raised 12:20", state:null},
- {id:"i2", title:"Plan on screen may be stale, paper changes since 07:30",
-  body:"Only source for the plan is the 05:48 import. The shift boss has re-sequenced work on paper twice since then (last operator entry 11:20). Readiness and ranking use the imported plan until the changes are logged.",
-  meta:"Planning vs operator inputs · raised 12:05", state:null},
+/* Data health: every feed ShiftWise depends on, how often it should arrive and whether it is.
+   strip is the last 24 hours, one character per hour from 14:00 yesterday to now:
+   o = received, p = partly received, m = nothing received. null = not a timed feed. */
+const FEEDS = [
+ {name:"Daily production report (Excel)", group:"Planning", cadence:"After each shift", last:"Yesterday 22:40", status:"ok", strip:null,
+  note:"Next report is due after Shift 1 ends at 14:00. Until then, today's tonnes come from fleet data."},
+ {name:"ERP work orders", group:"Planning", cadence:"Every 15 min", last:"12:45", status:"suspect", strip:"oooooooooooooooooooooooo",
+  issue:"Truck 6319 is marked ready by maintenance, but its engine hours haven't moved, fuel burn is zero and it has had no assignment for 3 hours.",
+  affects:"Truck 6319 is left out of fleet availability until someone confirms it."},
+ {name:"Mine plan import", group:"Planning", cadence:"Twice a day", last:"05:48", status:"ok", strip:null, note:"Next import at 17:30."},
+ {name:"Shift boss changes on paper", group:"Operator inputs", cadence:"Logged by hand", last:"11:20", status:"late", strip:null,
+  issue:"The shift boss has re-sequenced work on paper twice since 07:30, and the latest change has not been logged.",
+  affects:"Readiness checks and action ranking use the 05:48 plan until the changes are logged."},
+ {name:"Underground fleet (dispatch)", group:"Fleet", cadence:"Every 4 s", last:"13:07", status:"ok", strip:"oooooooooooooooooooooooo"},
+ {name:"Machine health telemetry", group:"Fleet", cadence:"Every 10 s", last:"13:07", status:"ok", strip:"oooooooooooopooooooooooo",
+  note:"A 38 min gap overnight (02:10 to 02:48) was filled in from the machine logs."},
+ {name:"Ventilation fans and airflow", group:"Fixed plant", cadence:"Every 1 s", last:"13:07", status:"ok", strip:"oooooooooooooooooooooooo"},
+ {name:"Pumps and sump levels", group:"Fixed plant", cadence:"Every 1 s", last:"13:07", status:"suspect", strip:"oooooooooooooooooooooooo",
+  issue:"The Sump 10 flow reading is 40% lower than the pump's power draw and pressure suggest.",
+  affects:"The Sump 10 recommendation is held until a field check confirms the flow."},
+ {name:"Crusher and conveyors", group:"Fixed plant", cadence:"Every 1 s", last:"13:07", status:"ok", strip:"oooooooooooooooooooooooo"},
+ {name:"People tracking (tag board)", group:"People and safety", cadence:"Every 30 s", last:"13:06", status:"ok", strip:"oooooooooooooooooooooooo"},
+ {name:"Gas monitoring", group:"People and safety", cadence:"Every 30 s", last:"13:07", status:"ok", strip:"oooooooooooooooooooooooo"},
+ {name:"Radio and logged updates", group:"Operator inputs", cadence:"Logged by hand", last:"12:58", status:"ok", strip:null, note:"7 updates this shift."},
+ {name:"Rajant mesh network", group:"Communications", cadence:"Continuous", last:"13:07", status:"gaps", strip:"oooooooooooooooopppppppp",
+  issue:"No data coverage at Etang North 550L and 640L. Nothing has arrived from those headings since crews started there at 06:00.",
+  affects:"Progress at Etang North 550L and 640L relies on radio calls."},
+ {name:"Leaky feeder voice", group:"Communications", cadence:"Continuous", last:"13:07", status:"ok", strip:"oooooooooooooooooooooooo"},
+ {name:"Seismic monitoring", group:"People and safety", cadence:"n/a", last:"Never", status:"off", strip:null,
+  issue:"Not installed at KTO. Identified as a gap in the site audit.",
+  affects:"Decisions near seismic zones fall back to geotech reports."}
 ];
 const SCORECARD=[
  ["Plan compliance (weighted)","61%","68%",true,"+7 pts"],
@@ -2105,20 +2073,11 @@ function renderFinish(){
   NBA.forEach(n=>{if(nbaState[n.id]==="approved"&&OUT_LIFT[n.id]){ore+=OUT_LIFT[n.id].ore||0;dev+=OUT_LIFT[n.id].dev||0}});
   const op=Math.round(ore/OUT_TARGET.ore*100),dp=Math.round(dev/OUT_TARGET.dev*100);
   const b0=Math.round(OUT_BASE.ore/OUT_TARGET.ore*100),d0=Math.round(OUT_BASE.dev/OUT_TARGET.dev*100);
-  const changed=ore!==OUT_BASE.ore||dev!==OUT_BASE.dev;
-  // the headline always shows the no-action position; the green part of each bar and the line below show what your approvals buy back
-  $("#finOre").textContent=OUT_BASE.ore.toLocaleString("en-US");$("#finOrePct").textContent=b0+"% of 2,667 t target";
-  $("#finDev").textContent=OUT_BASE.dev.toFixed(1);$("#finDevPct").textContent=d0+"% of 15 m target";
+  // the headline always shows the no-action position; the green part of each bar shows what your approvals buy back
+  $("#finOre").textContent=OUT_BASE.ore.toLocaleString("en-US");$("#finOrePct").textContent=b0+"% of 2,667 t target"+(op>b0?`, ${op}% with your approvals`:"");
+  $("#finDev").textContent=OUT_BASE.dev.toFixed(1);$("#finDevPct").textContent=d0+"% of 15 m target"+(dp>d0?`, ${dp}% with your approvals`:"");
   $("#finOreBar").style.width=b0+"%";$("#finOreGain").style.left=b0+"%";$("#finOreGain").style.width=Math.min(100,op)-b0+"%";
   $("#finDevBar").style.width=d0+"%";$("#finDevGain").style.left=d0+"%";$("#finDevGain").style.width=Math.min(100,dp)-d0+"%";
-  const w=$("#finWith");
-  w.classList.add("on");w.classList.toggle("pot",!changed);
-  if(changed)w.textContent=`With your approvals: ${ore.toLocaleString("en-US")} t ore (${op}%) · ${dev.toFixed(1)} m development (${dp}%)`;
-  else{
-    // nothing approved yet: preview what the two recommendations that move output would buy back
-    const po=OUT_BASE.ore+OUT_LIFT.n1.ore,pd=OUT_BASE.dev+OUT_LIFT.n4.dev;
-    w.textContent=`If you approve the truck reassignment and the charge-up move: ${po.toLocaleString("en-US")} t ore (${Math.round(po/OUT_TARGET.ore*100)}%) · ${pd.toFixed(1)} m development (${Math.round(pd/OUT_TARGET.dev*100)}%)`;
-  }
 }
 function renderSummary(){
   $("#sumNow").innerHTML="It is 13:07, seven hours into the day. Shift 1 hands over to Shift 2 at 14:00. You are <b>78% done against 82% expected</b>, so <b>4% behind</b>. At this rate you finish at about <b>1,870 t ore (70%)</b> and <b>10.0 m development (67%)</b>.";
@@ -2180,7 +2139,7 @@ function renderQueue(){
     let sub=u.short;
     if(st==="approved")sub=`Approved: assigned to ${n.owner}. Tracking in the action loop.`;
     else if(st==="confirming")sub="Field check requested. I'll re-rank when the confirmation lands.";
-    const chips=(n.owner!=="n/a"?`<span class="tag plain">Owner: ${n.owner}</span>`:"")+(!st?`<span class="tag qtimer ${ageCls(n.sec)}" data-age="${n.id}">Waiting ${fmtT(n.sec)}</span>`:"");
+    const chips=(n.alert?`<span class="tag amber">From alert: ${n.alert}</span>`:"")+(n.owner!=="n/a"?`<span class="tag plain">Owner: ${n.owner}</span>`:"")+(!st?`<span class="tag qtimer ${ageCls(n.sec)}" data-age="${n.id}">Waiting ${fmtT(n.sec)}</span>`:"");
     return `<div class="imp-row qact ${st?'resolved':''}" role="button" tabindex="0" onclick="openNBA('${n.id}','why')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNBA('${n.id}','why')}">
       <span class="qrk">${st?"✓":i+1}</span>
       <div class="im-main"><h4>${i===0&&!st?'<span class="tag first" style="margin-right:8px">Do this first</span>':''}${n.title}</h4><div class="im-sub">${sub}</div><div class="im-meta">${chips}</div></div>
@@ -2188,6 +2147,7 @@ function renderQueue(){
     </div>`;
   }).join("");
   renderTimeline();
+  renderPlan();
 }
 function nbaPrimary(id){
   const n=NBA.find(x=>x.id===id);
@@ -2210,7 +2170,12 @@ function confirmReject(id){
   const r=$("#rejReason").value;
   if(!r){toast("Choose a reason first: it's what lets ShiftWise learn from the disagreement.");return;}
   nbaState[id]="dismissed";
-  toast(`Rejected and removed from the queue, “${r}” logged to the decision record.`);
+  const n=NBA.find(x=>x.id===id),note=$("#rejNote").value.trim();
+  DECISIONS.unshift({t:`Today ${$("#scTime").textContent.slice(0,5)}`,title:n.title,by:`Rejected by N. Abara · ShiftWise was ${n.conf}% sure`,
+    body:`Reason given: ${r}.${note?" "+note.replace(/</g,"&lt;"):""}`,pred:n.predicted,act:"Not actioned.",
+    out:"violet",outLabel:"Rejected",learn:"The reason is used to tune future recommendations like this one."});
+  renderDecisions();
+  toast(`Rejected and removed from the queue, “${r}” logged to the decision history on the Actions page.`);
   renderQueue();closeDrawer();
 }
 
@@ -2224,6 +2189,7 @@ function openNBA(id,tab){
   $("#ds-why").innerHTML=`
     <div class="dblock"><h5>Why this action</h5><p>${n.why}</p></div>
     <div class="dblock"><h5>Why now</h5><p>${n.whyNow}</p></div>
+    ${n.alert?`<div class="dblock"><h5>Raised by an alert</h5><p><b>${n.alert}.</b> Pre-agreed response: ${n.resp}</p></div>`:""}
     <div class="dblock"><h5>Who executes</h5><p>Execution stays with authorised people and existing control systems. ShiftWise recommends, <b>${n.owner==='n/a'?'no execution needed':n.owner+' executes'}</b>.</p></div>`;
   $("#ds-evidence").innerHTML=`
     <div class="dblock"><h5>Evidence cited (${n.evidence.length})</h5>
@@ -2259,27 +2225,74 @@ $$(".dtab").forEach(b=>b.addEventListener("click",()=>switchDTab(b.dataset.dt)))
 function closeDrawer(){$("#drawerScrim").classList.remove("open");$("#drawer").classList.remove("open")}
 
 /* ═════════ Plan view ═════════ */
-let planFilter="all";
-const planOpen={};   // activity id -> show every readiness check (default: only the ones needing attention)
+const planOpen={};   // activity id -> details shown
+/* One status per activity, in plain words. Behind: less done than the plan expects by now.
+   At risk: a readiness check has failed, or something is pending and ShiftWise has an action for it. */
+const PLAN_ST={behind:["Behind","neg",0],risk:["At risk","warn",1],track:["On track","track",2],ahead:["Ahead","pos",3]};
+function planStatus(p){
+  const n=p.nba&&NBA.find(x=>x.id===p.nba),act=n&&n.tier!=="On track"&&nbaState[n.id]!=="dismissed"?n:null;
+  const no=p.ready.filter(r=>r[0]==="no"),pend=p.ready.filter(r=>r[0]==="pend");
+  const st=p.pct<p.expect-2?"behind":no.length||(act&&pend.length)?"risk":p.pct>p.expect+2?"ahead":"track";
+  const why=no.length?`Not ready: ${no.map(r=>r[1]).join(", ")}`:pend.length?`Waiting on: ${pend.map(r=>r[1]).join(", ")}`
+    :st==="behind"?(p.pct===0?"Not started yet, everything it needs is ready":"Slower than planned, everything it needs is ready"):`All ${p.ready.length} checks ready`;
+  return{st,why,act,cls:no.length?"no":pend.length?"pend":"ok"};
+}
 function renderPlan(){
-  $("#planList").innerHTML=PLAN.filter(p=>planFilter==="all"?true:planFilter==="risk"?p.risk:p.cat===planFilter).map(p=>{
-    const behind=p.pct<p.expect-2, ahead=p.pct>p.expect+2;
-    const issues=p.ready.filter(r=>r[0]!=="ok"),okN=p.ready.length-issues.length;
-    const showAll=planOpen[p.id]||!issues.length;
-    const chips=(showAll?p.ready:issues).map(r=>`<span class="rchk ${r[0]}">${r[0]==='ok'?CHECK:r[0]==='no'?CROSS:CLOCKI}${r[1]}</span>`).join("");
-    const summary=issues.length&&!showAll?`<span class="rchk ok">${CHECK}${okN} other check${okN===1?"":"s"} ready</span>`:(!issues.length?`<span class="rchk ok">${CHECK}All ${p.ready.length} checks ready</span>`:"");
-    const nums=planOpen[p.id]?`<span class="tag plain">Actual: ${p.act}</span><span class="tag plain">Plan: ${p.plan}</span>`:"";
-    return `<div class="imp-row qact" role="button" tabindex="0" onclick="planOpen['${p.id}']=!planOpen['${p.id}'];renderPlan()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();planOpen['${p.id}']=!planOpen['${p.id}'];renderPlan()}">
-      <div class="im-main"><h4>${p.name}</h4><div class="im-sub">${p.sub}</div><div class="im-meta">${!issues.length?summary:chips+summary}${nums}</div></div>
-      <div class="imp-contrib stack ${behind?'neg':ahead?'pos':'track'}"><b>${p.pct}%</b><span>done · ${p.expect}% expected</span><em class="rv">${planOpen[p.id]?"Hide details":"Details ›"}</em></div>
+  const rows=PLAN.map(p=>({p,...planStatus(p)})).sort((a,b)=>PLAN_ST[a.st][2]-PLAN_ST[b.st][2]);
+  const n=k=>rows.filter(r=>r.st===k).length;
+  $("#planSum").innerHTML=`<span><i class="neg"></i><b>${n("behind")}</b> behind</span><span><i class="warn"></i><b>${n("risk")}</b> at risk</span><span><i class="track"></i><b>${n("track")+n("ahead")}</b> on track or ahead</span><span class="plan-sum-of">${PLAN.length} activities today</span>`;
+  $("#planList").innerHTML=rows.map(({p,st,why,act,cls})=>{
+    const open=planOpen[p.id],toggle=`planOpen['${p.id}']=!planOpen['${p.id}'];renderPlan()`;
+    const link=act?(nbaState[act.id]==="approved"?`<span class="plan-act done">Action approved, tracking on the Shift page</span>`:`<button class="plan-act" onclick="event.stopPropagation();openNBA('${act.id}','why')">See the recommended action ›</button>`):"";
+    const details=open?`<div class="plan-det"><div class="im-sub">${p.sub}</div><div class="im-meta">${p.ready.map(r=>`<span class="rchk ${r[0]}">${r[0]==='ok'?CHECK:r[0]==='no'?CROSS:CLOCKI}${r[1]}</span>`).join("")}<span class="tag plain">Done: ${p.act}</span><span class="tag plain">Plan: ${p.plan}</span></div></div>`:"";
+    return `<div class="imp-row qact plan-row" role="button" tabindex="0" aria-expanded="${!!open}" onclick="${toggle}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${toggle}}">
+      <div class="im-main"><h4>${p.name}</h4><div class="plan-why ${cls}">${why}</div>${link}${details}</div>
+      <div class="imp-contrib stack ${PLAN_ST[st][1]}"><b>${PLAN_ST[st][0]}</b><span>${p.pct}% done, plan ${p.expect}%</span><em class="rv">${open?"Hide details":"Details ›"}</em></div>
     </div>`;
   }).join("");
 }
-$$("#planFilters .fchip").forEach(b=>b.addEventListener("click",()=>{
-  $$("#planFilters .fchip").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-  planFilter=b.dataset.pf;renderPlan();
-}));
 
+/* page tabs (Plan: Activities and Performance; Actions: Actions and Track record) */
+$$(".ptabs button").forEach(b=>b.addEventListener("click",()=>{
+  const view=b.closest(".view");
+  view.querySelectorAll(".ptabs button").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-selected",String(on))});
+  view.querySelectorAll(".ptab-panel").forEach(p=>p.classList.toggle("on",p.id===b.dataset.pt));
+}));
+/* Production totals: one bar per measure against its budget (sample values) */
+const PT_TODAY=[
+  {name:"Ore hoisted",unit:"t",done:1840,now:1990,fc:1920,day:2667,mtd:[50012,58064]},
+  {name:"Development",unit:"m",done:8.1,now:9.3,fc:9.0,day:15,mtd:[227,348],dp:1},
+  {name:"Backfill",unit:"t",done:1300,now:1450,fc:1450,day:2335,mtd:[60353,56044]}
+];
+const PT_FLOW=[["Blasted",2140,2000,"blasting"],["Trammed",1880,1950,"tramming"],["Hoisted",1840,1990,"hoisting"]];
+const ptN=(v,dp=0)=>v.toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp});
+function ptDelta(done,budget,unit,dp){
+  const d=done-budget,pct=Math.round(Math.abs(d)/budget*100);
+  if(Math.abs(d)<budget*.01)return`<span class="pt-d ok">On budget</span>`;
+  return`<span class="pt-d ${d<0?"neg":"pos"}">${d<0?"▼":"▲"} ${ptN(Math.abs(d),dp)} ${unit} ${d<0?"behind":"ahead"}</span><small>${pct}% ${d<0?"under":"over"} budget</small>`;
+}
+function ptBar(done,budget,max,title){
+  return`<div class="pt-bar" title="${title}"><i style="width:${Math.min(100,done/max*100)}%"></i><u style="left:${budget/max*100}%"></u></div>`;
+}
+function renderTotals(){
+  $("#ptToday").innerHTML=PT_TODAY.map(m=>{
+    const dp=m.dp||0,mp=Math.round(m.mtd[0]/m.mtd[1]*100);
+    return`<div class="pt-row">
+      <div class="pt-name">${m.name}<b>${ptN(m.done,dp)} ${m.unit}</b></div>
+      <div class="pt-mid">${ptBar(m.done,m.now,m.day,`Done ${ptN(m.done,dp)} ${m.unit}. Budget by now ${ptN(m.now,dp)} ${m.unit}. Reforecast by now ${ptN(m.fc,dp)} ${m.unit}. Day budget ${ptN(m.day,dp)} ${m.unit}.`)}
+        <div class="pt-sub">Day budget ${ptN(m.day,dp)} ${m.unit} · Month to date ${mp}% of budget</div></div>
+      <div class="pt-st">${ptDelta(m.done,m.now,m.unit,dp)}</div>
+    </div>`;
+  }).join("");
+  const max=Math.max(...PT_FLOW.flatMap(x=>[x[1],x[2]]))*1.08;
+  $("#ptFlow").innerHTML=PT_FLOW.map((s,i)=>`<div class="pt-row">
+      <div class="pt-name"><span class="pt-step">${i+1}</span>${s[0]}<b>${ptN(s[1])} t</b></div>
+      <div class="pt-mid">${ptBar(s[1],s[2],max,`${s[0]} ${ptN(s[1])} t. Budget by now ${ptN(s[2])} t.`)}</div>
+      <div class="pt-st">${ptDelta(s[1],s[2],"t",0)}</div>
+    </div>`).join("");
+  const gaps=PT_FLOW.slice(1).map((s,i)=>({a:PT_FLOW[i],b:s,t:PT_FLOW[i][1]-s[1]})),worst=gaps.reduce((x,y)=>y.t>x.t?y:x);
+  $("#ptFlowLead").innerHTML=`The hold-up is between <b>${worst.a[3]}</b> and <b>${worst.b[3]}</b>: ${ptN(worst.t)} t has been ${worst.a[0].toLowerCase()} but not yet ${worst.b[0].toLowerCase()}.`;
+}
 function renderMiniPlan(){
   const worst=[...PLAN].sort((a,b)=>(a.pct-a.expect)-(b.pct-b.expect)).slice(0,4);
   $("#miniPlan").innerHTML=worst.map(p=>`
@@ -2300,43 +2313,10 @@ function renderFeedLog(){
 }
 
 /* ═════════ Impact view ═════════ */
-const IMPACT = [
- {t:"08:41 · from recommendation", title:"Water-jet crew to clear Zone 4 OBI hang-up",
-  sub:"Predicted: <b>+350 t recovered</b> if cleared by 14:00. Crew reports 60% cleared at 11:52: attainment already lifting as partial bogging resumed at 12:30.",
-  meta:[["blue","Tracking: verifies at 14:00"],["plain","Approved by N. Abara · 88% confidence"]],
-  val:"+6 pts", cap:"attainment so far", cls:"track"},
- {t:"07:55 · from recommendation", title:"Swap LHD Scaltec 3404 → Scaltec 3402 at Zone 5 OBI before failure",
-  sub:"Predicted: hold bogging ≥ 300 t/h and avoid ~2 h unplanned downtime. Measured: <b>315 t/h held</b>; Scaltec 3404's seal confirmed failing in the workshop, the downtime was real and avoided.",
-  meta:[["green","Verified"],["plain","Approved by N. Abara · 91% confidence"]],
-  val:"+620 t", cap:"protected · +4 pts", cls:"pos"},
- {t:"07:12 · from recommendation", title:"Re-route decline traffic during 580L shotcrete",
-  sub:"Predicted: ≤ 2 queuing events, ~40 t cost. Measured: <b>zero queuing events, 38 t cost</b>: cheapest possible way through the shotcrete window.",
-  meta:[["green","Verified"],["plain","Approved by N. Abara · 84% confidence"]],
-  val:"+25 min", cap:"truck time saved", cls:"pos"},
- {t:"06:31 · from readiness check", title:"Top-up emulsion delivery to Zone 4 OBI magazine",
-  sub:"Caught before it became a problem: charge-up would have stalled at ~10:00 without stock. Measured: charge-up ran uninterrupted, <b>the 18:40 blast (and both Etang North 550L cuts) stay possible</b>.",
-  meta:[["green","Verified"],["plain","Approved by T. Mokoena · 79% confidence"]],
-  val:"18:40", cap:"blast protected", cls:"pos"},
- {t:"Yesterday 14:22 · learning example", title:"Bring forward Truck 6312 brake check",
-  sub:"Predicted: 1 truck-hour cost. Measured: <b>2.5 truck-hours</b>: the sensor was mis-calibrated, not the brakes. Logged honestly: single-sensor brake alerts now need a cross-check before costing a truck.",
-  meta:[["amber","Cost more than predicted"],["violet","Confidence model updated"]],
-  val:"−1.5 h", cap:"vs prediction", cls:"neg"},
-];
-function renderImpact(){
-  $("#impactList").innerHTML=IMPACT.map(d=>`
-    <div class="imp-row" style="cursor:default">
-      <div class="im-main">
-        <h4>${d.title}</h4>
-        <div class="im-sub">${d.sub}</div>
-        <div class="im-meta">${d.meta.map(m=>`<span class="tag ${m[0]}">${m[1]}</span>`).join("")}<span class="tag plain">${d.t}</span></div>
-      </div>
-      <div class="imp-contrib ${d.cls}"><b>${d.val}</b><span>${d.cap}</span></div>
-    </div>`).join("");
-}
-
 /* ═════════ Actions view ═════════ */
 const LOOPSTEPS=["Owned","Approved","In progress","Completed","Handover"];
 let actFilter="all";
+const actOpen={};   // action id -> why and what was learned shown
 function loopHTML(n,status){
   let h="";
   for(let i=0;i<5;i++){
@@ -2354,11 +2334,11 @@ function statusChip(s){
   return '<span class="status s-wait">Awaiting</span>';
 }
 const ACT_UI={
- "A-118":{big:"27 min",cap:"left",cls:"track",chip:["blue","In progress"],sec:27*60,dir:-1},
- "A-117":{big:"Done",cap:"closed 08:20",cls:"pos",chip:["violet","Handed over"]},
- "A-116":{big:"Done",cap:"closed 09:40",cls:"pos",chip:["green","Completed"]},
- "A-115":{big:"55 min",cap:"overdue",cls:"neg",chip:["red","Stalled"],sec:55*60,dir:1},
- "A-114":{big:"Done",cap:"closed 07:50",cls:"pos",chip:["violet","Handed over"]}
+ "A-118":{cap:"left",cls:"track",chip:["blue","In progress"],sec:27*60,dir:-1},
+ "A-117":{chip:["violet","Handed over 08:20"]},
+ "A-116":{chip:["green","Completed 09:40"]},
+ "A-115":{cap:"overdue",cls:"neg",chip:["red","Stalled"],sec:55*60,dir:1},
+ "A-114":{chip:["violet","Handed over 07:50"]}
 };
 function renderActions(){
   const rows=ACTIONS.filter(a=>{
@@ -2368,11 +2348,16 @@ function renderActions(){
     return a.status==="done"||a.status==="hand";
   });
   $("#actionList").innerHTML=rows.map(a=>{
-    const u=ACT_UI[a.id];
-    return `<div class="imp-row" style="cursor:default">
-      <div class="im-main"><h4>${a.title}</h4><div class="im-sub">${a.impact}</div>
-        <div class="im-meta"><span class="tag ${u.chip[0]}">${u.chip[1]}</span><span class="tag plain">${a.owner}</span><span class="tag plain">Verified by: ${a.verify}</span></div></div>
-      <div class="imp-contrib ${u.cls}"><b>${u.sec!==undefined?`<span data-act="${a.id}">${fmtT(u.sec)}</span>`:u.big}</b><span>${u.cap}</span></div>
+    const u=ACT_UI[a.id],open=actOpen[a.id],toggle=`actOpen['${a.id}']=!actOpen['${a.id}'];renderActions()`;
+    /* open actions show time left or overdue; finished ones show their verified result */
+    const rv=`<em class="rv">${open?"Hide details":"Details ›"}</em>`;
+    const right=a.result?`<div class="imp-contrib stack pos"><b>${a.result[0]}</b><span>${a.result[1]}</span>${rv}</div>`
+      :`<div class="imp-contrib stack ${u.cls}"><b><span data-act="${a.id}">${fmtT(u.sec)}</span></b><span>${u.cap}</span>${rv}</div>`;
+    const details=open?`<div class="act-det"><div><b>Why</b>${a.why}</div><div><b>Checked with</b>${a.verify}</div>${a.learn?`<div><b>Learned</b>${a.learn}</div>`:""}</div>`:"";
+    return `<div class="imp-row qact" role="button" tabindex="0" aria-expanded="${!!open}" onclick="${toggle}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${toggle}}">
+      <div class="im-main"><h4>${a.title}</h4><div class="im-sub">${a.detail}</div>
+        <div class="im-meta"><span class="tag ${u.chip[0]}">${u.chip[1]}</span><span class="tag plain">${a.owner}</span><span class="tag plain">${a.by}</span></div>${details}</div>
+      ${right}
     </div>`;}).join("");
   const stalls=ACTIONS.filter(a=>a.status==="stall").length;
   $("#pipActions").textContent=ACTIONS.filter(a=>a.status==="prog"||a.status==="stall").length;
@@ -2383,29 +2368,9 @@ $$("#actFilters .fchip").forEach(b=>b.addEventListener("click",()=>{
   actFilter=b.dataset.af;renderActions();
 }));
 
-/* ═════════ Alerts view ═════════ */
-function renderAlerts(){
-  $("#alertList").innerHTML=ALERTS.map(a=>`
-    <details class="alert-card ${a.cleared?'cleared':''}" ${a.tier===3&&!a.cleared?'open':''}>
-      <summary>
-        <div class="im-main"><h4>${a.title}</h4><div class="im-sub">${a.cleared?'Cleared':a.meta}</div></div>
-        <div class="imp-contrib ${a.tier===3?'neg':a.tier===2?'warn':'track'}"><b>Tier ${a.tier}</b><span>${a.tier===3?'stop':a.tier===2?'derate':'be aware'}</span></div>
-      </summary>
-      <div class="al-body">${a.body}</div>
-      <div class="al-resp"><b>Pre-agreed response</b>${a.resp.replace(/^Pre-agreed response:\s*/,"")}</div>
-      <div class="al-foot">
-        <span class="tag plain">${a.action}</span>
-        ${a.cleared?'<span class="tag green">Cleared</span>':`<button class="act line" onclick="clearAlert('${a.id}')">Mark resolved</button>`}
-      </div>
-    </details>`).join("");
-  const active=ALERTS.filter(a=>!a.cleared&&a.tier===3).length;
-  $("#pipAlerts").textContent=active||ALERTS.filter(a=>!a.cleared).length;
-  $("#pipAlerts").style.background=active?"var(--red)":"var(--amber)";
-}
-function clearAlert(id){
-  const a=ALERTS.find(x=>x.id===id);a.cleared=true;
-  toast(`Alert resolved: closure logged with evidence for the ${a.tier===3?'shift boss':'decision record'}.`);
-  renderAlerts();
+/* ═════════ Also watching (Shift) ═════════ */
+function renderWatching(){
+  $("#watchList").innerHTML=WATCH.length?`<div class="watch-h">Also watching <span>nothing to decide yet</span></div>`+WATCH.map(w=>`<div class="watch-row"><b>${w.title}</b><span>${w.meta} · ${w.resp}</span></div>`).join(""):"";
 }
 
 /* ═════════ Sources view ═════════ */
@@ -2423,18 +2388,54 @@ const SICONS={
  radio:'<path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="12" r="2"/><path d="M12 14v7"/>',
  wifi:'<path d="M2 9a15 15 0 0 1 20 0"/><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M12 20h.01"/>'
 };
-function renderSources(){
-  $("#sourceLayers").innerHTML=SOURCES.map(l=>`
-    <div class="layer ${l.items.every(s=>s.dot==='g')?'collapsed':''}">
-      <div class="layer-head" onclick="this.parentElement.classList.toggle('collapsed')"><h3>${l.layer}</h3><span class="lh-line"></span>${l.items.every(s=>s.dot==='g')?`<span class="tag green">${l.items.length} healthy</span>`:`<span class="tag amber">${l.items.filter(s=>s.dot!=='g').length} need attention</span>`}</div>
-      <div class="src-grid">
-        ${l.items.map(s=>`
-        <div class="imp-row" style="cursor:default">
-          <div class="im-main"><h4>${s.name}</h4><div class="im-sub">${s.sub}${s.note?`, ${s.note}`:""}</div></div>
-          <div class="imp-contrib ${s.gap?'dim':s.conf>=90?'pos':s.conf>=70?'warn':'neg'}"><b>${s.gap?'n/a':s.conf+'%'}</b><span>${s.gap?'not deployed':'data confidence'}</span></div>
-        </div>`).join("")}
+/* ═════════ Data health ═════════ */
+const DH_STATUS={ok:["Healthy","green"],suspect:["Values in question","amber"],gaps:["Arriving with gaps","amber"],late:["Not updated","amber"],off:["Not connected","plain"]};
+const DH_CELL={o:"received",p:"partly received",m:"nothing received"};
+function dhHour(i){return String((14+i)%24).padStart(2,"0")+":00"}
+function dhStrip(s){
+  if(!s)return"";
+  return`<div class="dh-strip" role="img" aria-label="Data received over the last 24 hours: ${dhCover(s)}% coverage">${[...s].map((c,i)=>`<i class="${c}" title="${dhHour(i)}: ${DH_CELL[c]}"></i>`).join("")}</div>`;
+}
+const dhCover=s=>Math.round([...s].reduce((a,c)=>a+(c==="o"?1:c==="p"?.5:0),0)/s.length*100);
+function renderDataHealth(){
+  const live=FEEDS.filter(f=>f.status!=="off"),ok=live.filter(f=>f.status==="ok").length,bad=FEEDS.filter(f=>f.status!=="ok"&&f.status!=="off");
+  const counts=["suspect","gaps","late","off"].map(k=>[k,FEEDS.filter(f=>f.status===k).length]).filter(x=>x[1]);
+  $("#dhSum").innerHTML=`<div class="dh-score"><b>${ok} of ${live.length}</b><span>connected feeds healthy</span></div>
+    <span class="su-bar dh-bar"><i style="width:${ok/live.length*100}%"></i></span>
+    <div class="dh-chips">${counts.map(([k,n])=>`<span class="tag ${DH_STATUS[k][1]}">${n} ${DH_STATUS[k][0].toLowerCase()}</span>`).join("")}</div>`;
+  $("#flagCount").textContent=bad.filter(f=>!f.state).length;
+  $("#flagCount").style.display=bad.some(f=>!f.state)?"inline-block":"none";
+  $("#dhAttention").innerHTML=bad.map(f=>{
+    const i=FEEDS.indexOf(f);
+    return`<div class="dh-card ${f.state?"done":""}">
+      <div class="dh-card-top">
+        <div class="im-main"><h4>${f.name}</h4><div class="dh-meta"><span class="tag ${DH_STATUS[f.status][1]}">${DH_STATUS[f.status][0]}</span>${f.group} · ${f.cadence.toLowerCase()} · last data ${f.last}</div></div>
+        ${f.strip?`<div class="dh-side">${dhStrip(f.strip)}<div class="dh-axis"><span>24 h ago</span><span>now</span></div></div>`:""}
       </div>
+      <div class="dh-issue">${f.issue}</div>
+      <div class="dh-aff"><b>What it affects</b>${f.affects}</div>
+      <div class="al-foot">${f.state?`<span class="tag ${f.state==="unreliable"?"red":"green"}">${f.state==="unreliable"?"Source flagged unreliable":"Acknowledged"}</span>`:`
+        <button class="act line" onclick="setFeedState(${i},'ack')">Acknowledge</button>
+        <button class="act line" onclick="setFeedState(${i},'unreliable')">Flag source as unreliable</button>
+        <button class="act link" onclick="openUpdateModal()">Log an update →</button>`}</div>
+    </div>`;
+  }).join("");
+  const used=[...new Set(FEEDS.flatMap(f=>f.strip?[...f.strip]:[]))];
+  $("#dhKey").innerHTML=`Last 24 hours: ${["o","p","m"].filter(c=>used.includes(c)).map(c=>`<span class="dh-k"><i class="${c}"></i>${DH_CELL[c]}</span>`).join("")}`;
+  $("#dhHealthy").innerHTML=FEEDS.filter(f=>f.status==="ok").map(f=>`<div class="dh-row">
+      <div class="dh-name"><b>${f.name}</b><span>${f.group}${f.note?` · ${f.note}`:""}</span></div>
+      <div class="dh-cad">${f.cadence}<span>last data ${f.last}</span></div>
+      <div class="dh-24">${f.strip?dhStrip(f.strip):`<span class="dh-na">Not a timed feed</span>`}</div>
+      <div class="dh-cov">${f.strip?`${dhCover(f.strip)}%<span>received</span>`:""}</div>
     </div>`).join("");
+  $("#dhOff").innerHTML=FEEDS.filter(f=>f.status==="off").map(f=>`<div class="dh-row dh-off">
+      <div class="dh-name"><b>${f.name}</b><span>${f.issue} ${f.affects}</span></div>
+    </div>`).join("");
+}
+function setFeedState(i,state){
+  FEEDS[i].state=state;
+  toast(state==="unreliable"?"Source flagged unreliable: its readings carry lower weight until someone confirms them.":"Acknowledged: the flag stays on record for the shift.");
+  renderDataHealth();
 }
 
 /* ═════════ Decisions view ═════════ */
@@ -2453,29 +2454,6 @@ function renderDecisions(){
       </div>
       ${d.learn?`<div class="dec-foot"><span class="learn">Learned: ${d.learn}</span></div>`:""}
     </details>`).join("");
-}
-
-/* ═════════ Data integrity flags ═════════ */
-function renderIntegrity(){
-  const open=INTEGRITY.filter(f=>!f.state).length;
-  $("#flagCount").textContent=open;
-  $("#flagCount").style.display=open?"inline-block":"none";
-  $("#integrityList").innerHTML=INTEGRITY.map(f=>`
-    <div class="alert-card t2 ${f.state?'cleared':''}">
-      <div class="al-top"><span class="tag amber">Integrity flag</span><h4>${f.title}</h4><span class="al-meta">${f.meta}</span></div>
-      <div class="al-body">${f.body}</div>
-      <div class="al-foot">
-        ${f.state?`<span class="tag ${f.state==='unreliable'?'red':'green'}">${f.state==='unreliable'?'Source flagged unreliable':'Acknowledged'}</span>`:`
-        <button class="act line" onclick="setIntegrity('${f.id}','ack')">Acknowledge</button>
-        <button class="act line" onclick="setIntegrity('${f.id}','unreliable')">Flag source as unreliable</button>
-        <button class="act link" onclick="openUpdateModal()">Record a manual override →</button>`}
-      </div>
-    </div>`).join("");
-}
-function setIntegrity(id,state){
-  INTEGRITY.find(f=>f.id===id).state=state;
-  toast(state==="unreliable"?"Source flagged unreliable: its readings carry lower weight until someone confirms them.":"Acknowledged: flag stays on record for the shift.");
-  renderIntegrity();
 }
 
 /* ═════════ Pilot scorecard ═════════ */
@@ -2810,9 +2788,9 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ═════════ Init ═════════ */
-renderQueue();renderPlan();renderMiniPlan();renderFeedLog();renderImpact();
-renderActions();renderAlerts();renderSources();renderDecisions();
-renderIntegrity();renderScorecard();renderHandover();
+renderQueue();renderPlan();renderTotals();renderMiniPlan();renderFeedLog();
+renderActions();renderWatching();renderDataHealth();renderDecisions();
+renderScorecard();renderHandover();
 tickClock();
 /* progressive disclosure: secondary panels sit behind a fold */
 function foldGrid(sel,label,hint){
@@ -2821,7 +2799,7 @@ function foldGrid(sel,label,hint){
   g.replaceWith(d);d.appendChild(g);
 }
 foldGrid("#view-shift .dash-grid","Plan gaps &amp; feed activity","secondary detail");
-foldGrid("#view-impact .dash-grid","Calibration &amp; shift-end trend","secondary detail");
+foldGrid("#atTrack .dash-grid","Calibration &amp; shift-end trend","secondary detail");
 /* open recommendations age in real time, urgency rises while they sit unresolved */
 let tickN=0;
 setInterval(()=>{
