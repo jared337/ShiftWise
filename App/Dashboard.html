@@ -1087,9 +1087,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   .shift-grid{grid-template-columns:minmax(0,1fr) 340px;gap:22px}
 }
 .rail .spacer{flex:1}
-/* Live view: the 3D mine fills the whole content area */
-#view-live{padding:0;overflow:hidden}
-#view-live iframe{display:block;width:100%;height:100%;border:0}
 /* Shift performance cards */
 .pcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:8px}
 .pcard{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;display:flex;flex-direction:column;gap:8px}
@@ -1209,10 +1206,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 3 8l4 4"/><path d="M3 8h13"/><path d="m17 20 4-4-4-4"/><path d="M21 16H8"/></svg>
       <span class="lbl">Handover</span>
     </button>
-    <button data-view="live">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5 12 21l9-4.5"/></svg>
-      <span class="lbl">Live view</span>
-    </button>
     <div class="spacer"></div>
     <button data-view="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg>
@@ -1297,10 +1290,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
   </section>
 
   <!-- ── Plan view ────────────────────────── -->
-  <section class="view" id="view-live">
-    <iframe id="liveFrame" title="Live view of the mine in 3D" data-src="Mine3D.html"></iframe>
-  </section>
-
   <section class="view" id="view-plan">
     <div class="view-head">
       <div>
@@ -2080,7 +2069,6 @@ function showView(v){
   $$(".view").forEach(x=>x.classList.remove("active"));
   $("#view-"+v).classList.add("active");
   if(v==="handover"&&!handoverAccepted)renderHandover();
-  if(v==="live"&&!$("#liveFrame").src)$("#liveFrame").src=$("#liveFrame").dataset.src;   // load the 3D view on first open
   $$(".rail button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
 }
 $$(".rail button[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
