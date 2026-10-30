@@ -1521,7 +1521,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <button data-jump="jsConn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Connections</button>
       <button data-jump="jsConfidence"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><path d="M1.5 14h5M9.5 8h5M17.5 16h5"/></svg>Confidence thresholds</button>
       <button data-jump="jsRanking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>Ranking weights</button>
-      <button data-jump="jsTiers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 19.5a1 1 0 0 0 .9 1.5h17.2a1 1 0 0 0 .9-1.5Z"/><path d="M12 10v4M12 18h.01"/></svg>Alert tiers</button>
       <button data-jump="jsEscalate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>Notifications</button>
       <button data-jump="jsTeam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Team access</button>
     </nav>
@@ -1595,14 +1594,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <div class="slider-row"><span class="sl-label">Protects the week / month</span><input type="range" min="0" max="50" value="15" id="wWeek" oninput="updateSlider('wWeek','wWeekVal','')"><span class="slider-val" id="wWeekVal">15</span></div>
       <div class="slider-note">Unresolved items also gain urgency with age, and confidence has to build (red → amber → green) before an action is recommended, so the operator isn't re-prompted every 30 seconds.</div>
       <button class="btn btn-ghost" onclick="toast('Weight change submitted for operations-owner approval, current weights stay live until approved.')">Submit for approval</button>
-    </div>
-
-    <div class="set-card" id="jsTiers">
-      <h3>Alert tier behaviour</h3>
-      <p>What each constraint tier does inside ShiftWise. Execution always stays with authorised people and existing control systems.</p>
-      <div class="conn"><div class="cico"><b style="font-size:13px">T1</b></div><div><b>Tier 1: Awareness</b><span>Notify operator · logged · no plan impact assumed</span></div><span class="cstate tag blue">Notify only</span></div>
-      <div class="conn"><div class="cico"><b style="font-size:13px">T2</b></div><div><b>Tier 2: Derate</b><span>Raise recommendation · attach pre-agreed response · re-rank queue</span></div><span class="cstate tag amber">Recommend</span></div>
-      <div class="conn"><div class="cico"><b style="font-size:13px">T3</b></div><div><b>Tier 3: Stop</b><span>Escalate to shift boss · constraint locked into plan evaluation</span></div><span class="cstate tag red">Escalate</span></div>
     </div>
 
     <div class="set-card" id="jsEscalate">
