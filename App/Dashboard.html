@@ -518,6 +518,68 @@ tbody tr:last-child td{border-bottom:none}
 .ptab-panel{display:none}
 .ptab-panel.on{display:block}
 .ptab-lead{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+/* Plan › Shift plans */
+.sp-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 22px;margin-bottom:8px}
+.sp-card-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.sp-card-h h4{font-size:15px;font-weight:800}
+.sp-prog{display:flex;align-items:center;gap:14px;margin:6px 0 4px;font-size:13px}
+.sp-prog b{white-space:nowrap}
+.sp-prog .su-bar{flex:1;max-width:320px}
+#spParts{margin-top:6px}
+.sp-fill{margin-bottom:8px;font-size:12.5px}
+.sp-foot{display:flex;justify-content:flex-end;margin-top:12px}
+.section-title .sp-view{margin-left:auto}
+.section-title .sp-view button{padding:6px 13px;font-size:12.5px}
+.sp-key{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-faint);font-weight:600;margin:-4px 0 10px}
+.sp-key i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}
+.sp-key i.g{background:var(--green)}.sp-key i.a{background:var(--amber)}.sp-key i.r{background:var(--red)}
+.sp-table{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:2px 16px}
+.sp-row{display:grid;grid-template-columns:minmax(180px,1.7fr) minmax(130px,1.2fr) 80px 90px 110px 140px;gap:12px;align-items:center;width:100%;text-align:left;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.sp-row:last-child{border-bottom:0}
+.sp-row.hd{font-size:11px;font-weight:800;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;padding:10px 0 6px}
+.sp-row.on .sp-d{color:var(--blue)}
+.sp-acts{display:flex;gap:6px;justify-content:flex-end}
+.sp-foot .btn[hidden]{display:none}
+.sp-acts .btn{padding:5px 11px;font-size:12.5px}
+.sp-d{font-weight:700}
+.sp-row small{display:block;font-size:11.5px;color:var(--ink-faint);font-weight:600;margin-top:2px}
+.sp-d em{font-style:normal;margin-left:6px;vertical-align:1px}
+.sp-card.editing{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.sp-foot{gap:8px}
+.sp-del{color:var(--red);margin-right:auto}
+.sp-editbtn{padding:5px 11px;font-size:12.5px}
+.sp-att{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:2px 8px}
+.sp-att.g{background:var(--green-soft);color:var(--green)}
+.sp-att.a{background:var(--amber-soft);color:var(--amber)}
+.sp-att.r{background:var(--red-soft);color:var(--red)}
+.sp-att.live{background:var(--blue-soft);color:var(--blue)}
+.sp-att.plan{color:var(--ink-soft);border:1px solid var(--line);font-weight:700}
+.sp-att.none{color:var(--ink-faint);font-weight:600;border:1px dashed var(--line)}
+.sp-plans{margin-top:14px}
+.sp-plans h5{font-size:12px;font-weight:800;color:var(--ink-soft);margin-bottom:6px}
+.sp-plan{display:flex;gap:10px;font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.sp-plan:last-child{border-bottom:0}
+.sp-plan b{white-space:nowrap}
+.sp-plan span{color:var(--ink-soft)}
+.sp-cal-h{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px}
+.sp-cal-h b{font-size:14px;min-width:150px;text-align:center}
+.sp-cal-h button{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:16px;font-weight:700}
+.sp-cal-h button:hover{border-color:var(--blue);color:var(--blue)}
+.sp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.sp-wd{font-size:11px;font-weight:800;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;text-align:center}
+.sp-c{min-height:64px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:6px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left}
+.sp-c b{font-size:12.5px}
+.sp-c.blank{background:transparent;border:0}
+.sp-c.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+button.sp-c:hover,.sp-c.on{border-color:var(--blue)}
+.sp-c .sp-att{font-size:11px;padding:1px 6px}
+.sp-day{background:var(--bg);border:1px solid var(--blue);border-radius:var(--r-md);padding:12px 16px;margin-top:10px}
+.sp-day-h{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.sp-day-h span{font-size:12.5px;color:var(--ink-faint);font-weight:600;flex:1}
+.sp-day-h .rm{font-size:12px;font-weight:700;color:var(--ink-faint)}
+.sp-day-r{display:grid;grid-template-columns:70px auto 1fr;gap:12px;align-items:center;font-size:12.5px;padding:6px 0;border-top:1px dashed var(--line)}
+.sp-day-r span:last-child{color:var(--ink-soft)}
+@media(max-width:700px){.sp-row{grid-template-columns:1fr auto;gap:6px}.sp-row>span:nth-child(3),.sp-row>span:nth-child(4){display:none}.sp-acts{grid-column:1/-1;justify-content:flex-start}.sp-row.hd{display:none}.sp-c{min-height:48px;padding:4px}.sp-c .sp-att{font-size:10px;padding:0 3px}.sp-day-r{grid-template-columns:60px auto;}.sp-day-r span:last-child{grid-column:1/-1}}
 /* Also watching, under the next best actions */
 .watching{margin:4px 0 14px}
 .watch-h{font-size:12.5px;font-weight:800;color:var(--ink-soft);margin:10px 0 6px}
@@ -1246,14 +1308,15 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <p>Activities shows each piece of work planned for today and whether it is on track. Performance shows how the plan is tracking through the shift and production against budget. When something needs fixing, the recommended action is on the Shift page.</p>
         <div class="plan-base"><span id="baseName">Plan v3 <small>imported 05:48</small></span> · <span id="baseSub">from the mine planning system</span></div>
       </div>
-      <button class="btn btn-blue" onclick="openPlanModal()">
+      <button class="btn btn-blue" onclick="openPlanTab()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
-        Upload plan
+        New shift plan
       </button>
     </div>
     <div class="ptabs" role="tablist" aria-label="Plan">
       <button role="tab" class="on" aria-selected="true" aria-controls="ptAct" data-pt="ptAct">Activities</button>
       <button role="tab" aria-selected="false" aria-controls="ptPerf" data-pt="ptPerf">Performance</button>
+      <button role="tab" aria-selected="false" aria-controls="ptPlans" data-pt="ptPlans">Shift plans</button>
     </div>
     <div class="ptab-panel on" id="ptAct" role="tabpanel">
       <div class="plan-sum" id="planSum"></div>
@@ -1315,6 +1378,43 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
         <div class="pt-foot">Hoisted grade: Cu 2.50%, Co 0.68%. That is 46 t of copper and 12.5 t of cobalt.</div>
       </div>
       <div class="sample-note">Sample values. Budgets follow the shape of KTO's daily production report.</div>
+    </div>
+
+    <div class="ptab-panel" id="ptPlans" role="tabpanel">
+      <p class="ptab-lead">The shift plan set is everything planned for a shift, not just the production target. Create one for each shift, then look back at how past shifts went against their plan.</p>
+      <div class="sp-card" id="spCreate">
+        <div class="sp-card-h"><h4 id="spTitle">Create a shift plan</h4><span class="su-saved" id="spSaved" aria-live="polite"></span></div>
+        <div class="f-grid">
+          <div class="field full"><label for="planName">Plan name</label><input id="planName" maxlength="80" placeholder="e.g. Week 45 production plan"></div>
+          <div class="field full">
+            <label>Dates the plan covers</label>
+            <div class="seg" id="planRange">
+              <button data-r="today" class="on">Today</button>
+              <button data-r="month">This month</button>
+              <button data-r="nextmonth">Next month</button>
+              <button data-r="custom">Custom</button>
+            </div>
+          </div>
+          <div class="field"><label for="planFrom">From</label><input type="date" id="planFrom"></div>
+          <div class="field"><label for="planTo">To</label><input type="date" id="planTo"></div>
+          <div class="field full"><label for="planShifts">Shifts</label>
+            <select id="planShifts"><option>Shift 1 (06:00 to 14:00)</option><option>Shift 2 (14:00 to 22:00)</option><option>Shift 3 (22:00 to 06:00)</option><option>All three shifts</option></select></div>
+        </div>
+        <div class="sp-prog"><b id="spCount">0 of 7 parts ready</b><span class="su-bar"><i id="spBar"></i></span></div>
+        <div id="spParts"></div>
+        <div class="field" style="margin-top:14px"><label for="planNote">What changed from the last plan (optional)</label>
+          <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced Zone 4 OBI after the hang-up, Etang North 550L second cut moved to Thursday."></textarea></div>
+        <div class="plan-msg" id="planMsg"></div>
+        <div class="sp-foot"><button class="btn btn-ghost sp-del" id="spDelete" hidden onclick="spDelete()">Delete plan</button><button class="btn btn-ghost" id="spCancel" hidden onclick="spCancelEdit()">Cancel</button><button class="btn btn-blue" id="planSubmit" onclick="submitPlan()" disabled>Save shift plan</button></div>
+      </div>
+
+      <div class="section-title">Shift plans
+        <div class="seg sp-view" id="spView"><button data-v="list" class="on">List</button><button data-v="cal">Calendar</button></div>
+      </div>
+      <div class="sp-key"><span><i class="g"></i>On plan (95% or more)</span><span><i class="a"></i>Slightly short (85 to 94%)</span><span><i class="r"></i>Short (under 85%)</span></div>
+      <div id="spList"></div>
+      <div id="spCal" hidden></div>
+      <div id="spDay"></div>
     </div>
   </section>
 
@@ -1735,64 +1835,6 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
 </div>
 
 <!-- ═════════ Plan upload modal ═════════ -->
-<div class="modal-scrim" id="planModal">
-  <div class="modal">
-    <div class="modal-head">
-      <div>
-        <h2>Upload a plan</h2>
-        <p>Upload a plan from the planning system or a spreadsheet. ShiftWise freezes it as the baseline for the dates you choose.</p>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div class="f-grid">
-        <div class="field full">
-          <label>Plan file</label>
-          <input type="file" id="planFile" accept=".xlsx,.xls,.csv,.pdf,.mpp,.xml" hidden>
-          <div class="dropzone" id="planDrop" role="button" tabindex="0" onclick="$('#planFile').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();$('#planFile').click()}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
-            <b>Drop the plan here or <u>browse</u></b>
-            <span>Excel, CSV, PDF or MS Project (.mpp, .xml)</span>
-          </div>
-          <div class="file-chip" id="planChip" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-            <span><b id="planFname"></b><small id="planFsize"></small></span>
-            <button type="button" onclick="clearPlanFile()">Remove</button>
-          </div>
-        </div>
-        <div class="field full">
-          <label>Dates the plan covers</label>
-          <div class="seg" id="planRange">
-            <button data-r="today">Today</button>
-            <button data-r="month" class="on">This month</button>
-            <button data-r="nextmonth">Next month</button>
-            <button data-r="custom">Custom</button>
-          </div>
-        </div>
-        <div class="field">
-          <label for="planFrom">From</label>
-          <input type="date" id="planFrom">
-        </div>
-        <div class="field">
-          <label for="planTo">To</label>
-          <input type="date" id="planTo">
-        </div>
-        <div class="field full">
-          <label for="planShifts">Shifts</label>
-          <select id="planShifts"><option>All three shifts</option><option>Shift 1</option><option>Shift 2</option><option>Shift 3</option></select>
-        </div>
-        <div class="field full">
-          <label for="planNote">What changed (optional)</label>
-          <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced Zone 4 OBI after the hang-up, Etang North 550L second cut moved to Thursday."></textarea>
-        </div>
-      </div>
-      <div class="plan-msg" id="planMsg"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closePlanModal()">Cancel</button>
-      <button class="btn btn-blue" id="planSubmit" onclick="submitPlan()" disabled>Upload plan</button>
-    </div>
-  </div>
-</div>
 
 <div id="toasts"></div>
 
@@ -2704,10 +2746,103 @@ function submitUpdate(){
 $("#updateModal").addEventListener("click",e=>{if(e.target.id==="updateModal")closeUpdateModal()});
 
 /* ═════════ Plan upload modal ═════════ */
+/* ═════════ Shift plans (Plan › Shift plans) ═════════ */
+/* Front end only: the draft is kept in this browser, file contents are not stored, and past shifts are sample values. */
 let planVersion=3;
-const isoDay=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10);};
+/* local calendar date as YYYY-MM-DD; built from local parts so daylight saving changes can't shift it a day */
+const isoDay=d=>{const x=new Date(d);return`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`};
 const niceDay=s=>new Date(s+"T00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"});
-function weekStart(off){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7)+off*7);return d;}
+const longDay=s=>new Date(s+"T00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+const addDays=(s,n)=>{const d=new Date(s+"T00:00");d.setDate(d.getDate()+n);return isoDay(d)};
+/* the shift plan set: everything planned for one shift */
+const SP_PARTS=[
+  {key:"production",name:"Production plan",what:"Targets by location (tonnes, metres, blasts), priorities and sequence."},
+  {key:"resources",name:"Resource allocation",what:"Which crews and equipment are assigned to which headings."},
+  {key:"maintenance",name:"Maintenance plan",what:"Planned downtime, such as hoist maintenance, and equipment out of service."},
+  {key:"services",name:"Infrastructure and services plan",what:"Planned power, water or ventilation work, backfill placement, road or ramp closures."},
+  {key:"constraints",name:"Constraints for this shift",what:"Blasting window, areas closed, known hazards."},
+  {key:"handover",name:"Handover from last shift",what:"What's carried over, open actions, problems left unsolved."},
+  {key:"comms",name:"Communication plan",what:"Who's on shift, radio channels, who to call for what."}
+];
+const SP_KEY="shiftwise.shiftplan.draft.v1",SP_TEXT_MIN=10;
+let SP={text:{},files:[]},spFileId=0;
+try{const s=JSON.parse(localStorage.getItem(SP_KEY)||"null");if(s){SP=s;spFileId=Math.max(0,...SP.files.map(f=>f.id))}}catch(e){}
+/* a part is ready when it has SP_TEXT_MIN words or a file with a description, and no file is waiting for one */
+function spCheck(p){
+  const w=suWords(SP.text[p.key]),f=SP.files.filter(x=>x.part===p.key),need=f.filter(x=>suWords(x.desc)<SU_DESC_MIN).length,done=f.length-need;
+  const ready=(w>=SP_TEXT_MIN||done>0)&&!need;
+  const miss=need?`${suPlural(need,"file")} need${need===1?"s":""} a description`:ready?"Ready":w?`Write ${SP_TEXT_MIN-w} more words or add a file`:"Describe it or add a file";
+  return{ready,started:w>0||f.length>0,need,miss};
+}
+let spSaveT;
+function spChanged(){
+  spRefresh();
+  if(SP.editing){$("#spSaved").textContent="Unsaved changes";return}   // edits to a saved plan apply only on Save changes
+  $("#spSaved").textContent="Saving...";clearTimeout(spSaveT);
+  spSaveT=setTimeout(()=>{let ok=true;try{localStorage.setItem(SP_KEY,JSON.stringify(SP))}catch(e){ok=false}$("#spSaved").textContent=ok?"Draft saved":"Not saved: this browser blocks storage"},500);
+}
+function spRefresh(){
+  const ev=SP_PARTS.map(p=>({p,...spCheck(p)})),n=ev.filter(x=>x.ready).length;
+  $("#spCount").textContent=`${n} of ${SP_PARTS.length} parts ready`;
+  $("#spBar").style.width=`${n/SP_PARTS.length*100}%`;
+  ev.forEach(({p,ready,started,need,miss})=>{
+    const st=ready?["Ready","green"]:need?["Needs description","amber"]:started?["In progress","blue"]:["Not started","plain"];
+    $(`#spParts .su-sec[data-step="${p.key}"] .su-head`).innerHTML=`<span class="su-head-t"><span class="su-h"><span class="su-name">${p.name}</span><span class="tag ${st[1]}">${st[0]}</span></span><span class="su-miss">${ready?p.what:miss}</span></span><svg class="su-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+  });
+  checkPlan();
+}
+function spToggle(key,open){
+  $$("#spParts .su-sec").forEach(s=>{const on=s.dataset.step===key?(open??!s.classList.contains("open")):false;s.classList.toggle("open",on);s.querySelector(".su-head").setAttribute("aria-expanded",String(on))});
+}
+function spRenderParts(){
+  $("#spParts").innerHTML=SP_PARTS.map(p=>`<section class="su-sec" data-step="${p.key}">
+    <button class="su-head" aria-expanded="false" onclick="spToggle('${p.key}')"></button>
+    <div class="su-body">
+      <div class="su-help">${p.what}</div>
+      ${p.key==="handover"?`<button class="lvl-confirm sp-fill" onclick="spFillHandover()">Fill in from the open actions ›</button>`:""}
+      <textarea class="su-text" rows="3" aria-label="${p.name}" placeholder="Write it here, or upload files below." oninput="SP.text.${p.key}=this.value;spChanged()">${suEsc(SP.text[p.key])}</textarea>
+      <input type="file" id="spIn-${p.key}" multiple hidden onchange="spAddFiles([...this.files],'${p.key}');this.value=''">
+      <div class="dropzone su-drop" role="button" tabindex="0" data-part="${p.key}" onclick="$('#spIn-${p.key}').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();$('#spIn-${p.key}').click()}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        <span><b>Drop files here or <u>browse</u></b><span>Excel, PDF, Word, images or a planning system export</span></span>
+      </div>
+      <div id="spFiles-${p.key}"></div>
+    </div>
+  </section>`).join("");
+  $$("#spParts .su-drop").forEach(z=>{
+    ["dragenter","dragover"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add("over")}));
+    ["dragleave","drop"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.remove("over")}));
+    z.addEventListener("drop",e=>{if(e.dataTransfer.files.length)spAddFiles([...e.dataTransfer.files],z.dataset.part)});
+  });
+  SP_PARTS.forEach(p=>spRenderFiles(p.key));
+}
+function spRenderFiles(key){
+  $(`#spFiles-${key}`).innerHTML=SP.files.filter(f=>f.part===key).map(f=>{
+    const w=suWords(f.desc),need=w<SU_DESC_MIN;
+    return`<div class="su-file${need?" need":""}"><div class="su-file-h"><b title="${suEsc(f.name)}">${suEsc(f.name)}</b><small>${suSize(f.size)}</small><span class="tag ${need?"amber":"green"}" id="spTag${f.id}">${need?"Needs description":"Added"}</span><button class="rm" onclick="spRemoveFile(${f.id})">Remove</button></div>
+      <textarea rows="2" aria-label="Description of ${suEsc(f.name)}" placeholder="What is this file? e.g. Shift 1 production targets by heading, exported from the planning system at 05:30." oninput="spFileDesc(${f.id},this.value)">${suEsc(f.desc)}</textarea>
+      <div class="su-hint" id="spHint${f.id}">${need?`${suPlural(w,"word")}, at least ${SU_DESC_MIN} needed`:"Description added"}</div></div>`;
+  }).join("");
+}
+function spAddFiles(list,part){
+  list.forEach(file=>SP.files.push({id:++spFileId,part,name:file.name,size:file.size,desc:""}));
+  spRenderFiles(part);spChanged();
+  const t=$(`#spFiles-${part} .su-file.need textarea`);if(t)t.focus();
+}
+function spFileDesc(id,v){
+  const f=SP.files.find(x=>x.id===id),w=suWords(v),need=w<SU_DESC_MIN;f.desc=v;
+  $(`#spHint${id}`).textContent=need?`${suPlural(w,"word")}, at least ${SU_DESC_MIN} needed`:"Description added";
+  const t=$(`#spTag${id}`);t.textContent=need?"Needs description":"Added";t.className=`tag ${need?"amber":"green"}`;
+  t.closest(".su-file").classList.toggle("need",need);
+  spChanged();
+}
+function spRemoveFile(id){const f=SP.files.find(x=>x.id===id);SP.files=SP.files.filter(x=>x.id!==id);spRenderFiles(f.part);spChanged()}
+function spFillHandover(){
+  const open=ACTIONS.filter(a=>a.status==="prog"||a.status==="stall").map(a=>`${a.title} (${a.owner}, ${a.timer.toLowerCase()})`);
+  SP.text.handover=`Open actions carried over: ${open.join("; ")}. Unsolved: VF-2 is still down, so no more headings can be ventilated in the north block.`;
+  $(`#spParts .su-sec[data-step="handover"] .su-text`).value=SP.text.handover;spChanged();
+}
+/* dates the plan covers */
 function setPlanRange(r){
   $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r===r));
   const today=new Date();
@@ -2717,53 +2852,203 @@ function setPlanRange(r){
 }
 $$("#planRange button").forEach(b=>b.addEventListener("click",()=>setPlanRange(b.dataset.r)));
 ["#planFrom","#planTo"].forEach(s=>$(s).addEventListener("change",()=>{$$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));checkPlan();}));
-function openPlanModal(){ if(!$("#planFrom").value) setPlanRange("month"); $("#planModal").classList.add("open"); }
-function closePlanModal(){ $("#planModal").classList.remove("open"); }
-function setPlanFile(f){
-  if(!f) return;
-  if(!/\.(xlsx|xls|csv|pdf|mpp|xml)$/i.test(f.name)){ toast("That file type can't be read. Use Excel, CSV, PDF or MS Project."); return; }
-  planFileObj=f;
-  $("#planFname").textContent=f.name;
-  $("#planFsize").textContent=f.size>1048576?(f.size/1048576).toFixed(1)+" MB":Math.max(1,Math.round(f.size/1024))+" KB";
-  $("#planDrop").hidden=true; $("#planChip").hidden=false; checkPlan();
+function openPlanTab(){
+  showView("plan");$("#view-plan .ptabs [data-pt=ptPlans]").click();
+  $("#spCreate").scrollIntoView({behavior:"smooth",block:"start"});
 }
-let planFileObj=null;
-function clearPlanFile(){ planFileObj=null; $("#planFile").value=""; $("#planDrop").hidden=false; $("#planChip").hidden=true; checkPlan(); }
-$("#planFile").addEventListener("change",e=>setPlanFile(e.target.files[0]));
-["dragenter","dragover"].forEach(ev=>$("#planDrop").addEventListener(ev,e=>{e.preventDefault();$("#planDrop").classList.add("over");}));
-["dragleave","drop"].forEach(ev=>$("#planDrop").addEventListener(ev,e=>{e.preventDefault();$("#planDrop").classList.remove("over");}));
-$("#planDrop").addEventListener("drop",e=>setPlanFile(e.dataTransfer.files[0]));
+/* a name is suggested from the dates until someone types their own */
+let spNameAuto=true;
+function planSuggestName(from,to){
+  const f=new Date(from+"T00:00"),t=new Date(to+"T00:00"),days=Math.round((t-f)/864e5)+1;
+  if(days===1)return`Daily plan, ${niceDay(from)}`;
+  if(f.getDate()===1&&t.getMonth()===f.getMonth()&&new Date(t.getFullYear(),t.getMonth()+1,0).getDate()===t.getDate())return`${f.toLocaleDateString("en-GB",{month:"long",year:"numeric"})} monthly plan`;
+  if(days===7)return`Week of ${niceDay(from)}`;
+  return`${niceDay(from)} to ${niceDay(to)} plan`;
+}
+$("#planName").addEventListener("input",()=>{spNameAuto=false;checkPlan()});
+$("#planName").addEventListener("blur",e=>{if(!e.target.value.trim()){spNameAuto=true;checkPlan()}});   // left empty: go back to the suggestion
 function checkPlan(){
+  if(!$("#planFrom"))return;
+  if(spNameAuto&&$("#planFrom").value&&$("#planTo").value)$("#planName").value=planSuggestName($("#planFrom").value,$("#planTo").value);
   const from=$("#planFrom").value,to=$("#planTo").value,msg=$("#planMsg"),today=isoDay(new Date());
-  let ok=!!planFileObj&&!!from&&!!to, text="", cls="";
-  if(from&&to&&to<from){ ok=false; text="The end date is before the start date."; cls="err"; }
+  const ready=SP_PARTS.filter(p=>spCheck(p).ready).length,waiting=SP.files.some(f=>suWords(f.desc)<SU_DESC_MIN),left=SP_PARTS.length-ready;
+  let ok=!!from&&!!to&&ready>0&&!waiting,text="",cls="";
+  if(from&&to&&to<from){ok=false;text="The end date is before the start date.";cls="err";}
   else if(from&&to){
     const days=Math.round((new Date(to)-new Date(from))/864e5)+1;
-    if(days>31){ ok=false; text="A plan can cover up to 31 days. Split longer plans into weekly uploads."; cls="err"; }
-    else if(from<=today&&today<=to){ text=`This plan covers the current shift. It will be recorded as an approved re-plan (Plan v${planVersion+1}), and Plan v${planVersion} stays frozen for comparison.`; cls="warn"; }
-    else if(to<today){ text="These dates are in the past. The plan is stored for the record but won't change today's recommendations."; }
-    else { text=`Plan v${planVersion+1} becomes the baseline from ${niceDay(from)}. Today's shift keeps Plan v${planVersion}.`; }
-    if(!planFileObj&&cls!=="err") text="Choose a plan file to continue. "+text;
+    if(days>31){ok=false;text="A plan can cover up to 31 days. Split longer plans into weekly ones.";cls="err";}
+    else if(waiting){text="Give every file a description before saving.";cls="warn";}
+    else if(!ready){text="Fill in at least one part of the plan to save it.";}
+    else if(!$("#planName").value.trim()){ok=false;text="Give the plan a name.";}
+    else if(SP.editing){text=`Saving updates "${suEsc($("#planName").value.trim())}" (Plan v${SP.editing}) for ${from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`}.${left?` ${suPlural(left,"part is","parts are")} still empty.`:""}`;}
+    else if(from<=today&&today<=to){text=`This plan covers the current shift. It will be saved as an approved re-plan (Plan v${planVersion+1}), and Plan v${planVersion} stays for comparison.${left?` ${suPlural(left,"part is","parts are")} still empty.`:""}`;cls="warn";}
+    else if(to<today){text="These dates are in the past. The plan is stored for the record but won't change today's recommendations.";}
+    else{text=`Plan v${planVersion+1} becomes the baseline from ${niceDay(from)}. Today's shift keeps Plan v${planVersion}.${left?` ${suPlural(left,"part is","parts are")} still empty.`:""}`;}
   }
-  msg.className="plan-msg "+cls; msg.textContent=text; $("#planSubmit").disabled=!ok;
+  msg.className="plan-msg "+cls;msg.textContent=text;$("#planSubmit").disabled=!ok;
 }
 function submitPlan(){
-  const from=$("#planFrom").value,to=$("#planTo").value,today=isoDay(new Date()),name=planFileObj.name;
-  const range=from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`, v=++planVersion, now=$("#scTime").textContent.slice(0,5);
-  closePlanModal();
-  toast(`Reading ${name}...`);
-  setTimeout(()=>{
-    if(from<=today&&today<=to){
-      $("#baseName").innerHTML=`Plan v${v} <small>uploaded ${now}</small>`;
-      $("#baseSub").textContent=`${range} · 1 approved re-plan · v${v-1} kept for comparison`;
-    } else {
-      $("#baseSub").textContent=`Plan v${v} queued for ${range}`;
-    }
-    toast(`Plan v${v} uploaded for ${range}: 46 activities, 3 dependency warnings to review. Recorded in the decision log.`);
-    clearPlanFile(); $("#planNote").value="";
-  },1300);
+  const from=$("#planFrom").value,to=$("#planTo").value,today=isoDay(new Date()),shift=$("#planShifts").value.replace(/ \(.*/,"");
+  const range=from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`,now=$("#scTime").textContent.slice(0,5),ready=SP_PARTS.filter(p=>spCheck(p).ready).length;
+  const fields={name:$("#planName").value.trim().replace(/</g,"&lt;"),from,to,shift,parts:{...SP.text},files:SP.files.map(f=>({...f})),note:$("#planNote").value.trim().replace(/</g,"&lt;")||"No note"};
+  if(SP.editing){
+    const p=PLANS.find(x=>x.v===SP.editing);Object.assign(p,fields,{at:`${niceDay(today)} ${now}`,by:"N. Abara"});
+    toast(`${p.name} updated: ${ready} of ${SP_PARTS.length} parts ready.`);
+    spBaseLine();spCancelEdit();return;
+  }
+  const v=++planVersion;
+  PLANS.unshift({v,...fields,by:"N. Abara",at:`${niceDay(today)} ${now}`});
+  spBaseLine();
+  toast(`${fields.name} saved for ${range}, ${shift.toLowerCase()}: ${ready} of ${SP_PARTS.length} parts ready.`);
+  SP={text:{},files:[]};try{localStorage.removeItem(SP_KEY)}catch(e){}
+  $("#planNote").value="";spNameAuto=true;spRenderParts();spRefresh();$("#spSaved").textContent="";renderPastShifts();
 }
-$("#planModal").addEventListener("click",e=>{if(e.target.id==="planModal")closePlanModal()});
+
+/* past shifts: plan versions on file and how each shift finished (sample values) */
+const TODAY_ISO=isoDay(new Date()),MONTH1=TODAY_ISO.slice(0,8)+"01",MONTH_END=isoDay(new Date(new Date().getFullYear(),new Date().getMonth()+1,0));
+const REPLAN=addDays(TODAY_ISO,-10)<MONTH1?MONTH1:addDays(TODAY_ISO,-10);
+const SP_SAMPLE={
+  production:"Zone 5 OBI bog 1,800 t, fire Zone 4 OBI ring 12 at 18:40, and two development cuts at Etang North 550L.",
+  resources:"LHD Scaltec 3402 and trucks 6313 to 6317 on Zone 5 OBI. Jumbo 3123 and the charge crew on Etang North 550L.",
+  maintenance:"Truck 6317 500-hour service in workshop bay 1 from 17:00. Hoist inspection on Sunday from 06:00 to 10:00.",
+  services:"Vent duct extension at Etang North 640L. Hydraulic backfill into the Zone 3 OBI stope from 02:00.",
+  constraints:"Blasting window at 18:40. Exclusion zone at the Zone 4 OBI draw point. VF-2 down, so no new headings in the north block.",
+  handover:"Water-jet crew still clearing the Zone 4 OBI hang-up. Vent tech confirmation on VF-2 is outstanding.",
+  comms:"Shift boss T. Mokoena, control room N. Abara. Radio channel 3 for production, channel 5 for services."
+};
+/* sample plans fill their first n parts; real saved plans keep exactly what was entered */
+const spSampleParts=n=>Object.fromEntries(SP_PARTS.slice(0,n).map(p=>[p.key,SP_SAMPLE[p.key]]));
+const PLANS=[
+  {v:3,name:`Daily plan, ${niceDay(TODAY_ISO)}`,from:TODAY_ISO,to:TODAY_ISO,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(TODAY_ISO)} 05:48`,note:"Daily import",
+   parts:spSampleParts(7),files:[{id:9001,part:"production",name:"KTO daily plan 05-48.xlsx",size:184000,desc:"Daily plan exported from the mine planning system at 05:48 with targets by heading."}]},
+  {v:2,name:"Zone 4 OBI re-plan",from:REPLAN,to:MONTH_END,shift:"All three shifts",by:"T. Mokoena",at:`${niceDay(REPLAN)} 05:30`,note:"Re-sequenced Zone 4 OBI after a stope delay",
+   parts:spSampleParts(6),files:[]},
+  {v:1,name:`${new Date(MONTH1+"T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})} monthly plan`,from:MONTH1,to:MONTH_END,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(MONTH1)} 06:10`,note:"Monthly plan",
+   parts:spSampleParts(5),files:[{id:9002,part:"production",name:"KTO monthly plan.xlsx",size:612000,desc:"Monthly production plan from the mine planning system with targets by area and week."}]}
+];
+/* how many of the 7 parts a plan has ready, using the same rule as the form */
+function planReady(p){return SP_PARTS.filter(x=>{const w=suWords(p.parts[x.key]),f=p.files.filter(y=>y.part===x.key);return(w>=SP_TEXT_MIN||f.length)&&f.every(y=>suWords(y.desc)>=SU_DESC_MIN)}).length}
+function planMissing(p){
+  const m=SP_PARTS.filter(x=>!suWords(p.parts[x.key])&&!p.files.some(y=>y.part===x.key)).map(x=>x.name.toLowerCase());
+  return m.length>1?m.slice(0,-1).join(", ")+" and "+m[m.length-1]:m.join("");
+}
+/* open a saved plan in the form above to change it, add files to it or delete it */
+let spDraft=null;
+function spEdit(v){
+  const p=PLANS.find(x=>x.v===v);if(!p)return;
+  if(SP.editing===undefined||SP.editing===null)spDraft=SP;
+  SP={editing:v,text:{...p.parts},files:p.files.map(f=>({...f}))};
+  $("#planFrom").value=p.from;$("#planTo").value=p.to;
+  $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));
+  $("#planShifts").value=[...$("#planShifts").options].find(o=>o.value.startsWith(p.shift))?.value||$("#planShifts").value;
+  $("#planNote").value=p.note;$("#planName").value=p.name;spNameAuto=false;
+  spEditMode(true);spRenderParts();spRefresh();renderPastShifts();
+  $("#spCreate").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function spEditMode(on){
+  const v=SP.editing;
+  $("#spTitle").textContent=on?`Editing ${PLANS.find(x=>x.v===v).name}`:"Create a shift plan";
+  $("#planSubmit").textContent=on?"Save changes":"Save shift plan";
+  $("#spDelete").hidden=!on;$("#spCancel").hidden=!on;$("#spSaved").textContent="";
+  $("#spCreate").classList.toggle("editing",on);
+}
+function spCancelEdit(){
+  SP=spDraft||{text:{},files:[]};spDraft=null;delete SP.editing;
+  spNameAuto=true;$("#planName").value="";
+  setPlanRange("today");$("#planNote").value="";
+  spEditMode(false);spRenderParts();spRefresh();renderPastShifts();
+}
+function spDelete(v=SP.editing){
+  const p=PLANS.find(x=>x.v===v);if(!p)return;
+  if(!confirm(`Delete "${p.name}" (Plan v${v}, ${planRange(p)})? Its parts and files are removed. Days it covered fall back to the plan underneath, if there is one.`))return;
+  PLANS.splice(PLANS.indexOf(p),1);
+  spBaseLine();
+  toast(`${p.name} deleted. Create a new one above to replace it.`);
+  if(SP.editing===v)spCancelEdit();else renderPastShifts();
+}
+function spNewFor(day){
+  if(SP.editing)spCancelEdit();
+  $("#planFrom").value=$("#planTo").value=day;
+  $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));
+  checkPlan();$("#spCreate").scrollIntoView({behavior:"smooth",block:"start"});
+}
+/* the "Plan v… imported" line at the top of the Plan page follows whichever plan covers today */
+function spBaseLine(){
+  const p=planFor(TODAY_ISO);
+  $("#baseName").innerHTML=p?`${p.name} <small>(Plan v${p.v}, saved ${p.at})</small>`:"No plan for today";
+  $("#baseSub").textContent=p?`${planRange(p)} · ${p.by}`:"create one in Shift plans";
+}
+function planKind(p){
+  const days=Math.round((new Date(p.to)-new Date(p.from))/864e5)+1,f=new Date(p.from+"T00:00"),t=new Date(p.to+"T00:00");
+  if(days===1)return"Daily";
+  if(days===7)return"Weekly";
+  if(f.getDate()===1&&new Date(t.getFullYear(),t.getMonth()+1,0).getDate()===t.getDate()&&f.getMonth()===t.getMonth())return"Monthly";
+  return`${days} days`;
+}
+const SHIFT_NAMES=["Shift 1","Shift 2","Shift 3"];
+function spHash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,1540483477);h^=h>>>15;return(h>>>0)/4294967295}
+function planFor(day){return PLANS.filter(p=>p.from<=day&&day<=p.to).sort((a,b)=>b.v-a.v)[0]||null}
+function shiftResult(day,i){
+  const p=planFor(day);if(!p)return{state:"none"};
+  if(day>TODAY_ISO||(day===TODAY_ISO&&i>0))return{state:"planned",plan:p};
+  if(day===TODAY_ISO)return{state:"live",att:78,plan:p,ready:planReady(p)};
+  return{state:"done",att:Math.round(76+spHash(day+i)*26),plan:p,ready:planReady(p)};
+}
+const attCls=a=>a>=95?"g":a>=85?"a":"r";
+let spSelected=null,spMonth=TODAY_ISO.slice(0,7);
+function spCell(r){
+  if(r.state==="done")return`<span class="sp-att ${attCls(r.att)}">${r.att}%</span>`;
+  if(r.state==="live")return`<span class="sp-att live">${r.att}% so far</span>`;
+  if(r.state==="planned")return`<span class="sp-att plan">Planned</span>`;
+  return`<span class="sp-att none">No plan</span>`;
+}
+/* a plan's result: the shifts it governed that have finished (later versions take over the days they cover) */
+function planResult(p){
+  const rs=[];for(let d=p.from;d<=p.to&&d<=TODAY_ISO;d=addDays(d,1)){if(planFor(d)!==p)continue;SHIFT_NAMES.forEach((_,i)=>{const r=shiftResult(d,i);if(r.state==="done"||r.state==="live")rs.push(r)})}
+  if(!rs.length)return{label:p.from>TODAY_ISO?"Not started":"Replaced before it ran",cls:"plan"};
+  const avg=Math.round(rs.reduce((a,r)=>a+r.att,0)/rs.length);
+  return{label:`${avg}%${rs.some(r=>r.state==="live")?" so far":""}`,cls:rs.some(r=>r.state==="live")&&rs.length===1?"live":attCls(avg),n:rs.length};
+}
+const planRange=p=>p.from===p.to?longDay(p.from):`${niceDay(p.from)} to ${niceDay(p.to)}`;
+function renderPastShifts(){
+  $("#spList").innerHTML=`<div class="sp-table"><div class="sp-row hd"><span>Plan</span><span>Dates</span><span>Shifts</span><span>Parts ready</span><span>Result</span><span></span></div>`+
+    PLANS.map(p=>{const r=planResult(p),ready=planReady(p),cur=planFor(TODAY_ISO)===p,editing=SP.editing===p.v;
+      return`<div class="sp-row${editing?" on":""}">
+        <span class="sp-d">${p.name}${cur?` <em class="tag blue">Current</em>`:""}${editing?` <em class="tag plain">Editing</em>`:""}<small>Plan v${p.v} · ${p.note} · saved ${p.at} by ${p.by}</small></span>
+        <span>${planRange(p)}<small>${planKind(p)}</small></span>
+        <span>${p.shift.replace("All three shifts","All three")}</span>
+        <span><span class="sp-att ${ready===7?"g":ready>=5?"a":"r"}">${ready} of 7</span></span>
+        <span><span class="sp-att ${r.cls}">${r.label}</span>${r.n?`<small>${suPlural(r.n,"shift")}</small>`:""}</span>
+        <span class="sp-acts"><button class="btn btn-ghost" onclick="spEdit(${p.v})" aria-label="Edit ${suEsc(p.name)}">Edit</button><button class="btn btn-ghost sp-del" onclick="spDelete(${p.v})" aria-label="Delete ${suEsc(p.name)}">Delete</button></span>
+      </div>`;}).join("")+`</div>`;
+  renderCalendar();renderSpDay();
+}
+function renderCalendar(){
+  const [y,m]=spMonth.split("-").map(Number),first=new Date(y,m-1,1),days=new Date(y,m,0).getDate(),lead=(first.getDay()+6)%7;
+  const title=first.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+  let cells="";for(let i=0;i<lead;i++)cells+=`<span class="sp-c blank"></span>`;
+  for(let d=1;d<=days;d++){
+    const day=`${spMonth}-${String(d).padStart(2,"0")}`,rs=SHIFT_NAMES.map((_,i)=>shiftResult(day,i)),done=rs.filter(r=>r.state==="done");
+    const avg=done.length?Math.round(done.reduce((a,r)=>a+r.att,0)/done.length):null;
+    const label=avg!==null?`<span class="sp-att ${attCls(avg)}">${avg}%</span>`:rs[0].state==="live"?`<span class="sp-att live">Today</span>`:rs[0].state==="planned"?`<span class="sp-att plan">Planned</span>`:`<span class="sp-att none">No plan</span>`;
+    cells+=`<button class="sp-c${day===TODAY_ISO?" today":""}${spSelected===day?" on":""}" onclick="spSelect('${day}')"><b>${d}</b>${label}</button>`;
+  }
+  $("#spCal").innerHTML=`<div class="sp-cal-h"><button onclick="spShiftMonth(-1)" aria-label="Previous month">‹</button><b>${title}</b><button onclick="spShiftMonth(1)" aria-label="Next month">›</button></div>
+    <div class="sp-grid">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(w=>`<span class="sp-wd">${w}</span>`).join("")}${cells}</div>`;
+}
+function spShiftMonth(n){const [y,m]=spMonth.split("-").map(Number),d=new Date(y,m-1+n,1);spMonth=isoDay(d).slice(0,7);renderCalendar()}
+function spSelect(day){spSelected=spSelected===day?null:day;renderPastShifts()}
+function renderSpDay(){
+  if(!spSelected){$("#spDay").innerHTML="";return}
+  const p=planFor(spSelected),rs=SHIFT_NAMES.map((_,i)=>shiftResult(spSelected,i));
+  $("#spDay").innerHTML=`<div class="sp-day"><div class="sp-day-h"><b>${longDay(spSelected)}</b><span>${p?`${p.name} (Plan v${p.v}, ${planRange(p)}) · ${p.note}`:"No plan on file for this day"}</span>${p?`<button class="btn btn-ghost sp-editbtn" onclick="spEdit(${p.v})">Edit this plan</button>`:`<button class="btn btn-ghost sp-editbtn" onclick="spNewFor('${spSelected}')">Create a plan for this day</button>`}<button class="rm" onclick="spSelect('${spSelected}')">Close</button></div>
+    ${rs.map((r,i)=>`<div class="sp-day-r"><b>${SHIFT_NAMES[i]}</b>${spCell(r)}<span>${r.state==="done"||r.state==="live"?`${r.ready} of 7 plan parts were ready${r.ready<7?`, missing ${planMissing(r.plan)}`:""}`:r.state==="planned"?"Not started yet":"Nothing planned"}</span></div>`).join("")}</div>`;
+}
+$$("#spView button").forEach(b=>b.addEventListener("click",()=>{
+  $$("#spView button").forEach(x=>x.classList.toggle("on",x===b));
+  $("#spList").hidden=b.dataset.v!=="list";$("#spCal").hidden=b.dataset.v!=="cal";
+}));
+setPlanRange("today");spRenderParts();spRefresh();renderPastShifts();
 
 /* ═════════ Shift clock ═════════ */
 let simSec=13*3600+6*60+59;
@@ -2775,7 +3060,7 @@ function tickClock(){
 
 /* ═════════ Escape key ═════════ */
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){closeDrawer();closeUpdateModal();closePlanModal();toggleChat(false);}
+  if(e.key==="Escape"){closeDrawer();closeUpdateModal();toggleChat(false);}
 });
 
 /* ═════════ Init ═════════ */
