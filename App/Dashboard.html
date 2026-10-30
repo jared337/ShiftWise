@@ -1400,7 +1400,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           <div class="field full"><label for="planShifts">Shifts</label>
             <select id="planShifts"><option>Shift 1 (06:00 to 14:00)</option><option>Shift 2 (14:00 to 22:00)</option><option>Shift 3 (22:00 to 06:00)</option><option>All three shifts</option></select></div>
         </div>
-        <div class="sp-prog"><b id="spCount">0 of 7 parts ready</b><span class="su-bar"><i id="spBar"></i></span></div>
+        <div class="sp-prog"><b id="spCount">0 of 6 parts ready</b><span class="su-bar"><i id="spBar"></i></span></div>
         <div id="spParts"></div>
         <div class="field" style="margin-top:14px"><label for="planNote">What changed from the last plan (optional)</label>
           <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced Zone 4 OBI after the hang-up, Etang North 550L second cut moved to Thursday."></textarea></div>
@@ -1650,7 +1650,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <div class="su-prog">
         <div class="su-prog-top">
           <div class="su-score"><b id="suScore">0%</b><span>Data quality</span></div>
-          <div class="su-score-r"><span id="suCount">0 of 9 parts complete</span><span class="su-bar"><i id="suBar"></i></span></div>
+          <div class="su-score-r"><span id="suCount">0 of 10 parts complete</span><span class="su-bar"><i id="suBar"></i></span></div>
         </div>
         <ol class="su-steps" id="suSteps"></ol>
         <div class="su-done" id="suDone" hidden>
@@ -2539,11 +2539,12 @@ $$("#settingsNav button").forEach(b=>b.addEventListener("click",()=>{
 const SU_KEY="shiftwise.setup.KTO.v3";
 const SU_READABLE=/\.(pdf|png|jpe?g|svg|vsdx|dwg|dxf|docx?|xlsx?|csv|pptx?)$/i;
 const SU_DESC_MIN=10,SU_TEXT_MIN=25;
-/* the nine parts of the mine model */
+/* the parts of the mine model */
 const SU_PARTS=[
   {key:"layout",name:"Layout and locations",what:"Areas, zones, levels, headings, stopes, ramps, ore passes, tipping points.",why:"Recommendations must point to a real place.",src:"Survey plans, mine plans, level layouts"},
   {key:"flow",name:"Material flow",what:"How ore and waste move, every stage's capacity, storage buffers, bottlenecks.",why:"At KCC the shaft looked like the bottleneck, but wasn't.",src:"Process diagrams, ore extraction drawings, KPI reports"},
   {key:"work",name:"How work is done",what:"Mining cycles, step order, typical durations, what must be ready first.",why:"A heading needs charging before it can blast.",src:"SOPs, cycle time studies, shift plans"},
+  {key:"sequence",name:"Sequences and dependencies",what:"The order work must happen in across the mine, and what each step depends on: which stope is mined before which, backfill before the next lift, development ahead of stoping, shared equipment and crews.",why:"Recommendations must never ask for something before what it depends on is done.",src:"Mining sequence plans, schedules, stope sequencing diagrams"},
   {key:"assets",name:"Assets",what:"Equipment list, capacities, which fleet does what.",why:"Moving a truck means knowing which trucks exist.",src:"Equipment registers, fleet lists"},
   {key:"people",name:"People",what:"Crews, roles, skills, who can operate what.",why:"A rig can't move without a qualified operator.",src:"Org charts, rosters, training matrices"},
   {key:"materials",name:"Materials and services",what:"Explosives, ground support, cement, power, water, ventilation, pumping.",why:"No explosives or no power stops work.",src:"Stock reports, ventilation and dewatering plans"},
@@ -2762,7 +2763,6 @@ const SP_PARTS=[
   {key:"services",name:"Infrastructure and services plan",what:"Planned power, water or ventilation work, backfill placement, road or ramp closures."},
   {key:"constraints",name:"Constraints for this shift",what:"Blasting window, areas closed, known hazards."},
   {key:"handover",name:"Handover from last shift",what:"What's carried over, open actions, problems left unsolved."},
-  {key:"comms",name:"Communication plan",what:"Who's on shift, radio channels, who to call for what."}
 ];
 const SP_KEY="shiftwise.shiftplan.draft.v1",SP_TEXT_MIN=10;
 let SP={text:{},files:[]},spFileId=0;
@@ -2914,17 +2914,16 @@ const SP_SAMPLE={
   services:"Vent duct extension at Etang North 640L. Hydraulic backfill into the Zone 3 OBI stope from 02:00.",
   constraints:"Blasting window at 18:40. Exclusion zone at the Zone 4 OBI draw point. VF-2 down, so no new headings in the north block.",
   handover:"Water-jet crew still clearing the Zone 4 OBI hang-up. Vent tech confirmation on VF-2 is outstanding.",
-  comms:"Shift boss T. Mokoena, control room N. Abara. Radio channel 3 for production, channel 5 for services."
 };
 /* sample plans fill their first n parts; real saved plans keep exactly what was entered */
 const spSampleParts=n=>Object.fromEntries(SP_PARTS.slice(0,n).map(p=>[p.key,SP_SAMPLE[p.key]]));
 const PLANS=[
   {v:3,name:`Daily plan, ${niceDay(TODAY_ISO)}`,from:TODAY_ISO,to:TODAY_ISO,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(TODAY_ISO)} 05:48`,note:"Daily import",
-   parts:spSampleParts(7),files:[{id:9001,part:"production",name:"KTO daily plan 05-48.xlsx",size:184000,desc:"Daily plan exported from the mine planning system at 05:48 with targets by heading."}]},
+   parts:spSampleParts(6),files:[{id:9001,part:"production",name:"KTO daily plan 05-48.xlsx",size:184000,desc:"Daily plan exported from the mine planning system at 05:48 with targets by heading."}]},
   {v:2,name:"Zone 4 OBI re-plan",from:REPLAN,to:MONTH_END,shift:"All three shifts",by:"T. Mokoena",at:`${niceDay(REPLAN)} 05:30`,note:"Re-sequenced Zone 4 OBI after a stope delay",
-   parts:spSampleParts(6),files:[]},
+   parts:spSampleParts(5),files:[]},
   {v:1,name:`${new Date(MONTH1+"T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})} monthly plan`,from:MONTH1,to:MONTH_END,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(MONTH1)} 06:10`,note:"Monthly plan",
-   parts:spSampleParts(5),files:[{id:9002,part:"production",name:"KTO monthly plan.xlsx",size:612000,desc:"Monthly production plan from the mine planning system with targets by area and week."}]}
+   parts:spSampleParts(4),files:[{id:9002,part:"production",name:"KTO monthly plan.xlsx",size:612000,desc:"Monthly production plan from the mine planning system with targets by area and week."}]}
 ];
 /* how many of the 7 parts a plan has ready, using the same rule as the form */
 function planReady(p){return SP_PARTS.filter(x=>{const w=suWords(p.parts[x.key]),f=p.files.filter(y=>y.part===x.key);return(w>=SP_TEXT_MIN||f.length)&&f.every(y=>suWords(y.desc)>=SU_DESC_MIN)}).length}
@@ -3017,7 +3016,7 @@ function renderPastShifts(){
         <span class="sp-d">${p.name}${cur?` <em class="tag blue">Current</em>`:""}${editing?` <em class="tag plain">Editing</em>`:""}<small>Plan v${p.v} · ${p.note} · saved ${p.at} by ${p.by}</small></span>
         <span>${planRange(p)}<small>${planKind(p)}</small></span>
         <span>${p.shift.replace("All three shifts","All three")}</span>
-        <span><span class="sp-att ${ready===7?"g":ready>=5?"a":"r"}">${ready} of 7</span></span>
+        <span><span class="sp-att ${ready===SP_PARTS.length?"g":ready>=SP_PARTS.length-2?"a":"r"}">${ready} of ${SP_PARTS.length}</span></span>
         <span><span class="sp-att ${r.cls}">${r.label}</span>${r.n?`<small>${suPlural(r.n,"shift")}</small>`:""}</span>
         <span class="sp-acts"><button class="btn btn-ghost" onclick="spEdit(${p.v})" aria-label="Edit ${suEsc(p.name)}">Edit</button><button class="btn btn-ghost sp-del" onclick="spDelete(${p.v})" aria-label="Delete ${suEsc(p.name)}">Delete</button></span>
       </div>`;}).join("")+`</div>`;
@@ -3042,7 +3041,7 @@ function renderSpDay(){
   if(!spSelected){$("#spDay").innerHTML="";return}
   const p=planFor(spSelected),rs=SHIFT_NAMES.map((_,i)=>shiftResult(spSelected,i));
   $("#spDay").innerHTML=`<div class="sp-day"><div class="sp-day-h"><b>${longDay(spSelected)}</b><span>${p?`${p.name} (Plan v${p.v}, ${planRange(p)}) · ${p.note}`:"No plan on file for this day"}</span>${p?`<button class="btn btn-ghost sp-editbtn" onclick="spEdit(${p.v})">Edit this plan</button>`:`<button class="btn btn-ghost sp-editbtn" onclick="spNewFor('${spSelected}')">Create a plan for this day</button>`}<button class="rm" onclick="spSelect('${spSelected}')">Close</button></div>
-    ${rs.map((r,i)=>`<div class="sp-day-r"><b>${SHIFT_NAMES[i]}</b>${spCell(r)}<span>${r.state==="done"||r.state==="live"?`${r.ready} of 7 plan parts were ready${r.ready<7?`, missing ${planMissing(r.plan)}`:""}`:r.state==="planned"?"Not started yet":"Nothing planned"}</span></div>`).join("")}</div>`;
+    ${rs.map((r,i)=>`<div class="sp-day-r"><b>${SHIFT_NAMES[i]}</b>${spCell(r)}<span>${r.state==="done"||r.state==="live"?`${r.ready} of ${SP_PARTS.length} plan parts were ready${r.ready<SP_PARTS.length?`, missing ${planMissing(r.plan)}`:""}`:r.state==="planned"?"Not started yet":"Nothing planned"}</span></div>`).join("")}</div>`;
 }
 $$("#spView button").forEach(b=>b.addEventListener("click",()=>{
   $$("#spView button").forEach(x=>x.classList.toggle("on",x===b));
