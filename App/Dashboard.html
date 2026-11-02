@@ -2541,7 +2541,7 @@ $$("#settingsNav button").forEach(b=>b.addEventListener("click",()=>{
    The file contents themselves are not stored, and reading is simulated. */
 const SU_KEY="shiftwise.setup.KTO.v3";
 const SU_READABLE=/\.(pdf|png|jpe?g|svg|vsdx|dwg|dxf|docx?|xlsx?|csv|pptx?)$/i;
-const SU_DESC_MIN=10,SU_TEXT_MIN=25;
+const SU_DESC_MIN=10,SU_TEXT_MIN=1;   // any description is enough to save a part
 /* the parts of the mine model */
 const SU_PARTS=[
   {key:"layout",name:"Layout and locations",what:"Areas, zones, levels, headings, stopes, ramps, ore passes, tipping points.",why:"Recommendations must point to a real place.",src:"Survey plans, mine plans, level layouts"},
