@@ -394,7 +394,9 @@ tbody tr:last-child td{border-bottom:none}
 .su-ctx-h b{font-size:13.5px}
 .su-ctx-meta{margin-left:auto;font-size:11.5px;color:var(--ink-faint);font-weight:600}
 .su-ctx-warn{font-size:12.5px;color:#8a6420;font-weight:600;margin-top:8px}
-.su-ctx-text{font-size:13px;color:var(--ink);white-space:pre-wrap;margin-top:10px;line-height:1.5}
+.su-ctx-text{font-size:13px;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px;line-height:1.5}
+.su-file-d,.su-file-err,.su-hint,.su-save-msg,.su-ctx-warn{overflow-wrap:anywhere}
+.su-ctx,.su-file{min-width:0}
 .su-ctx .su-text{margin-top:10px}
 .su-ctx-f{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:10px;flex-wrap:wrap}
 .su-ctx-f .btn{padding:6px 13px;font-size:12.5px}
@@ -1385,7 +1387,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     </div>
 
     <div class="ptab-panel" id="ptPlans" role="tabpanel">
-      <p class="ptab-lead">The shift plan set is everything planned for a shift, not just the production target. Create one for each shift, then look back at how past shifts went against their plan.</p>
+      <p class="ptab-lead">The shift plan set is everything planned for a shift, not just the production target. It is the ideal set: a basic plan works, and the more parts you fill in, the better the recommendations. Create one for each shift, then look back at how past shifts went against their plan.</p>
       <div class="sp-card" id="spCreate">
         <div class="sp-card-h"><h4 id="spTitle">Create a shift plan</h4><span class="su-saved" id="spSaved" aria-live="polite"></span></div>
         <div class="f-grid">
@@ -1404,7 +1406,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           <div class="field full"><label for="planShifts">Shifts</label>
             <select id="planShifts"><option>Shift 1 (06:00 to 14:00)</option><option>Shift 2 (14:00 to 22:00)</option><option>Shift 3 (22:00 to 06:00)</option><option>All three shifts</option></select></div>
         </div>
-        <div class="sp-prog"><b id="spCount">0 of 6 parts ready</b><span class="su-bar"><i id="spBar"></i></span></div>
+        <div class="sp-prog"><b id="spCount">0 of 9 parts ready</b><span class="su-bar"><i id="spBar"></i></span></div>
         <div id="spParts"></div>
         <div class="field" style="margin-top:14px"><label for="planNote">What changed from the last plan (optional)</label>
           <textarea id="planNote" rows="2" placeholder="e.g. Re-sequenced Zone 4 OBI after the hang-up, Etang North 550L second cut moved to Thursday."></textarea></div>
@@ -1648,13 +1650,13 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
     <div class="set-card on" id="jsProfile">
       <div class="su-top">
         <div><h3>Site setup</h3>
-        <p>The mine model: how this mine works. It changes slowly, so review it monthly or when the mine changes. For each part, write it in your own words, upload documents that describe it, or both. Give every file a short description so ShiftWise knows what it is looking at.</p></div>
+        <p>The mine model: how this mine works. It changes slowly, if at all, and it is the minimum ShiftWise needs to make recommendations for a site. For each part, write it in your own words, upload documents that describe it, or both. Give every file a short description so ShiftWise knows what it is looking at.</p></div>
         <span class="su-saved" id="suSaved" aria-live="polite"></span>
       </div>
       <div class="su-prog">
         <div class="su-prog-top">
           <div class="su-score"><b id="suScore">0%</b><span>Data quality</span></div>
-          <div class="su-score-r"><span id="suCount">0 of 10 parts complete</span><span class="su-bar"><i id="suBar"></i></span></div>
+          <div class="su-score-r"><span id="suCount">0 of 14 parts complete</span><span class="su-bar"><i id="suBar"></i></span></div>
         </div>
         <ol class="su-steps" id="suSteps"></ol>
         <div class="su-done" id="suDone" hidden>
@@ -2541,19 +2543,23 @@ $$("#settingsNav button").forEach(b=>b.addEventListener("click",()=>{
    The file contents themselves are not stored, and reading is simulated. */
 const SU_KEY="shiftwise.setup.KTO.v3";
 const SU_READABLE=/\.(pdf|png|jpe?g|svg|vsdx|dwg|dxf|docx?|xlsx?|csv|pptx?)$/i;
-const SU_DESC_MIN=10,SU_TEXT_MIN=1;   // any description is enough to save a part
+const SU_DESC_MIN=1,SU_TEXT_MIN=1;   // any description is enough, for a part and for a file
 /* the parts of the mine model */
 const SU_PARTS=[
-  {key:"layout",name:"Layout and locations",what:"Areas, zones, levels, headings, stopes, ramps, ore passes, tipping points.",why:"Recommendations must point to a real place.",src:"Survey plans, mine plans, level layouts"},
+  {key:"layout",name:"Layout and locations",what:"Areas, zones, levels, headings, stopes, ramps, ore passes, tipping points, and each location's lifecycle status, e.g. planned, in use, mined out, backfilled, closed or inaccessible.",why:"Recommendations must point to a real place.",src:"Survey plans, mine plans, level layouts"},
   {key:"flow",name:"Material flow",what:"How ore and waste move, every stage's capacity, storage buffers, bottlenecks.",why:"At KCC the shaft looked like the bottleneck, but wasn't.",src:"Process diagrams, ore extraction drawings, KPI reports"},
   {key:"work",name:"How work is done",what:"Mining cycles, step order, typical durations, what must be ready first.",why:"A heading needs charging before it can blast.",src:"SOPs, cycle time studies, shift plans"},
-  {key:"sequence",name:"Sequences and dependencies",what:"The order work must happen in across the mine, and what each step depends on: which stope is mined before which, backfill before the next lift, development ahead of stoping, shared equipment and crews.",why:"Recommendations must never ask for something before what it depends on is done.",src:"Mining sequence plans, schedules, stope sequencing diagrams"},
+  {key:"calendar",name:"Shift pattern and calendar",what:"Shift times and rotation, handover times, planned shutdowns and holidays.",why:"Targets are often set by day or month, so ShiftWise needs to know what a shift is and when it starts and ends.",src:"Shift rosters, site calendar, shutdown schedules"},
+  {key:"sequence",name:"Sequences and dependencies",what:"The rules for the order work must happen in across the mine: which stope is mined before which, backfill before the next lift, development ahead of stoping, shared equipment and crews. The actual planned order sits in the plan.",why:"You can't mine the next stope until the one beside it is backfilled.",src:"Mining sequence plans, schedules, stope sequencing diagrams"},
   {key:"assets",name:"Assets",what:"Equipment list, capacities, which fleet does what.",why:"Moving a truck means knowing which trucks exist.",src:"Equipment registers, fleet lists"},
-  {key:"people",name:"People",what:"Crews, roles, skills, who can operate what.",why:"A rig can't move without a qualified operator.",src:"Org charts, rosters, training matrices"},
-  {key:"materials",name:"Materials and services",what:"Explosives, ground support, cement, power, water, ventilation, pumping.",why:"No explosives or no power stops work.",src:"Stock reports, ventilation and dewatering plans"},
+  {key:"people",name:"People",what:"Roles, certifications, which role can operate what. Named people and attendance sit in the shift plan.",why:"A rig can't move without a qualified operator.",src:"Org charts, role lists, training and certification matrices"},
+  {key:"materials",name:"Materials",what:"Consumables the work depends on, e.g. explosives, ground support, cement and backfill binder, fuel, drill consumables, spares.",why:"No explosives stops work.",src:"Stock reports, consumables lists, supply contracts"},
+  {key:"services",name:"Services and infrastructure",what:"Services the work depends on, e.g. power, water, ventilation and refrigeration, pumping and dewatering, compressed air, communications, and which areas each one supplies.",why:"Losing a service in one area stops every heading it supplies.",src:"Ventilation, power and dewatering plans, reticulation drawings"},
   {key:"rules",name:"Rules and constraints",what:"Safety rules, re-entry times, blasting windows, restricted areas, gas limits.",why:"Recommendations must never break a rule.",src:"Safety standards, blasting procedures, permits"},
   {key:"decisions",name:"Decision rights",what:"Who can decide what on shift, what needs approval, escalation paths.",why:"Only recommend things the person can actually do.",src:"Delegation of authority, escalation procedures"},
-  {key:"systems",name:"Systems and data map",what:"Which system provides each live signal, how often, and who reports it by hand where there's no system. Comms coverage. KPI definitions.",why:"Know which data to trust and whether a gap is a real problem.",src:"System lists, KPI definitions, comms coverage maps"}
+  {key:"systems",name:"Systems and data map",what:"Which system provides each live signal, how often, and who reports it by hand where there's no system. Comms coverage. KPI definitions.",why:"Know which data to trust and whether a gap is a real problem.",src:"System lists, KPI definitions, comms coverage maps"},
+  {key:"delays",name:"Delay and reason codes",what:"The site's standard list of reasons for lost time, delays and missed targets.",why:"Live input and history use the same reasons, so causes can be counted and compared.",src:"Delay code lists, daily production reports"},
+  {key:"terms",name:"Site terminology",what:"Local names, abbreviations and the languages used on site.",why:"Plans and reports use site-specific names ShiftWise must understand.",src:"Glossaries, abbreviation lists, plans and reports"}
 ];
 var SU=null;
 let suFileId=0;
@@ -2561,23 +2567,22 @@ const suWords=s=>(String(s||"").trim().match(/\S+/g)||[]).length;
 const suPlural=(n,one,many)=>`${n} ${n===1?one:(many||one+"s")}`;
 const suEsc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 
-/* What a part's context is built from: its description plus every file that has been read.
-   If this changes after a save, the saved context is out of date. */
+/* What a part's context is built from: its description plus every file and its description.
+   If any of it changes after a save (new file, removed file, edited text), the context is out of date. */
 function suSource(key){
-  return JSON.stringify([String(SU.text[key]||"").trim(),SU.files.filter(f=>f.part===key&&f.proc==="done").map(f=>[f.name,f.desc.trim()])]);
+  return JSON.stringify([String(SU.text[key]||"").trim(),SU.files.filter(f=>f.part===key&&f.proc!=="failed").map(f=>[f.name,f.desc.trim()])]);
 }
-/* Completion rule, the one place to change it. A part can be saved once it has at least
-   SU_TEXT_MIN words of text or one file that has been read, and no file is still waiting
-   for a description, being read, or unreadable. It is complete once its context has been
-   saved and nothing has changed since. */
+/* Completion rule, the one place to change it. A part can be saved once it has some description
+   or a described file, and every file has a description and can be read. Saving reads the files
+   and builds the context. The part is complete once its context is saved and nothing has changed since. */
 function suCheck(p){
   const text=suWords(SU.text[p.key]),f=SU.files.filter(x=>x.part===p.key),miss=[];
-  const read=f.filter(x=>x.proc==="done").length,need=f.filter(x=>x.proc==="need").length;
-  const busy=f.filter(x=>x.proc==="uploading"||x.proc==="reading").length,failed=f.filter(x=>x.proc==="failed").length;
-  if(text<SU_TEXT_MIN&&!read)miss.push(text?`Write ${SU_TEXT_MIN-text} more words or add a file`:"Describe it or add a file");
+  const described=f.filter(x=>x.proc==="ready"||x.proc==="done").length,need=f.filter(x=>x.proc==="need").length;
+  const busy=f.filter(x=>x.proc==="reading").length,failed=f.filter(x=>x.proc==="failed").length;
+  if(text<SU_TEXT_MIN&&!described&&!need)miss.push("Describe it or add a file");
   if(need)miss.push(`${suPlural(need,"file")} need${need===1?"s":""} a description`);
-  if(busy)miss.push(`${suPlural(busy,"file")} still being read`);
-  if(failed)miss.push(`${suPlural(failed,"file")} could not be read`);
+  if(busy)miss.push(`${suPlural(busy,"file")} being read`);
+  if(failed)miss.push(`${suPlural(failed,"file")} can't be read, remove ${failed===1?"it":"them"}`);
   const canSave=!miss.length,ctx=SU.context[p.key],stale=!!ctx&&ctx.src!==suSource(p.key);
   if(canSave&&!ctx)miss.push("Save to build the context");
   else if(stale)miss.push("Changed since the context was saved, save again");
@@ -2662,7 +2667,7 @@ function suRenderSave(x){
   const ctx=SU.context[x.key],el=$(`#suSave-${x.key}`);if(!el)return;
   if(suBuilding[x.key]){el.innerHTML=`<span class="su-save-msg">Building the ${x.name.toLowerCase()} context...</span><button class="btn btn-blue" disabled>Saving...</button>`;return}
   const label=!ctx?"Save":"Save again",ready=x.canSave&&(!ctx||x.stale);
-  const msg=!x.canSave?"Add a description or a read file to save this part.":!ctx?"Saving builds the context ShiftWise uses for this part.":x.stale?"You changed the description or files. Save again to rebuild the context.":"Context is up to date.";
+  const msg=!x.canSave?`${x.miss[0]}.`:!ctx?"Saving builds the context ShiftWise uses for this part.":x.stale?"You changed the description or files. Save again to rebuild the context.":"Context is up to date.";
   el.innerHTML=`<span class="su-save-msg">${msg}</span><button class="btn btn-blue" ${ready?"":"disabled"} onclick="suSave('${x.key}')">${label}</button>`;
 }
 function suBuildContext(key){
@@ -2675,13 +2680,17 @@ function suBuildContext(key){
 function suSave(key){
   const ctx=SU.context[key];
   if(ctx&&ctx.edited&&!confirm("Saving again rebuilds the context from the description and files, and replaces the changes made to it by hand. Continue?"))return;
-  suBuilding[key]=true;suRefresh();
+  /* saving reads any new or re-described files first, then builds the context */
+  const toRead=SU.files.filter(f=>f.part===key&&f.proc==="ready");
+  toRead.forEach(f=>f.proc="reading");
+  suBuilding[key]=true;renderProfFiles();
   setTimeout(()=>{
     const p=SU_PARTS.find(x=>x.key===key);
+    toRead.forEach(f=>{if(suFile(f.id))f.proc="done"});
     SU.context[key]={text:suBuildContext(key),v:(ctx?.v||0)+1,at:`${niceDay(isoDay(new Date()))} ${$("#scTime").textContent.slice(0,5)}`,by:"N. Abara",src:suSource(key),edited:false};
-    suBuilding[key]=false;suChanged();
+    suBuilding[key]=false;renderProfFiles();suChanged();
     toast(`${p.name} context saved (version ${SU.context[key].v}).`);
-  },1200);
+  },1400);
 }
 function suRenderCtx(key,stale){
   const ctx=SU.context[key],el=$(`#suCtx-${key}`);if(!el)return;
@@ -2707,16 +2716,17 @@ function suCtxSaveEdit(key){
   toast(`${SU_PARTS.find(x=>x.key===key).name} context updated (version ${ctx.v}).`);
 }
 
-/* files: each one waits for a description before it is read */
-const SU_PROC={need:["Needs description","amber"],uploading:["Uploading","blue"],reading:["Reading","blue"],done:["Done","green"],failed:["Failed","red"]};
+/* files: each needs a description; the part's Save reads them along with building the context */
+const SU_PROC={need:["Needs description","amber"],ready:["Ready to save","blue"],reading:["Reading","blue"],done:["Read","green"],failed:["Can't be read","red"]};
+const SU_FILE_HINT={need:"Add a description, then save the part.",ready:"Read when you save the part."};
 function suSize(b){return b>1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB"}
 function renderProfFiles(){
   SU_PARTS.forEach(p=>{$(`#suFiles-${p.key}`).innerHTML=SU.files.filter(f=>f.part===p.key).map(f=>{
-    const w=suWords(f.desc),editing=f.proc==="need";
-    return`<div class="su-file${editing?" need":""}" data-file="${f.id}">
-      <div class="su-file-h"><b title="${suEsc(f.name)}">${suEsc(f.name)}</b><small>${suSize(f.size)}</small><span class="tag ${SU_PROC[f.proc][1]}">${SU_PROC[f.proc][0]}</span><button class="rm" onclick="suRemoveFile(${f.id})">Remove</button></div>
+    const editing=f.proc==="need"||f.proc==="ready";
+    return`<div class="su-file${f.proc==="need"?" need":""}" data-file="${f.id}">
+      <div class="su-file-h"><b title="${suEsc(f.name)}">${suEsc(f.name)}</b><small>${suSize(f.size)}</small><span class="tag ${SU_PROC[f.proc][1]}" id="suFileTag${f.id}">${SU_PROC[f.proc][0]}</span><button class="rm" onclick="suRemoveFile(${f.id})">Remove</button></div>
       ${editing?`<textarea rows="2" aria-label="Description of ${suEsc(f.name)}" placeholder="What is this file and what does it show? e.g. Ore extraction drawing for Shaft 1, KTO.MIN.008 from 2015. The Crusher 2 area has since collapsed." oninput="suFileDesc(${f.id},this.value)">${suEsc(f.desc)}</textarea>
-      <div class="su-file-f"><span class="su-hint" id="suFileHint${f.id}">${w<SU_DESC_MIN?`${suPlural(w,"word")}, at least ${SU_DESC_MIN} needed`:"Ready to read"}</span><button class="btn btn-blue" id="suFileGo${f.id}" ${w<SU_DESC_MIN?"disabled":""} onclick="suReadFile(${f.id})">Read this file</button></div>`
+      <div class="su-hint" id="suFileHint${f.id}">${SU_FILE_HINT[f.proc]}</div>`
       :f.proc==="failed"?`<div class="su-file-err">${suEsc(f.err)}</div>`
       :`<div class="su-file-d">${suEsc(f.desc)}${f.proc==="done"?` <button class="lvl-confirm" onclick="suEditFile(${f.id})">Edit</button>`:""}</div>`}
     </div>`;
@@ -2725,36 +2735,29 @@ function renderProfFiles(){
 }
 const suFile=id=>SU.files.find(f=>f.id===id);
 function suFileDesc(id,v){
-  const f=suFile(id),w=suWords(v);f.desc=v;
-  $(`#suFileHint${id}`).textContent=w<SU_DESC_MIN?`${suPlural(w,"word")}, at least ${SU_DESC_MIN} needed`:"Ready to read";
-  $(`#suFileGo${id}`).disabled=w<SU_DESC_MIN;
+  const f=suFile(id);f.desc=v;f.proc=v.trim()?"ready":"need";
+  const t=$(`#suFileTag${id}`);t.textContent=SU_PROC[f.proc][0];t.className=`tag ${SU_PROC[f.proc][1]}`;
+  $(`#suFileHint${id}`).textContent=SU_FILE_HINT[f.proc];
+  t.closest(".su-file").classList.toggle("need",f.proc==="need");
   suChanged();
 }
-function suEditFile(id){suFile(id).proc="need";renderProfFiles();suChanged();$(`[data-file="${id}"] textarea`).focus()}
+function suEditFile(id){suFile(id).proc="ready";renderProfFiles();suChanged();$(`[data-file="${id}"] textarea`).focus()}
 function suRemoveFile(id){SU.files=SU.files.filter(f=>f.id!==id);renderProfFiles();suChanged()}
-function suReadFile(id){
-  const f=suFile(id);if(!f||suWords(f.desc)<SU_DESC_MIN||!SU_READABLE.test(f.name))return;
-  f.proc="uploading";renderProfFiles();suChanged();
-  setTimeout(()=>{
-    if(!suFile(id))return;f.proc="reading";renderProfFiles();suChanged();
-    setTimeout(()=>{
-      if(!suFile(id))return;
-      f.proc="done";renderProfFiles();suChanged();
-      toast(`${f.name} read.`);
-    },1600);
-  },600);
-}
 function addProfFiles(list,part){
+  let dup=0;
   list.forEach(file=>{
+    if(SU.files.some(f=>f.part===part&&f.name===file.name&&f.size===file.size)){dup++;return}   // same file added twice
     const ok=SU_READABLE.test(file.name),ext=(file.name.match(/\.[^.]+$/)||["this type of"])[0];
     SU.files.push({id:++suFileId,part,name:file.name,size:file.size,desc:"",proc:ok?"need":"failed",err:ok?"":`ShiftWise can't read ${ext} files. Save it as a PDF, image, Word, Excel or PowerPoint file and upload it again.`});
   });
+  if(dup)toast(dup===1?"That file is already added to this part.":`${dup} of those files are already added to this part.`);
   renderProfFiles();suChanged();
   const t=$(`#suFiles-${part} .su-file.need textarea`);if(t)t.focus();
 }
 
 suLoad();suRenderParts();
-SU.files.filter(f=>f.proc==="uploading"||f.proc==="reading").forEach(f=>{f.proc="need";suReadFile(f.id)});
+/* files saved by an earlier version, or left mid-read by a reload */
+SU.files.forEach(f=>{if(f.proc==="uploading"||f.proc==="reading"||f.proc==="need")f.proc=String(f.desc||"").trim()?"ready":"need"});
 renderProfFiles();
 suToggle((suEval().find(x=>x.status!=="complete")||{}).key,true);
 function updateSlider(id,valId,suffix){$("#"+valId).textContent=$("#"+id).value+suffix}
@@ -2825,22 +2828,44 @@ const longDay=s=>new Date(s+"T00:00").toLocaleDateString("en-GB",{weekday:"short
 const addDays=(s,n)=>{const d=new Date(s+"T00:00");d.setDate(d.getDate()+n);return isoDay(d)};
 /* the shift plan set: everything planned for one shift */
 const SP_PARTS=[
-  {key:"production",name:"Production plan",what:"Targets by location (tonnes, metres, blasts), priorities and sequence."},
-  {key:"resources",name:"Resource allocation",what:"Which crews and equipment are assigned to which headings."},
-  {key:"maintenance",name:"Maintenance plan",what:"Planned downtime, such as hoist maintenance, and equipment out of service."},
+  {key:"production",name:"Production plan",what:"Targets by location, machine and activity type, e.g. ore and waste tonnes, development metres, production drilling metres, blasts, ground support installed, backfill placed; grade or quality targets; the planned work for each heading; priorities and sequence."},
+  {key:"drawings",name:"Plan drawings",what:"Plans showing where work is planned, e.g. marked-up level plans, development and stope layouts, drill and blast designs."},
+  {key:"period",name:"Period plan and position",what:"The weekly or monthly plan this shift contributes to, and month to date against target."},
+  {key:"resources",name:"Resource allocation",what:"Which crews and equipment are assigned to which headings; who is on shift, absences, supervisors and contractors."},
+  {key:"maintenance",name:"Maintenance plan",what:"Planned downtime with start and end times, such as hoist maintenance, equipment out of service, and equipment due back in service during the shift."},
   {key:"services",name:"Infrastructure and services plan",what:"Planned power, water or ventilation work, backfill placement, road or ramp closures."},
-  {key:"constraints",name:"Constraints for this shift",what:"Blasting window, areas closed, known hazards."},
-  {key:"handover",name:"Handover from last shift",what:"What's carried over, open actions, problems left unsolved."},
+  {key:"logistics",name:"Materials and logistics",what:"Planned supply and movement of what the shift needs, e.g. deliveries of consumables, fuel and spares; allocation of support vehicles and service equipment; personnel transport and hoist or cage schedules."},
+  {key:"constraints",name:"Constraints for this shift",what:"Blasting window, areas closed, known hazards, re-entry times carried over from the last shift's blasts."},
+  {key:"handover",name:"Handover from last shift",what:"What's carried over, open actions, problems left unsolved. ShiftWise generates most of this from its own records; the mine adds supervisor notes."}
 ];
-const SP_KEY="shiftwise.shiftplan.draft.v1",SP_TEXT_MIN=10;
-let SP={text:{},files:[]},spFileId=0;
-try{const s=JSON.parse(localStorage.getItem(SP_KEY)||"null");if(s){SP=s;spFileId=Math.max(0,...SP.files.map(f=>f.id))}}catch(e){}
-/* a part is ready when it has SP_TEXT_MIN words or a file with a description, and no file is waiting for one */
+const SP_KEY="shiftwise.shiftplan.draft.v1";
+let SP={text:{},files:[],context:{}},spFileId=0;
+try{const s=JSON.parse(localStorage.getItem(SP_KEY)||"null");if(s){SP=Object.assign({text:{},files:[],context:{}},s);spFileId=Math.max(0,...SP.files.map(f=>f.id))}}catch(e){}
+/* drafts saved by an earlier version, or left mid-read by a reload */
+SP.files.forEach(f=>{if(f.proc!=="done")f.proc=String(f.desc||"").trim()?"ready":"need"});
+/* Shift plan parts follow the same rules as Site setup parts: a part can be saved once it has some text
+   or a described file, saving reads the files and builds the part's context, and the part is ready once
+   its context is saved and nothing has changed since. */
+const spCtxEditing={},spBuilding={};
+function spSource(key,store=SP){
+  return JSON.stringify([String(store.text[key]||"").trim(),store.files.filter(f=>f.part===key).map(f=>[f.name,String(f.desc||"").trim()])]);
+}
+function spBuildContext(key,store=SP){
+  const text=String(store.text[key]||"").trim(),files=store.files.filter(f=>f.part===key),out=[];
+  if(text)out.push(`From the plan:\n${text}`);
+  if(files.length)out.push(`From the uploaded files:\n${files.map(f=>`• ${f.name}: ${String(f.desc||"").trim()}`).join("\n")}`);
+  return out.join("\n\n");
+}
 function spCheck(p){
-  const w=suWords(SP.text[p.key]),f=SP.files.filter(x=>x.part===p.key),need=f.filter(x=>suWords(x.desc)<SU_DESC_MIN).length,done=f.length-need;
-  const ready=(w>=SP_TEXT_MIN||done>0)&&!need;
-  const miss=need?`${suPlural(need,"file")} need${need===1?"s":""} a description`:ready?"Ready":w?`Write ${SP_TEXT_MIN-w} more words or add a file`:"Describe it or add a file";
-  return{ready,started:w>0||f.length>0,need,miss};
+  const w=suWords(SP.text[p.key]),f=SP.files.filter(x=>x.part===p.key),miss=[];
+  const described=f.filter(x=>x.proc==="ready"||x.proc==="done").length,need=f.filter(x=>x.proc==="need").length,busy=f.filter(x=>x.proc==="reading").length;
+  if(!w&&!described&&!need)miss.push("Describe it or add a file");
+  if(need)miss.push(`${suPlural(need,"file")} need${need===1?"s":""} a description`);
+  if(busy)miss.push(`${suPlural(busy,"file")} being read`);
+  const canSave=!miss.length,ctx=SP.context[p.key],stale=!!ctx&&ctx.src!==spSource(p.key);
+  if(canSave&&!ctx)miss.push("Save to build the context");
+  else if(stale)miss.push("Changed since the context was saved, save again");
+  return{ready:!miss.length,canSave,stale,need,started:w>0||f.length>0||!!ctx,miss,ctx};
 }
 let spSaveT;
 function spChanged(){
@@ -2853,9 +2878,11 @@ function spRefresh(){
   const ev=SP_PARTS.map(p=>({p,...spCheck(p)})),n=ev.filter(x=>x.ready).length;
   $("#spCount").textContent=`${n} of ${SP_PARTS.length} parts ready`;
   $("#spBar").style.width=`${n/SP_PARTS.length*100}%`;
-  ev.forEach(({p,ready,started,need,miss})=>{
-    const st=ready?["Ready","green"]:need?["Needs description","amber"]:started?["In progress","blue"]:["Not started","plain"];
-    $(`#spParts .su-sec[data-step="${p.key}"] .su-head`).innerHTML=`<span class="su-head-t"><span class="su-h"><span class="su-name">${p.name}</span><span class="tag ${st[1]}">${st[0]}</span></span><span class="su-miss">${ready?p.what:miss}</span></span><svg class="su-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+  ev.forEach(x=>{
+    const st=x.ready?["Ready","green"]:x.need?["Needs description","amber"]:x.canSave?["Needs saving","amber"]:x.started?["In progress","blue"]:["Not started","plain"];
+    $(`#spParts .su-sec[data-step="${x.p.key}"] .su-head`).innerHTML=`<span class="su-head-t"><span class="su-h"><span class="su-name">${x.p.name}</span><span class="tag ${st[1]}">${st[0]}</span></span><span class="su-miss">${x.ready?"Nothing missing.":x.miss[0]}</span></span><svg class="su-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+    spRenderSave(x);
+    if(!spCtxEditing[x.p.key])spRenderCtx(x.p.key,x.stale);
   });
   checkPlan();
 }
@@ -2875,6 +2902,8 @@ function spRenderParts(){
         <span><b>Drop files here or <u>browse</u></b><span>Excel, PDF, Word, images or a planning system export</span></span>
       </div>
       <div id="spFiles-${p.key}"></div>
+      <div class="su-save" id="spSave-${p.key}"></div>
+      <div id="spCtx-${p.key}"></div>
     </div>
   </section>`).join("");
   $$("#spParts .su-drop").forEach(z=>{
@@ -2884,31 +2913,86 @@ function spRenderParts(){
   });
   SP_PARTS.forEach(p=>spRenderFiles(p.key));
 }
+/* files use Site setup's statuses: Needs description, Ready to save, Reading, Read */
 function spRenderFiles(key){
   $(`#spFiles-${key}`).innerHTML=SP.files.filter(f=>f.part===key).map(f=>{
-    const w=suWords(f.desc),need=w<SU_DESC_MIN;
-    return`<div class="su-file${need?" need":""}"><div class="su-file-h"><b title="${suEsc(f.name)}">${suEsc(f.name)}</b><small>${suSize(f.size)}</small><span class="tag ${need?"amber":"green"}" id="spTag${f.id}">${need?"Needs description":"Added"}</span><button class="rm" onclick="spRemoveFile(${f.id})">Remove</button></div>
-      <textarea rows="2" aria-label="Description of ${suEsc(f.name)}" placeholder="What is this file? e.g. Shift 1 production targets by heading, exported from the planning system at 05:30." oninput="spFileDesc(${f.id},this.value)">${suEsc(f.desc)}</textarea>
-      <div class="su-hint" id="spHint${f.id}">${need?`${suPlural(w,"word")}, at least ${SU_DESC_MIN} needed`:"Description added"}</div></div>`;
+    const editing=f.proc==="need"||f.proc==="ready";
+    return`<div class="su-file${f.proc==="need"?" need":""}" data-spfile="${f.id}">
+      <div class="su-file-h"><b title="${suEsc(f.name)}">${suEsc(f.name)}</b><small>${suSize(f.size)}</small><span class="tag ${SU_PROC[f.proc][1]}" id="spTag${f.id}">${SU_PROC[f.proc][0]}</span><button class="rm" onclick="spRemoveFile(${f.id})">Remove</button></div>
+      ${editing?`<textarea rows="2" aria-label="Description of ${suEsc(f.name)}" placeholder="What is this file? e.g. Shift 1 production targets by heading, exported from the planning system at 05:30." oninput="spFileDesc(${f.id},this.value)">${suEsc(f.desc)}</textarea>
+      <div class="su-hint" id="spHint${f.id}">${SU_FILE_HINT[f.proc]}</div>`
+      :`<div class="su-file-d">${suEsc(f.desc)}${f.proc==="done"?` <button class="lvl-confirm" onclick="spEditFile(${f.id})">Edit</button>`:""}</div>`}
+    </div>`;
   }).join("");
 }
 function spAddFiles(list,part){
-  list.forEach(file=>SP.files.push({id:++spFileId,part,name:file.name,size:file.size,desc:""}));
+  let dup=0;
+  list.forEach(file=>{
+    if(SP.files.some(f=>f.part===part&&f.name===file.name&&f.size===file.size)){dup++;return}   // same file added twice
+    SP.files.push({id:++spFileId,part,name:file.name,size:file.size,desc:"",proc:"need"});
+  });
+  if(dup)toast(dup===1?"That file is already added to this part.":`${dup} of those files are already added to this part.`);
   spRenderFiles(part);spChanged();
   const t=$(`#spFiles-${part} .su-file.need textarea`);if(t)t.focus();
 }
 function spFileDesc(id,v){
-  const f=SP.files.find(x=>x.id===id),w=suWords(v),need=w<SU_DESC_MIN;f.desc=v;
-  $(`#spHint${id}`).textContent=need?`${suPlural(w,"word")}, at least ${SU_DESC_MIN} needed`:"Description added";
-  const t=$(`#spTag${id}`);t.textContent=need?"Needs description":"Added";t.className=`tag ${need?"amber":"green"}`;
-  t.closest(".su-file").classList.toggle("need",need);
+  const f=SP.files.find(x=>x.id===id);f.desc=v;f.proc=v.trim()?"ready":"need";
+  const t=$(`#spTag${id}`);t.textContent=SU_PROC[f.proc][0];t.className=`tag ${SU_PROC[f.proc][1]}`;
+  $(`#spHint${id}`).textContent=SU_FILE_HINT[f.proc];
+  t.closest(".su-file").classList.toggle("need",f.proc==="need");
   spChanged();
 }
+function spEditFile(id){const f=SP.files.find(x=>x.id===id);f.proc="ready";spRenderFiles(f.part);spChanged();$(`[data-spfile="${id}"] textarea`).focus()}
 function spRemoveFile(id){const f=SP.files.find(x=>x.id===id);SP.files=SP.files.filter(x=>x.id!==id);spRenderFiles(f.part);spChanged()}
 function spFillHandover(){
   const open=ACTIONS.filter(a=>a.status==="prog"||a.status==="stall").map(a=>`${a.title} (${a.owner}, ${a.timer.toLowerCase()})`);
   SP.text.handover=`Open actions carried over: ${open.join("; ")}. Unsolved: VF-2 is still down, so no more headings can be ventilated in the north block.`;
   $(`#spParts .su-sec[data-step="handover"] .su-text`).value=SP.text.handover;spChanged();
+}
+/* per-part Save and the saved context card */
+function spRenderSave(x){
+  const key=x.p.key,el=$(`#spSave-${key}`);if(!el)return;
+  if(spBuilding[key]){el.innerHTML=`<span class="su-save-msg">Building the ${x.p.name.toLowerCase()} context...</span><button class="btn btn-blue" disabled>Saving...</button>`;return}
+  const ctx=x.ctx,ready=x.canSave&&(!ctx||x.stale);
+  const msg=!x.canSave?`${x.miss[0]}.`:!ctx?"Saving builds the context ShiftWise uses for this part.":x.stale?"You changed the text or files. Save again to rebuild the context.":"Context is up to date.";
+  el.innerHTML=`<span class="su-save-msg">${msg}</span><button class="btn btn-blue" ${ready?"":"disabled"} onclick="spSavePart('${key}')">${ctx?"Save again":"Save"}</button>`;
+}
+function spStamp(){return`${niceDay(isoDay(new Date()))} ${$("#scTime").textContent.slice(0,5)}`}
+function spSavePart(key){
+  const ctx=SP.context[key];
+  if(ctx&&ctx.edited&&!confirm("Saving again rebuilds the context from the text and files, and replaces the changes made to it by hand. Continue?"))return;
+  const toRead=SP.files.filter(f=>f.part===key&&f.proc==="ready");
+  toRead.forEach(f=>f.proc="reading");
+  spBuilding[key]=true;spRenderFiles(key);spRefresh();
+  setTimeout(()=>{
+    toRead.forEach(f=>{if(SP.files.includes(f))f.proc="done"});
+    SP.context[key]={text:spBuildContext(key),v:(ctx?.v||0)+1,at:spStamp(),by:"N. Abara",src:spSource(key),edited:false};
+    spBuilding[key]=false;spRenderFiles(key);spChanged();
+    toast(`${SP_PARTS.find(x=>x.key===key).name} context saved (version ${SP.context[key].v}).`);
+  },1400);
+}
+function spRenderCtx(key,stale){
+  const ctx=SP.context[key],el=$(`#spCtx-${key}`);if(!el)return;
+  if(!ctx){el.innerHTML="";return}
+  const p=SP_PARTS.find(x=>x.key===key),editing=spCtxEditing[key];
+  el.innerHTML=`<div class="su-ctx${stale?" stale":""}">
+    <div class="su-ctx-h"><b>${p.name} context</b><span class="tag ${stale?"amber":"green"}">${stale?"Out of date":"Saved"}</span>${ctx.edited?`<span class="tag plain">Edited by hand</span>`:""}
+      <span class="su-ctx-meta">Version ${ctx.v} · saved ${ctx.at} by ${ctx.by}</span></div>
+    ${stale&&!editing?`<div class="su-ctx-warn">The text or files changed after this was saved. Save again to rebuild it.</div>`:""}
+    ${editing?`<textarea class="su-text" rows="8" id="spCtxText-${key}" aria-label="${p.name} context">${suEsc(ctx.text)}</textarea>
+      <div class="su-ctx-f"><button class="btn btn-ghost" onclick="spCtxCancel('${key}')">Cancel</button><button class="btn btn-blue" onclick="spCtxSaveEdit('${key}')">Save changes</button></div>`
+    :`<div class="su-ctx-text">${suEsc(ctx.text)}</div>
+      <div class="su-ctx-f"><span class="su-ctx-note">Draft built from the text and file notes. AI-written context will replace it later.</span><button class="btn btn-ghost" onclick="spCtxEdit('${key}')">Edit</button></div>`}
+  </div>`;
+}
+function spCtxEdit(key){spCtxEditing[key]=true;spRenderCtx(key,spCheck(SP_PARTS.find(x=>x.key===key)).stale);$(`#spCtxText-${key}`).focus()}
+function spCtxCancel(key){spCtxEditing[key]=false;spRefresh()}
+function spCtxSaveEdit(key){
+  const ctx=SP.context[key],v=$(`#spCtxText-${key}`).value.trim();
+  if(!v){toast("The context can't be empty. Cancel, or write the context first.");return}
+  if(v!==ctx.text)Object.assign(ctx,{text:v,v:ctx.v+1,at:spStamp(),by:"N. Abara",edited:true});
+  spCtxEditing[key]=false;spChanged();
+  toast(`${SP_PARTS.find(x=>x.key===key).name} context updated (version ${ctx.v}).`);
 }
 /* dates the plan covers */
 function setPlanRange(r){
@@ -2939,14 +3023,16 @@ function checkPlan(){
   if(!$("#planFrom"))return;
   if(spNameAuto&&$("#planFrom").value&&$("#planTo").value)$("#planName").value=planSuggestName($("#planFrom").value,$("#planTo").value);
   const from=$("#planFrom").value,to=$("#planTo").value,msg=$("#planMsg"),today=isoDay(new Date());
-  const ready=SP_PARTS.filter(p=>spCheck(p).ready).length,waiting=SP.files.some(f=>suWords(f.desc)<SU_DESC_MIN),left=SP_PARTS.length-ready;
-  let ok=!!from&&!!to&&ready>0&&!waiting,text="",cls="";
+  const ev=SP_PARTS.map(p=>({p,...spCheck(p)})),ready=ev.filter(x=>x.ready).length,left=SP_PARTS.length-ready;
+  const waiting=ev.some(x=>x.need),unsaved=ev.filter(x=>x.canSave&&!x.ready).map(x=>x.p.name.toLowerCase());
+  let ok=!!from&&!!to&&ready>0&&!waiting&&!unsaved.length,text="",cls="";
   if(from&&to&&to<from){ok=false;text="The end date is before the start date.";cls="err";}
   else if(from&&to){
     const days=Math.round((new Date(to)-new Date(from))/864e5)+1;
     if(days>31){ok=false;text="A plan can cover up to 31 days. Split longer plans into weekly ones.";cls="err";}
-    else if(waiting){text="Give every file a description before saving.";cls="warn";}
-    else if(!ready){text="Fill in at least one part of the plan to save it.";}
+    else if(waiting){text="Give every file a description, then save that part.";cls="warn";}
+    else if(unsaved.length){text=`Save ${unsaved.length>2?`${unsaved.slice(0,2).join(", ")} and ${unsaved.length-2} more`:unsaved.join(" and ")} first, so the plan keeps the latest context.`;cls="warn";}
+    else if(!ready){text="Fill in and save at least one part of the plan.";}
     else if(!$("#planName").value.trim()){ok=false;text="Give the plan a name.";}
     else if(SP.editing){text=`Saving updates "${suEsc($("#planName").value.trim())}" (Plan v${SP.editing}) for ${from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`}.${left?` ${suPlural(left,"part is","parts are")} still empty.`:""}`;}
     else if(from<=today&&today<=to){text=`This plan covers the current shift. It will be saved as an approved re-plan (Plan v${planVersion+1}), and Plan v${planVersion} stays for comparison.${left?` ${suPlural(left,"part is","parts are")} still empty.`:""}`;cls="warn";}
@@ -2958,7 +3044,7 @@ function checkPlan(){
 function submitPlan(){
   const from=$("#planFrom").value,to=$("#planTo").value,today=isoDay(new Date()),shift=$("#planShifts").value.replace(/ \(.*/,"");
   const range=from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`,now=$("#scTime").textContent.slice(0,5),ready=SP_PARTS.filter(p=>spCheck(p).ready).length;
-  const fields={name:$("#planName").value.trim().replace(/</g,"&lt;"),from,to,shift,parts:{...SP.text},files:SP.files.map(f=>({...f})),note:$("#planNote").value.trim().replace(/</g,"&lt;")||"No note"};
+  const fields={name:$("#planName").value.trim().replace(/</g,"&lt;"),from,to,shift,parts:{...SP.text},files:SP.files.map(f=>({...f})),context:JSON.parse(JSON.stringify(SP.context)),note:$("#planNote").value.trim().replace(/</g,"&lt;")||"No note"};
   if(SP.editing){
     const p=PLANS.find(x=>x.v===SP.editing);Object.assign(p,fields,{at:`${niceDay(today)} ${now}`,by:"N. Abara"});
     toast(`${p.name} updated: ${ready} of ${SP_PARTS.length} parts ready.`);
@@ -2968,7 +3054,7 @@ function submitPlan(){
   PLANS.unshift({v,...fields,by:"N. Abara",at:`${niceDay(today)} ${now}`});
   spBaseLine();
   toast(`${fields.name} saved for ${range}, ${shift.toLowerCase()}: ${ready} of ${SP_PARTS.length} parts ready.`);
-  SP={text:{},files:[]};try{localStorage.removeItem(SP_KEY)}catch(e){}
+  SP={text:{},files:[],context:{}};try{localStorage.removeItem(SP_KEY)}catch(e){}
   $("#planNote").value="";spNameAuto=true;spRenderParts();spRefresh();$("#spSaved").textContent="";renderPastShifts();
 }
 
@@ -2977,9 +3063,12 @@ const TODAY_ISO=isoDay(new Date()),MONTH1=TODAY_ISO.slice(0,8)+"01",MONTH_END=is
 const REPLAN=addDays(TODAY_ISO,-10)<MONTH1?MONTH1:addDays(TODAY_ISO,-10);
 const SP_SAMPLE={
   production:"Zone 5 OBI bog 1,800 t, fire Zone 4 OBI ring 12 at 18:40, and two development cuts at Etang North 550L.",
+  drawings:"Marked-up 550L and 640L level plans, and the Zone 4 OBI ring 12 drill and blast design.",
+  period:"Week 44 plan: 18,600 t ore and 105 m development. Month to date 50,012 t against 58,064 t.",
   resources:"LHD Scaltec 3402 and trucks 6313 to 6317 on Zone 5 OBI. Jumbo 3123 and the charge crew on Etang North 550L.",
   maintenance:"Truck 6317 500-hour service in workshop bay 1 from 17:00. Hoist inspection on Sunday from 06:00 to 10:00.",
   services:"Vent duct extension at Etang North 640L. Hydraulic backfill into the Zone 3 OBI stope from 02:00.",
+  logistics:"Emulsion delivery to the Zone 4 OBI magazine at 16:00. Fuel truck to 550L at 10:00. Cage schedule unchanged.",
   constraints:"Blasting window at 18:40. Exclusion zone at the Zone 4 OBI draw point. VF-2 down, so no new headings in the north block.",
   handover:"Water-jet crew still clearing the Zone 4 OBI hang-up. Vent tech confirmation on VF-2 is outstanding.",
 };
@@ -2987,16 +3076,19 @@ const SP_SAMPLE={
 const spSampleParts=n=>Object.fromEntries(SP_PARTS.slice(0,n).map(p=>[p.key,SP_SAMPLE[p.key]]));
 const PLANS=[
   {v:3,name:`Daily plan, ${niceDay(TODAY_ISO)}`,from:TODAY_ISO,to:TODAY_ISO,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(TODAY_ISO)} 05:48`,note:"Daily import",
-   parts:spSampleParts(6),files:[{id:9001,part:"production",name:"KTO daily plan 05-48.xlsx",size:184000,desc:"Daily plan exported from the mine planning system at 05:48 with targets by heading."}]},
+   parts:spSampleParts(9),files:[{id:9001,part:"production",name:"KTO daily plan 05-48.xlsx",size:184000,desc:"Daily plan exported from the mine planning system at 05:48 with targets by heading.",proc:"done"}]},
   {v:2,name:"Zone 4 OBI re-plan",from:REPLAN,to:MONTH_END,shift:"All three shifts",by:"T. Mokoena",at:`${niceDay(REPLAN)} 05:30`,note:"Re-sequenced Zone 4 OBI after a stope delay",
-   parts:spSampleParts(5),files:[]},
+   parts:spSampleParts(8),files:[]},
   {v:1,name:`${new Date(MONTH1+"T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})} monthly plan`,from:MONTH1,to:MONTH_END,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(MONTH1)} 06:10`,note:"Monthly plan",
-   parts:spSampleParts(4),files:[{id:9002,part:"production",name:"KTO monthly plan.xlsx",size:612000,desc:"Monthly production plan from the mine planning system with targets by area and week."}]}
+   parts:spSampleParts(6),files:[{id:9002,part:"production",name:"KTO monthly plan.xlsx",size:612000,desc:"Monthly production plan from the mine planning system with targets by area and week.",proc:"done"}]}
 ];
-/* how many of the 7 parts a plan has ready, using the same rule as the form */
-function planReady(p){return SP_PARTS.filter(x=>{const w=suWords(p.parts[x.key]),f=p.files.filter(y=>y.part===x.key);return(w>=SP_TEXT_MIN||f.length)&&f.every(y=>suWords(y.desc)>=SU_DESC_MIN)}).length}
+/* sample plans were saved with a context for every part they filled in */
+PLANS.forEach(p=>{p.context={};SP_PARTS.forEach(x=>{if(p.parts[x.key]||p.files.some(f=>f.part===x.key))p.context[x.key]={text:spBuildContext(x.key,{text:p.parts,files:p.files}),v:1,at:p.at,by:p.by,src:spSource(x.key,{text:p.parts,files:p.files}),edited:false}})});
+/* a saved plan's part is ready when its context was saved and matches the part's text and files */
+const planPartReady=(p,key)=>!!p.context?.[key]&&p.context[key].src===spSource(key,{text:p.parts,files:p.files});
+function planReady(p){return SP_PARTS.filter(x=>planPartReady(p,x.key)).length}
 function planMissing(p){
-  const m=SP_PARTS.filter(x=>!suWords(p.parts[x.key])&&!p.files.some(y=>y.part===x.key)).map(x=>x.name.toLowerCase());
+  const m=SP_PARTS.filter(x=>!planPartReady(p,x.key)).map(x=>x.name.toLowerCase());
   return m.length>1?m.slice(0,-1).join(", ")+" and "+m[m.length-1]:m.join("");
 }
 /* open a saved plan in the form above to change it, add files to it or delete it */
@@ -3004,7 +3096,7 @@ let spDraft=null;
 function spEdit(v){
   const p=PLANS.find(x=>x.v===v);if(!p)return;
   if(SP.editing===undefined||SP.editing===null)spDraft=SP;
-  SP={editing:v,text:{...p.parts},files:p.files.map(f=>({...f}))};
+  SP={editing:v,text:{...p.parts},files:p.files.map(f=>({...f})),context:JSON.parse(JSON.stringify(p.context||{}))};
   $("#planFrom").value=p.from;$("#planTo").value=p.to;
   $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));
   $("#planShifts").value=[...$("#planShifts").options].find(o=>o.value.startsWith(p.shift))?.value||$("#planShifts").value;
@@ -3020,7 +3112,7 @@ function spEditMode(on){
   $("#spCreate").classList.toggle("editing",on);
 }
 function spCancelEdit(){
-  SP=spDraft||{text:{},files:[]};spDraft=null;delete SP.editing;
+  SP=spDraft||{text:{},files:[],context:{}};spDraft=null;delete SP.editing;
   spNameAuto=true;$("#planName").value="";
   setPlanRange("today");$("#planNote").value="";
   spEditMode(false);spRenderParts();spRefresh();renderPastShifts();
