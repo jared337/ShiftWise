@@ -384,6 +384,21 @@ tbody tr:last-child td{border-bottom:none}
 .su-file-f .btn:disabled{opacity:.45;cursor:default}
 .su-file-d{font-size:12.5px;color:var(--ink-soft);margin-top:6px}
 .su-file-err{font-size:12.5px;color:var(--red);margin-top:6px}
+.su-save{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:14px;flex-wrap:wrap}
+.su-save-msg{font-size:12px;color:var(--ink-faint);font-weight:600}
+.su-save .btn{padding:7px 16px}
+.su-save .btn:disabled{opacity:.45;cursor:default}
+.su-ctx{margin-top:12px;border:1px solid #bfe6cf;border-left:3px solid var(--green);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.su-ctx.stale{border-color:#e9c77e;border-left-color:var(--amber);background:#fffcf4}
+.su-ctx-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.su-ctx-h b{font-size:13.5px}
+.su-ctx-meta{margin-left:auto;font-size:11.5px;color:var(--ink-faint);font-weight:600}
+.su-ctx-warn{font-size:12.5px;color:#8a6420;font-weight:600;margin-top:8px}
+.su-ctx-text{font-size:13px;color:var(--ink);white-space:pre-wrap;margin-top:10px;line-height:1.5}
+.su-ctx .su-text{margin-top:10px}
+.su-ctx-f{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:10px;flex-wrap:wrap}
+.su-ctx-f .btn{padding:6px 13px;font-size:12.5px}
+.su-ctx-note{font-size:11.5px;color:var(--ink-faint);font-weight:600;margin-right:auto}
 .su-file-err button{color:var(--blue);font-weight:700;margin-left:6px}
 @media(max-width:700px){.su-steps{grid-template-columns:1fr}}
 @media(max-width:820px){.set-layout{grid-template-columns:1fr}.set-nav{flex-direction:row;overflow-x:auto;position:static;padding-bottom:4px}.set-nav button{white-space:nowrap}}
@@ -2546,9 +2561,15 @@ const suWords=s=>(String(s||"").trim().match(/\S+/g)||[]).length;
 const suPlural=(n,one,many)=>`${n} ${n===1?one:(many||one+"s")}`;
 const suEsc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 
-/* Completion rule, the one place to change it: a part is complete when it has at least
+/* What a part's context is built from: its description plus every file that has been read.
+   If this changes after a save, the saved context is out of date. */
+function suSource(key){
+  return JSON.stringify([String(SU.text[key]||"").trim(),SU.files.filter(f=>f.part===key&&f.proc==="done").map(f=>[f.name,f.desc.trim()])]);
+}
+/* Completion rule, the one place to change it. A part can be saved once it has at least
    SU_TEXT_MIN words of text or one file that has been read, and no file is still waiting
-   for a description, being read, or unreadable. */
+   for a description, being read, or unreadable. It is complete once its context has been
+   saved and nothing has changed since. */
 function suCheck(p){
   const text=suWords(SU.text[p.key]),f=SU.files.filter(x=>x.part===p.key),miss=[];
   const read=f.filter(x=>x.proc==="done").length,need=f.filter(x=>x.proc==="need").length;
@@ -2557,13 +2578,16 @@ function suCheck(p){
   if(need)miss.push(`${suPlural(need,"file")} need${need===1?"s":""} a description`);
   if(busy)miss.push(`${suPlural(busy,"file")} still being read`);
   if(failed)miss.push(`${suPlural(failed,"file")} could not be read`);
-  return{miss,started:text>0||f.length>0,review:need};
+  const canSave=!miss.length,ctx=SU.context[p.key],stale=!!ctx&&ctx.src!==suSource(p.key);
+  if(canSave&&!ctx)miss.push("Save to build the context");
+  else if(stale)miss.push("Changed since the context was saved, save again");
+  return{miss,started:text>0||f.length>0||!!ctx,review:need,canSave,stale};
 }
-const SU_STATUS={complete:["Complete","green"],review:["Needs review","amber"],progress:["In progress","blue"],none:["Not started","plain"]};
+const SU_STATUS={complete:["Complete","green"],review:["Needs review","amber"],save:["Needs saving","amber"],progress:["In progress","blue"],none:["Not started","plain"]};
 function suEval(){
   return SU_PARTS.map((p,i)=>{
-    const r=suCheck(p),status=!r.miss.length?"complete":r.review?"review":r.started?"progress":"none";
-    return{...p,i,status,miss:r.miss};
+    const r=suCheck(p),status=!r.miss.length?"complete":r.review?"review":r.canSave?"save":r.started?"progress":"none";
+    return{...p,i,status,miss:r.miss,canSave:r.canSave,stale:r.stale};
   });
 }
 function suRefresh(){
@@ -2577,6 +2601,8 @@ function suRefresh(){
     $(`.su-sec[data-step="${x.key}"] .su-head`).innerHTML=`<span class="su-head-t"><span class="su-h"><span class="su-num">${x.i+1}</span><span class="su-name">${x.name}</span><span class="tag ${SU_STATUS[x.status][1]}">${SU_STATUS[x.status][0]}</span></span><span class="su-miss">${x.miss.length?"Still needed: "+x.miss.join(", ").toLowerCase()+".":"Nothing missing."}</span></span><svg class="su-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
     const w=suWords(SU.text[x.key]);
     $(`#suWords-${x.key}`).textContent=w?`${suPlural(w,"word")}${w<SU_TEXT_MIN?`, ${SU_TEXT_MIN} or more counts on its own`:""}`:"";
+    suRenderSave(x);
+    if(!suCtxEditing[x.key])suRenderCtx(x.key,x.stale);
   });
   $("#suDone").hidden=done<n;
 }
@@ -2602,7 +2628,7 @@ function suChanged(){
 function suSubmit(){toast("Mine model submitted. Rayven and Ramjack will review it and come back to you.")}
 function suLoad(){
   let saved=null;try{saved=JSON.parse(localStorage.getItem(SU_KEY)||"null")}catch(e){}
-  SU={text:saved?.text||{},files:saved?.files||[]};
+  SU={text:saved?.text||{},files:saved?.files||[],context:saved?.context||{}};
   suFileId=Math.max(0,...SU.files.map(f=>f.id));
 }
 function suRenderParts(){
@@ -2618,6 +2644,8 @@ function suRenderParts(){
       <span><b>Drop files here or <u>browse</u></b><span>Good sources: ${p.src}</span></span>
     </div>
     <div class="su-files" id="suFiles-${p.key}"></div>
+    <div class="su-save" id="suSave-${p.key}"></div>
+    <div id="suCtx-${p.key}"></div>
     </div>
   </section>`).join("");
   $$("#suParts .su-drop").forEach(z=>{
@@ -2625,6 +2653,58 @@ function suRenderParts(){
     ["dragleave","drop"].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.remove("over")}));
     z.addEventListener("drop",e=>{if(e.dataTransfer.files.length)addProfFiles([...e.dataTransfer.files],z.dataset.part)});
   });
+}
+
+/* Saving a part builds its context: the text ShiftWise reasons with for that part, kept with a version.
+   For now a stand-in assembles it from the description and file notes; the AI step replaces suBuildContext later. */
+const suCtxEditing={},suBuilding={};
+function suRenderSave(x){
+  const ctx=SU.context[x.key],el=$(`#suSave-${x.key}`);if(!el)return;
+  if(suBuilding[x.key]){el.innerHTML=`<span class="su-save-msg">Building the ${x.name.toLowerCase()} context...</span><button class="btn btn-blue" disabled>Saving...</button>`;return}
+  const label=!ctx?"Save":"Save again",ready=x.canSave&&(!ctx||x.stale);
+  const msg=!x.canSave?"Add a description or a read file to save this part.":!ctx?"Saving builds the context ShiftWise uses for this part.":x.stale?"You changed the description or files. Save again to rebuild the context.":"Context is up to date.";
+  el.innerHTML=`<span class="su-save-msg">${msg}</span><button class="btn btn-blue" ${ready?"":"disabled"} onclick="suSave('${x.key}')">${label}</button>`;
+}
+function suBuildContext(key){
+  const p=SU_PARTS.find(x=>x.key===key),text=String(SU.text[key]||"").trim(),files=SU.files.filter(f=>f.part===key&&f.proc==="done");
+  const out=[];
+  if(text)out.push(`From the site's description:\n${text}`);
+  if(files.length)out.push(`From the uploaded files:\n${files.map(f=>`• ${f.name}: ${f.desc.trim()}`).join("\n")}`);
+  return out.join("\n\n");
+}
+function suSave(key){
+  const ctx=SU.context[key];
+  if(ctx&&ctx.edited&&!confirm("Saving again rebuilds the context from the description and files, and replaces the changes made to it by hand. Continue?"))return;
+  suBuilding[key]=true;suRefresh();
+  setTimeout(()=>{
+    const p=SU_PARTS.find(x=>x.key===key);
+    SU.context[key]={text:suBuildContext(key),v:(ctx?.v||0)+1,at:`${niceDay(isoDay(new Date()))} ${$("#scTime").textContent.slice(0,5)}`,by:"N. Abara",src:suSource(key),edited:false};
+    suBuilding[key]=false;suChanged();
+    toast(`${p.name} context saved (version ${SU.context[key].v}).`);
+  },1200);
+}
+function suRenderCtx(key,stale){
+  const ctx=SU.context[key],el=$(`#suCtx-${key}`);if(!el)return;
+  if(!ctx){el.innerHTML="";return}
+  const p=SU_PARTS.find(x=>x.key===key),editing=suCtxEditing[key];
+  el.innerHTML=`<div class="su-ctx${stale?" stale":""}">
+    <div class="su-ctx-h"><b>${p.name} context</b><span class="tag ${stale?"amber":"green"}">${stale?"Out of date":"Saved"}</span>${ctx.edited?`<span class="tag plain">Edited by hand</span>`:""}
+      <span class="su-ctx-meta">Version ${ctx.v} · saved ${ctx.at} by ${ctx.by}</span></div>
+    ${stale&&!editing?`<div class="su-ctx-warn">The description or files changed after this was saved. Save again to rebuild it.</div>`:""}
+    ${editing?`<textarea class="su-text" rows="8" id="suCtxText-${key}" aria-label="${p.name} context">${suEsc(ctx.text)}</textarea>
+      <div class="su-ctx-f"><button class="btn btn-ghost" onclick="suCtxCancel('${key}')">Cancel</button><button class="btn btn-blue" onclick="suCtxSaveEdit('${key}')">Save changes</button></div>`
+    :`<div class="su-ctx-text">${suEsc(ctx.text)}</div>
+      <div class="su-ctx-f"><span class="su-ctx-note">Draft built from the description and file notes. AI-written context will replace it later.</span><button class="btn btn-ghost" onclick="suCtxEdit('${key}')">Edit</button></div>`}
+  </div>`;
+}
+function suCtxEdit(key){suCtxEditing[key]=true;suRenderCtx(key,suEval().find(x=>x.key===key).stale);$(`#suCtxText-${key}`).focus()}
+function suCtxCancel(key){suCtxEditing[key]=false;suRefresh()}
+function suCtxSaveEdit(key){
+  const ctx=SU.context[key],v=$(`#suCtxText-${key}`).value.trim();
+  if(!v){toast("The context can't be empty. Cancel, or write the context first.");return}
+  if(v!==ctx.text)Object.assign(ctx,{text:v,v:ctx.v+1,at:`${niceDay(isoDay(new Date()))} ${$("#scTime").textContent.slice(0,5)}`,by:"N. Abara",edited:true});
+  suCtxEditing[key]=false;suChanged();
+  toast(`${SU_PARTS.find(x=>x.key===key).name} context updated (version ${ctx.v}).`);
 }
 
 /* files: each one waits for a description before it is read */
