@@ -544,14 +544,16 @@ tbody tr:last-child td{border-bottom:none}
 .sp-prog .su-bar{flex:1;max-width:320px}
 #spParts{margin-top:6px}
 .sp-fill{margin-bottom:8px;font-size:12.5px}
+.sp-time-hint{font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:-6px}
 .sp-foot{display:flex;justify-content:flex-end;margin-top:12px}
 .section-title .sp-view{margin-left:auto}
 .section-title .sp-view button{padding:6px 13px;font-size:12.5px}
 .sp-key{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-faint);font-weight:600;margin:-4px 0 10px}
 .sp-key i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}
 .sp-key i.g{background:var(--green)}.sp-key i.a{background:var(--amber)}.sp-key i.r{background:var(--red)}
+.sp-key i.p{background:var(--green-soft);border:1px solid #bfe6cf}
 .sp-table{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:2px 16px}
-.sp-row{display:grid;grid-template-columns:minmax(180px,1.7fr) minmax(130px,1.2fr) 80px 90px 110px 140px;gap:12px;align-items:center;width:100%;text-align:left;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.sp-row{display:grid;grid-template-columns:minmax(180px,1.7fr) minmax(170px,1.4fr) 90px 110px 140px;gap:12px;align-items:center;width:100%;text-align:left;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
 .sp-row:last-child{border-bottom:0}
 .sp-row.hd{font-size:11px;font-weight:800;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;padding:10px 0 6px}
 .sp-row.on .sp-d{color:var(--blue)}
@@ -570,7 +572,8 @@ tbody tr:last-child td{border-bottom:none}
 .sp-att.a{background:var(--amber-soft);color:var(--amber)}
 .sp-att.r{background:var(--red-soft);color:var(--red)}
 .sp-att.live{background:var(--blue-soft);color:var(--blue)}
-.sp-att.plan{color:var(--ink-soft);border:1px solid var(--line);font-weight:700}
+.sp-att.plan{color:var(--green);background:var(--green-soft);border:1px solid #bfe6cf;font-weight:700}
+.sp-c.planned{background:#f3fbf6;border-color:#cfeedd}
 .sp-att.none{color:var(--ink-faint);font-weight:600;border:1px dashed var(--line)}
 .sp-plans{margin-top:14px}
 .sp-plans h5{font-size:12px;font-weight:800;color:var(--ink-soft);margin-bottom:6px}
@@ -596,7 +599,7 @@ button.sp-c:hover,.sp-c.on{border-color:var(--blue)}
 .sp-day-h .rm{font-size:12px;font-weight:700;color:var(--ink-faint)}
 .sp-day-r{display:grid;grid-template-columns:70px auto 1fr;gap:12px;align-items:center;font-size:12.5px;padding:6px 0;border-top:1px dashed var(--line)}
 .sp-day-r span:last-child{color:var(--ink-soft)}
-@media(max-width:700px){.sp-row{grid-template-columns:1fr auto;gap:6px}.sp-row>span:nth-child(3),.sp-row>span:nth-child(4){display:none}.sp-acts{grid-column:1/-1;justify-content:flex-start}.sp-row.hd{display:none}.sp-c{min-height:48px;padding:4px}.sp-c .sp-att{font-size:10px;padding:0 3px}.sp-day-r{grid-template-columns:60px auto;}.sp-day-r span:last-child{grid-column:1/-1}}
+@media(max-width:700px){.sp-row{grid-template-columns:1fr auto;gap:6px}.sp-row>span:nth-child(3){display:none}.sp-acts{grid-column:1/-1;justify-content:flex-start}.sp-row.hd{display:none}.sp-c{min-height:48px;padding:4px}.sp-c .sp-att{font-size:10px;padding:0 3px}.sp-day-r{grid-template-columns:60px auto;}.sp-day-r span:last-child{grid-column:1/-1}}
 /* Also watching, under the next best actions */
 .watching{margin:4px 0 14px}
 .watch-h{font-size:12.5px;font-weight:800;color:var(--ink-soft);margin:10px 0 6px}
@@ -1403,8 +1406,9 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
           </div>
           <div class="field"><label for="planFrom">From</label><input type="date" id="planFrom"></div>
           <div class="field"><label for="planTo">To</label><input type="date" id="planTo"></div>
-          <div class="field full"><label for="planShifts">Shifts</label>
-            <select id="planShifts"><option>Shift 1 (06:00 to 14:00)</option><option>Shift 2 (14:00 to 22:00)</option><option>Shift 3 (22:00 to 06:00)</option><option>All three shifts</option></select></div>
+          <div class="field"><label for="planStart">Start time</label><input type="time" id="planStart" value="06:00"></div>
+          <div class="field"><label for="planEnd">End time</label><input type="time" id="planEnd" value="14:00"></div>
+          <div class="field full sp-time-hint" id="planTimeHint"></div>
         </div>
         <div class="sp-prog"><b id="spCount">0 of 9 parts ready</b><span class="su-bar"><i id="spBar"></i></span></div>
         <div id="spParts"></div>
@@ -1417,7 +1421,7 @@ body{background:var(--canvas);color:var(--ink);font-size:14px}
       <div class="section-title">Shift plans
         <div class="seg sp-view" id="spView"><button data-v="list" class="on">List</button><button data-v="cal">Calendar</button></div>
       </div>
-      <div class="sp-key"><span><i class="g"></i>On plan (95% or more)</span><span><i class="a"></i>Slightly short (85 to 94%)</span><span><i class="r"></i>Short (under 85%)</span></div>
+      <div class="sp-key"><span><i class="g"></i>On plan (95% or more)</span><span><i class="a"></i>Slightly short (85 to 94%)</span><span><i class="r"></i>Short (under 85%)</span><span><i class="p"></i>Planned, not run yet</span></div>
       <div id="spList"></div>
       <div id="spCal" hidden></div>
       <div id="spDay"></div>
@@ -3004,6 +3008,13 @@ function setPlanRange(r){
 }
 $$("#planRange button").forEach(b=>b.addEventListener("click",()=>setPlanRange(b.dataset.r)));
 ["#planFrom","#planTo"].forEach(s=>$(s).addEventListener("change",()=>{$$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));checkPlan();}));
+/* each day in a plan runs from the start time to the end time */
+function timeSpan(s,e){return!s||!e?"":s===e?`${s} to ${e}, 24 hours`:e<s?`${s} to ${e} the next morning`:`${s} to ${e}`}
+function spTimeHint(){
+  const s=$("#planStart").value,e=$("#planEnd").value;
+  $("#planTimeHint").textContent=!s||!e?"Set the time each day starts and ends.":s===e?"Each day in the plan runs a full 24 hours from the start time.":e<s?"The end time is earlier than the start time, so each day runs overnight.":`Each day in the plan runs from ${s} to ${e}.`;
+}
+["#planStart","#planEnd"].forEach(s=>$(s).addEventListener("input",()=>{spTimeHint();checkPlan()}));
 function openPlanTab(){
   showView("plan");$("#view-plan .ptabs [data-pt=ptPlans]").click();
   $("#spCreate").scrollIntoView({behavior:"smooth",block:"start"});
@@ -3027,6 +3038,7 @@ function checkPlan(){
   const waiting=ev.some(x=>x.need),unsaved=ev.filter(x=>x.canSave&&!x.ready).map(x=>x.p.name.toLowerCase());
   let ok=!!from&&!!to&&ready>0&&!waiting&&!unsaved.length,text="",cls="";
   if(from&&to&&to<from){ok=false;text="The end date is before the start date.";cls="err";}
+  else if(!$("#planStart").value||!$("#planEnd").value){ok=false;text="Set a start and end time for each day.";cls="warn";}
   else if(from&&to){
     const days=Math.round((new Date(to)-new Date(from))/864e5)+1;
     if(days>31){ok=false;text="A plan can cover up to 31 days. Split longer plans into weekly ones.";cls="err";}
@@ -3042,9 +3054,9 @@ function checkPlan(){
   msg.className="plan-msg "+cls;msg.textContent=text;$("#planSubmit").disabled=!ok;
 }
 function submitPlan(){
-  const from=$("#planFrom").value,to=$("#planTo").value,today=isoDay(new Date()),shift=$("#planShifts").value.replace(/ \(.*/,"");
+  const from=$("#planFrom").value,to=$("#planTo").value,today=isoDay(new Date());
   const range=from===to?niceDay(from):`${niceDay(from)} to ${niceDay(to)}`,now=$("#scTime").textContent.slice(0,5),ready=SP_PARTS.filter(p=>spCheck(p).ready).length;
-  const fields={name:$("#planName").value.trim().replace(/</g,"&lt;"),from,to,shift,parts:{...SP.text},files:SP.files.map(f=>({...f})),context:JSON.parse(JSON.stringify(SP.context)),note:$("#planNote").value.trim().replace(/</g,"&lt;")||"No note"};
+  const fields={name:$("#planName").value.trim().replace(/</g,"&lt;"),from,to,startTime:$("#planStart").value,endTime:$("#planEnd").value,parts:{...SP.text},files:SP.files.map(f=>({...f})),context:JSON.parse(JSON.stringify(SP.context)),note:$("#planNote").value.trim().replace(/</g,"&lt;")||"No note"};
   if(SP.editing){
     const p=PLANS.find(x=>x.v===SP.editing);Object.assign(p,fields,{at:`${niceDay(today)} ${now}`,by:"N. Abara"});
     toast(`${p.name} updated: ${ready} of ${SP_PARTS.length} parts ready.`);
@@ -3053,7 +3065,7 @@ function submitPlan(){
   const v=++planVersion;
   PLANS.unshift({v,...fields,by:"N. Abara",at:`${niceDay(today)} ${now}`});
   spBaseLine();
-  toast(`${fields.name} saved for ${range}, ${shift.toLowerCase()}: ${ready} of ${SP_PARTS.length} parts ready.`);
+  toast(`${fields.name} saved for ${range}, ${timeSpan(fields.startTime,fields.endTime)}: ${ready} of ${SP_PARTS.length} parts ready.`);
   SP={text:{},files:[],context:{}};try{localStorage.removeItem(SP_KEY)}catch(e){}
   $("#planNote").value="";spNameAuto=true;spRenderParts();spRefresh();$("#spSaved").textContent="";renderPastShifts();
 }
@@ -3075,11 +3087,11 @@ const SP_SAMPLE={
 /* sample plans fill their first n parts; real saved plans keep exactly what was entered */
 const spSampleParts=n=>Object.fromEntries(SP_PARTS.slice(0,n).map(p=>[p.key,SP_SAMPLE[p.key]]));
 const PLANS=[
-  {v:3,name:`Daily plan, ${niceDay(TODAY_ISO)}`,from:TODAY_ISO,to:TODAY_ISO,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(TODAY_ISO)} 05:48`,note:"Daily import",
+  {v:3,name:`Daily plan, ${niceDay(TODAY_ISO)}`,from:TODAY_ISO,to:TODAY_ISO,startTime:"06:00",endTime:"06:00",by:"Mine planning system",at:`${niceDay(TODAY_ISO)} 05:48`,note:"Daily import",
    parts:spSampleParts(9),files:[{id:9001,part:"production",name:"KTO daily plan 05-48.xlsx",size:184000,desc:"Daily plan exported from the mine planning system at 05:48 with targets by heading.",proc:"done"}]},
-  {v:2,name:"Zone 4 OBI re-plan",from:REPLAN,to:MONTH_END,shift:"All three shifts",by:"T. Mokoena",at:`${niceDay(REPLAN)} 05:30`,note:"Re-sequenced Zone 4 OBI after a stope delay",
+  {v:2,name:"Zone 4 OBI re-plan",from:REPLAN,to:MONTH_END,startTime:"06:00",endTime:"06:00",by:"T. Mokoena",at:`${niceDay(REPLAN)} 05:30`,note:"Re-sequenced Zone 4 OBI after a stope delay",
    parts:spSampleParts(8),files:[]},
-  {v:1,name:`${new Date(MONTH1+"T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})} monthly plan`,from:MONTH1,to:MONTH_END,shift:"All three shifts",by:"Mine planning system",at:`${niceDay(MONTH1)} 06:10`,note:"Monthly plan",
+  {v:1,name:`${new Date(MONTH1+"T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})} monthly plan`,from:MONTH1,to:MONTH_END,startTime:"06:00",endTime:"06:00",by:"Mine planning system",at:`${niceDay(MONTH1)} 06:10`,note:"Monthly plan",
    parts:spSampleParts(6),files:[{id:9002,part:"production",name:"KTO monthly plan.xlsx",size:612000,desc:"Monthly production plan from the mine planning system with targets by area and week.",proc:"done"}]}
 ];
 /* sample plans were saved with a context for every part they filled in */
@@ -3099,7 +3111,7 @@ function spEdit(v){
   SP={editing:v,text:{...p.parts},files:p.files.map(f=>({...f})),context:JSON.parse(JSON.stringify(p.context||{}))};
   $("#planFrom").value=p.from;$("#planTo").value=p.to;
   $$("#planRange button").forEach(b=>b.classList.toggle("on",b.dataset.r==="custom"));
-  $("#planShifts").value=[...$("#planShifts").options].find(o=>o.value.startsWith(p.shift))?.value||$("#planShifts").value;
+  $("#planStart").value=p.startTime||"06:00";$("#planEnd").value=p.endTime||"06:00";spTimeHint();
   $("#planNote").value=p.note;$("#planName").value=p.name;spNameAuto=false;
   spEditMode(true);spRenderParts();spRefresh();renderPastShifts();
   $("#spCreate").scrollIntoView({behavior:"smooth",block:"start"});
@@ -3114,6 +3126,7 @@ function spEditMode(on){
 function spCancelEdit(){
   SP=spDraft||{text:{},files:[],context:{}};spDraft=null;delete SP.editing;
   spNameAuto=true;$("#planName").value="";
+  $("#planStart").value="06:00";$("#planEnd").value="14:00";spTimeHint();
   setPlanRange("today");$("#planNote").value="";
   spEditMode(false);spRenderParts();spRefresh();renderPastShifts();
 }
@@ -3144,14 +3157,14 @@ function planKind(p){
   if(f.getDate()===1&&new Date(t.getFullYear(),t.getMonth()+1,0).getDate()===t.getDate()&&f.getMonth()===t.getMonth())return"Monthly";
   return`${days} days`;
 }
-const SHIFT_NAMES=["Shift 1","Shift 2","Shift 3"];
 function spHash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,1540483477);h^=h>>>15;return(h>>>0)/4294967295}
 function planFor(day){return PLANS.filter(p=>p.from<=day&&day<=p.to).sort((a,b)=>b.v-a.v)[0]||null}
-function shiftResult(day,i){
+/* one result per day: how much of that day's plan was done (sample values for past days) */
+function dayResult(day){
   const p=planFor(day);if(!p)return{state:"none"};
-  if(day>TODAY_ISO||(day===TODAY_ISO&&i>0))return{state:"planned",plan:p};
+  if(day>TODAY_ISO)return{state:"planned",plan:p};
   if(day===TODAY_ISO)return{state:"live",att:78,plan:p,ready:planReady(p)};
-  return{state:"done",att:Math.round(76+spHash(day+i)*26),plan:p,ready:planReady(p)};
+  return{state:"done",att:Math.round(76+spHash(day)*26),plan:p,ready:planReady(p)};
 }
 const attCls=a=>a>=95?"g":a>=85?"a":"r";
 let spSelected=null,spMonth=TODAY_ISO.slice(0,7);
@@ -3161,23 +3174,23 @@ function spCell(r){
   if(r.state==="planned")return`<span class="sp-att plan">Planned</span>`;
   return`<span class="sp-att none">No plan</span>`;
 }
-/* a plan's result: the shifts it governed that have finished (later versions take over the days they cover) */
+/* a plan's result: the days it governed that have run (later versions take over the days they cover) */
 function planResult(p){
-  const rs=[];for(let d=p.from;d<=p.to&&d<=TODAY_ISO;d=addDays(d,1)){if(planFor(d)!==p)continue;SHIFT_NAMES.forEach((_,i)=>{const r=shiftResult(d,i);if(r.state==="done"||r.state==="live")rs.push(r)})}
+  const rs=[];for(let d=p.from;d<=p.to&&d<=TODAY_ISO;d=addDays(d,1)){if(planFor(d)!==p)continue;const r=dayResult(d);if(r.state==="done"||r.state==="live")rs.push(r)}
   if(!rs.length)return{label:p.from>TODAY_ISO?"Not started":"Replaced before it ran",cls:"plan"};
   const avg=Math.round(rs.reduce((a,r)=>a+r.att,0)/rs.length);
   return{label:`${avg}%${rs.some(r=>r.state==="live")?" so far":""}`,cls:rs.some(r=>r.state==="live")&&rs.length===1?"live":attCls(avg),n:rs.length};
 }
 const planRange=p=>p.from===p.to?longDay(p.from):`${niceDay(p.from)} to ${niceDay(p.to)}`;
+const planTimes=p=>timeSpan(p.startTime,p.endTime);
 function renderPastShifts(){
-  $("#spList").innerHTML=`<div class="sp-table"><div class="sp-row hd"><span>Plan</span><span>Dates</span><span>Shifts</span><span>Parts ready</span><span>Result</span><span></span></div>`+
+  $("#spList").innerHTML=`<div class="sp-table"><div class="sp-row hd"><span>Plan</span><span>Dates</span><span>Parts ready</span><span>Result</span><span></span></div>`+
     PLANS.map(p=>{const r=planResult(p),ready=planReady(p),cur=planFor(TODAY_ISO)===p,editing=SP.editing===p.v;
       return`<div class="sp-row${editing?" on":""}">
         <span class="sp-d">${p.name}${cur?` <em class="tag blue">Current</em>`:""}${editing?` <em class="tag plain">Editing</em>`:""}<small>Plan v${p.v} · ${p.note} · saved ${p.at} by ${p.by}</small></span>
-        <span>${planRange(p)}<small>${planKind(p)}</small></span>
-        <span>${p.shift.replace("All three shifts","All three")}</span>
+        <span>${planRange(p)}<small>${planKind(p)} · ${planTimes(p)}</small></span>
         <span><span class="sp-att ${ready===SP_PARTS.length?"g":ready>=SP_PARTS.length-2?"a":"r"}">${ready} of ${SP_PARTS.length}</span></span>
-        <span><span class="sp-att ${r.cls}">${r.label}</span>${r.n?`<small>${suPlural(r.n,"shift")}</small>`:""}</span>
+        <span><span class="sp-att ${r.cls}">${r.label}</span>${r.n?`<small>${suPlural(r.n,"day")}</small>`:""}</span>
         <span class="sp-acts"><button class="btn btn-ghost" onclick="spEdit(${p.v})" aria-label="Edit ${suEsc(p.name)}">Edit</button><button class="btn btn-ghost sp-del" onclick="spDelete(${p.v})" aria-label="Delete ${suEsc(p.name)}">Delete</button></span>
       </div>`;}).join("")+`</div>`;
   renderCalendar();renderSpDay();
@@ -3187,10 +3200,9 @@ function renderCalendar(){
   const title=first.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
   let cells="";for(let i=0;i<lead;i++)cells+=`<span class="sp-c blank"></span>`;
   for(let d=1;d<=days;d++){
-    const day=`${spMonth}-${String(d).padStart(2,"0")}`,rs=SHIFT_NAMES.map((_,i)=>shiftResult(day,i)),done=rs.filter(r=>r.state==="done");
-    const avg=done.length?Math.round(done.reduce((a,r)=>a+r.att,0)/done.length):null;
-    const label=avg!==null?`<span class="sp-att ${attCls(avg)}">${avg}%</span>`:rs[0].state==="live"?`<span class="sp-att live">Today</span>`:rs[0].state==="planned"?`<span class="sp-att plan">Planned</span>`:`<span class="sp-att none">No plan</span>`;
-    cells+=`<button class="sp-c${day===TODAY_ISO?" today":""}${spSelected===day?" on":""}" onclick="spSelect('${day}')"><b>${d}</b>${label}</button>`;
+    const day=`${spMonth}-${String(d).padStart(2,"0")}`,r=dayResult(day);
+    const label=r.state==="done"?`<span class="sp-att ${attCls(r.att)}">${r.att}%</span>`:r.state==="live"?`<span class="sp-att live">Today</span>`:r.state==="planned"?`<span class="sp-att plan">Planned</span>`:`<span class="sp-att none">No plan</span>`;
+    cells+=`<button class="sp-c${day===TODAY_ISO?" today":""}${r.state==="planned"?" planned":""}${spSelected===day?" on":""}" onclick="spSelect('${day}')"><b>${d}</b>${label}</button>`;
   }
   $("#spCal").innerHTML=`<div class="sp-cal-h"><button onclick="spShiftMonth(-1)" aria-label="Previous month">‹</button><b>${title}</b><button onclick="spShiftMonth(1)" aria-label="Next month">›</button></div>
     <div class="sp-grid">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(w=>`<span class="sp-wd">${w}</span>`).join("")}${cells}</div>`;
@@ -3199,15 +3211,15 @@ function spShiftMonth(n){const [y,m]=spMonth.split("-").map(Number),d=new Date(y
 function spSelect(day){spSelected=spSelected===day?null:day;renderPastShifts()}
 function renderSpDay(){
   if(!spSelected){$("#spDay").innerHTML="";return}
-  const p=planFor(spSelected),rs=SHIFT_NAMES.map((_,i)=>shiftResult(spSelected,i));
-  $("#spDay").innerHTML=`<div class="sp-day"><div class="sp-day-h"><b>${longDay(spSelected)}</b><span>${p?`${p.name} (Plan v${p.v}, ${planRange(p)}) · ${p.note}`:"No plan on file for this day"}</span>${p?`<button class="btn btn-ghost sp-editbtn" onclick="spEdit(${p.v})">Edit this plan</button>`:`<button class="btn btn-ghost sp-editbtn" onclick="spNewFor('${spSelected}')">Create a plan for this day</button>`}<button class="rm" onclick="spSelect('${spSelected}')">Close</button></div>
-    ${rs.map((r,i)=>`<div class="sp-day-r"><b>${SHIFT_NAMES[i]}</b>${spCell(r)}<span>${r.state==="done"||r.state==="live"?`${r.ready} of ${SP_PARTS.length} plan parts were ready${r.ready<SP_PARTS.length?`, missing ${planMissing(r.plan)}`:""}`:r.state==="planned"?"Not started yet":"Nothing planned"}</span></div>`).join("")}</div>`;
+  const p=planFor(spSelected),r=dayResult(spSelected);
+  $("#spDay").innerHTML=`<div class="sp-day"><div class="sp-day-h"><b>${longDay(spSelected)}</b><span>${p?`${p.name} (Plan v${p.v}, ${planRange(p)}, ${planTimes(p)}) · ${p.note}`:"No plan on file for this day"}</span>${p?`<button class="btn btn-ghost sp-editbtn" onclick="spEdit(${p.v})">Edit this plan</button>`:`<button class="btn btn-ghost sp-editbtn" onclick="spNewFor('${spSelected}')">Create a plan for this day</button>`}<button class="rm" onclick="spSelect('${spSelected}')">Close</button></div>
+    <div class="sp-day-r"><b>Result</b>${spCell(r)}<span>${r.state==="done"||r.state==="live"?`${r.ready} of ${SP_PARTS.length} plan parts were ready${r.ready<SP_PARTS.length?`, missing ${planMissing(r.plan)}`:""}`:r.state==="planned"?"Not started yet":"Nothing planned"}</span></div></div>`;
 }
 $$("#spView button").forEach(b=>b.addEventListener("click",()=>{
   $$("#spView button").forEach(x=>x.classList.toggle("on",x===b));
   $("#spList").hidden=b.dataset.v!=="list";$("#spCal").hidden=b.dataset.v!=="cal";
 }));
-setPlanRange("today");spRenderParts();spRefresh();renderPastShifts();
+spTimeHint();setPlanRange("today");spRenderParts();spRefresh();renderPastShifts();
 
 /* ═════════ Shift clock ═════════ */
 let simSec=13*3600+6*60+59;
